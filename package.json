@@ -17,6 +17,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build"
   },
+  "engines": {
+    "node": "18"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
