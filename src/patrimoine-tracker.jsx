@@ -1062,6 +1062,7 @@ export default function PatrimoineTracker(){
                   {benchIndices.msci&&<div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:20,height:3,borderRadius:2,background:C.green,opacity:.7}}/><span style={{fontSize:11,color:C.textDim}}>MSCI World</span></div>}
                 </div>
                 <div style={{marginTop:12,fontSize:11,color:C.textMuted,textAlign:"center"}}>Base 100 depuis le {fmtDate(snapshots[0]?.date)}. Ton portefeuille en trait plein, les indices en pointillés.</div>
+                {snapshots.length<6&&<div style={{marginTop:8,padding:"8px 14px",background:C.goldDim,border:`1px solid ${C.gold}33`,borderRadius:8,fontSize:11,color:C.gold,textAlign:"center"}}>💡 Plus tu ajoutes de snapshots réguliers, plus le benchmark est lisible. Idéalement 1 par mois.</div>}
               </>}
             </div>
           </SectionCard>
