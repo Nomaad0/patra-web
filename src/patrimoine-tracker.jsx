@@ -390,6 +390,7 @@ export default function PatrimoineTracker(){
   const [divEditItem,setDivEditItem]=useState(null);
   const [showHistoryModal,setShowHistoryModal]=useState(false);
   const [showSnapManager,setShowSnapManager]=useState(false);
+  const [showDivHistoryManager,setShowDivHistoryManager]=useState(false);
   const [historyForm,setHistoryForm]=useState({year:"",total:""});
   const [divFetchStatus,setDivFetchStatus]=useState("");
   const [monthlyIncome,setMonthlyIncome]=useState(0);
@@ -1227,7 +1228,12 @@ export default function PatrimoineTracker(){
         </div>
 
         <SectionCard title="Historique des dividendes" rightContent={
-          <button onClick={()=>setShowHistoryModal(true)} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Plus size={13}/>Ajouter année</button>
+          <div style={{display:"flex",gap:8}}>
+            <button onClick={()=>setShowHistoryModal(true)} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"6px 12px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:11,fontWeight:600}}><Plus size={12}/>Ajouter</button>
+            {divHistory.length>0&&<button onClick={()=>setShowDivHistoryManager(!showDivHistoryManager)} style={{background:showDivHistoryManager?C.accentDim:"transparent",border:`1px solid ${showDivHistoryManager?C.accent:C.border}`,borderRadius:8,padding:"6px 12px",color:showDivHistoryManager?C.accent:C.textDim,cursor:"pointer",fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:5}}>
+              <Edit3 size={12}/>{showDivHistoryManager?"Fermer":"Gérer"}
+            </button>}
+          </div>
         }>
           <div style={{padding:20}}>
             <ResponsiveContainer width="100%" height={220}>
@@ -1241,19 +1247,25 @@ export default function PatrimoineTracker(){
               <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:10,height:10,borderRadius:2,background:C.green}}/><span style={{fontSize:11,color:C.textDim}}>Perçus</span></div>
               <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:10,height:10,borderRadius:2,background:C.accentDim}}/><span style={{fontSize:11,color:C.textDim}}>Projection 2026</span></div>
             </div>
-            {divHistory.length>0&&<div style={{marginTop:16,borderTop:`1px solid ${C.border}`,paddingTop:12}}>
-              {divHistory.map(d=>(
-                <div key={d.year} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 4px",borderBottom:`1px solid ${C.border}22`,fontSize:13}}>
-                  <span style={{fontWeight:600,color:C.textDim}}>{d.year}</span>
-                  <span style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:C.green}}>{fmtEur(d.total)}</span>
-                  <div style={{display:"flex",gap:6}}>
-                    <button onClick={()=>{setHistoryForm({year:String(d.year),total:String(d.total)});setShowHistoryModal(true);}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4}} onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={13}/></button>
-                    <button onClick={()=>setDivHistory(p=>p.filter(x=>x.year!==d.year))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4}} onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
-                  </div>
-                </div>
-              ))}
-            </div>}
           </div>
+          {showDivHistoryManager&&<div style={{borderTop:`1px solid ${C.border}`,maxHeight:250,overflowY:"auto"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 80px",padding:"8px 16px",background:C.bg}}>
+              <span style={{fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:.5}}>ANNÉE</span>
+              <span style={{fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:.5,textAlign:"right"}}>TOTAL PERÇU</span>
+              <span></span>
+            </div>
+            {[...divHistory].reverse().map(d=>(
+              <div key={d.year} style={{display:"grid",gridTemplateColumns:"1fr 1fr 80px",padding:"10px 16px",borderBottom:`1px solid ${C.border}`,fontSize:12,alignItems:"center"}}
+                onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                <span style={{fontWeight:600,color:C.text}}>{d.year}</span>
+                <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:C.green}}>{fmtEur(d.total)}</span>
+                <div style={{display:"flex",gap:4,justifyContent:"flex-end"}}>
+                  <button onClick={()=>{setHistoryForm({year:String(d.year),total:String(d.total)});setShowHistoryModal(true);}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={13}/></button>
+                  <button onClick={()=>setDivHistory(p=>p.filter(x=>x.year!==d.year))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
+                </div>
+              </div>
+            ))}
+          </div>}
         </SectionCard>
 
         <SectionCard title="Détail par ligne">
