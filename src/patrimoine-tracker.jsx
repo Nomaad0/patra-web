@@ -1373,7 +1373,7 @@ export default function PatrimoineTracker(){
 
     {/* ═══ FOOTER ═══ */}
     <div style={{padding:"28px 28px",display:"flex",justifyContent:"center",alignItems:"center",borderTop:`1px solid ${C.border}`,marginTop:8}}>
-      <a href="#" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:10,border:`1px solid ${C.border}`,background:C.card,color:C.textDim,textDecoration:"none",fontSize:13,fontWeight:600,transition:"all .2s"}}
+      <a href="https://ko-fi.com/patracker" target="_blank" rel="noopener noreferrer" style={{display:"flex",alignItems:"center",gap:8,padding:"10px 20px",borderRadius:10,border:`1px solid ${C.border}`,background:C.card,color:C.textDim,textDecoration:"none",fontSize:13,fontWeight:600,transition:"all .2s"}}
         onMouseEnter={e=>{e.currentTarget.style.borderColor=C.accent;e.currentTarget.style.color=C.text;}}
         onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.color=C.textDim;}}>
         ☕ Soutenir PaTra — un café (tarif aéroport)
