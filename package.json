@@ -1,0 +1,30 @@
+{
+  "name": "patra",
+  "version": "1.0.0",
+  "private": true,
+  "homepage": "./",
+  "description": "PaTra - Suivi de patrimoine personnel",
+  "author": "Pierrick",
+  "dependencies": {
+    "lucide-react": "^0.383.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-scripts": "5.0.1",
+    "recharts": "^2.15.0",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version"
+    ]
+  }
+}
