@@ -815,7 +815,7 @@ export default function PatrimoineTracker(){
           <MetricCard label="PEA" value={fmtEur(peaTotal)} sub={`PV ${fmtPct(peaPVPct)}`} icon={BarChart3} trend={peaPV>=0?"up":"down"} color={C.accent}/>
           {ctoTotal>0&&<MetricCard label="CTO" value={fmtEur(ctoTotal)} sub={`PV ${fmtPct(ctoPVPct)}`} icon={Layers} trend={ctoPV>=0?"up":"down"} color={C.purple}/>}
           <MetricCard label="CRYPTO" value={fmtEur(cryptoTotal)} sub={`PV ${fmtPct(cryptoPVPct)}`} icon={Zap} trend={cryptoPV>=0?"up":"down"} color={C.gold}/>
-          <MetricCard label="LIVRETS" value={fmtEur(livretsTotal)} sub={livretsTotal>0?`~${(livrets.reduce((s,l)=>s+l.balance*l.rate,0)/(livretsTotal||1)).toFixed(1)}% rendement moyen`:`${livrets.length} livret(s)`} icon={Wallet} color={C.green}/>
+          <MetricCard label="LIVRETS" value={fmtEur(livretsTotal)} sub={livretsTotal>0?`~${(livrets.reduce((s,l)=>s+l.balance*l.rate,0)/(livretsTotal||1)).toFixed(1)}% rendement pondéré`:`${livrets.length} livret(s)`} icon={Wallet} color={C.green}/>
           <MetricCard label={t.divAn} value={fmtEur(totalDivAnnual)} sub={`${fmtEur(divMonthly)}${t.month}`} icon={Banknote} color={C.purple}/>
         </div>
 
