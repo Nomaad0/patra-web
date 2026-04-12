@@ -391,6 +391,7 @@ export default function PatrimoineTracker(){
   const [showHistoryModal,setShowHistoryModal]=useState(false);
   const [showSnapManager,setShowSnapManager]=useState(false);
   const [historyForm,setHistoryForm]=useState({year:"",total:""});
+  const [divFetchStatus,setDivFetchStatus]=useState("");
   const [monthlyIncome,setMonthlyIncome]=useState(0);
   const [targetAlloc,setTargetAlloc]=useState({});
   const [darkMode,setDarkMode]=useState(true);
@@ -628,6 +629,22 @@ export default function PatrimoineTracker(){
   const addDivHistory=()=>{const y=parseInt(historyForm.year);const t=parseFloat(historyForm.total);
     if(y&&t){setDivHistory(p=>{const e=p.findIndex(d=>d.year===y);if(e>=0){const n=[...p];n[e]={year:y,total:t};return n;}return[...p,{year:y,total:t}].sort((a,b)=>a.year-b.year)});}
     setHistoryForm({year:"",total:""});setShowHistoryModal(false);};
+
+  const fetchDivForTicker=async(ticker)=>{
+    if(!ticker)return;
+    setDivFetchStatus("⏳ Recherche...");
+    try{
+      const r=await fetch(`/api/dividends?ticker=${encodeURIComponent(ticker)}`);
+      const d=await r.json();
+      if(d.dividendRate!=null&&d.dividendRate>0){
+        setForm(p=>({...p,divPerShare:String(d.dividendRate)}));
+        setDivFetchStatus(`✅ ${d.dividendRate}€/action trouvé`);
+      }else{
+        setDivFetchStatus("ℹ️ Aucun dividende (ETF cap. ou non versant)");
+      }
+    }catch(e){setDivFetchStatus("❌ Erreur de récupération");}
+    setTimeout(()=>setDivFetchStatus(""),4000);
+  };
 
   // Export CSV
   const exportCSV=()=>{
@@ -1224,6 +1241,18 @@ export default function PatrimoineTracker(){
               <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:10,height:10,borderRadius:2,background:C.green}}/><span style={{fontSize:11,color:C.textDim}}>Perçus</span></div>
               <div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:10,height:10,borderRadius:2,background:C.accentDim}}/><span style={{fontSize:11,color:C.textDim}}>Projection 2026</span></div>
             </div>
+            {divHistory.length>0&&<div style={{marginTop:16,borderTop:`1px solid ${C.border}`,paddingTop:12}}>
+              {divHistory.map(d=>(
+                <div key={d.year} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 4px",borderBottom:`1px solid ${C.border}22`,fontSize:13}}>
+                  <span style={{fontWeight:600,color:C.textDim}}>{d.year}</span>
+                  <span style={{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:C.green}}>{fmtEur(d.total)}</span>
+                  <div style={{display:"flex",gap:6}}>
+                    <button onClick={()=>{setHistoryForm({year:String(d.year),total:String(d.total)});setShowHistoryModal(true);}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4}} onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={13}/></button>
+                    <button onClick={()=>setDivHistory(p=>p.filter(x=>x.year!==d.year))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4}} onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
+                  </div>
+                </div>
+              ))}
+            </div>}
           </div>
         </SectionCard>
 
@@ -1393,7 +1422,16 @@ export default function PatrimoineTracker(){
     {/* ═══ MODALS ═══ */}
     <Modal show={!!showModal} onClose={()=>{setShowModal(null);setForm({})}} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
       {(showModal==="pea"||showModal==="cto")&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="TOTALENERGIES"/>
-        <InputField label="Ticker Yahoo" value={form.ticker||""} onChange={v=>setForm(p=>({...p,ticker:v}))} placeholder="TTE.PA"/>
+        <div style={{marginBottom:14}}>
+          <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>Ticker Yahoo</label>
+          <div style={{display:"flex",gap:8}}>
+            <input value={form.ticker||""} onChange={e=>setForm(p=>({...p,ticker:e.target.value}))} placeholder="TTE.PA"
+              style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
+              onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>{e.target.style.borderColor=C.border;fetchDivForTicker(form.ticker);}}/>
+            <button type="button" onClick={()=>fetchDivForTicker(form.ticker)} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 14px",color:C.accent,cursor:"pointer",fontSize:12,fontWeight:600,whiteSpace:"nowrap"}}>Récupérer div.</button>
+          </div>
+          {divFetchStatus&&<div style={{fontSize:11,color:C.textDim,marginTop:5}}>{divFetchStatus}</div>}
+        </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
           <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number"/>
           <InputField label="PRU (€)" value={form.pru||""} onChange={v=>setForm(p=>({...p,pru:v}))} type="number"/>
