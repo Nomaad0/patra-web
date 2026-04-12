@@ -72,7 +72,7 @@ const DEMO_DATA={
     {id:"d10",name:"LEP",balance:2000,rate:4},
   ],
   peaCash:850,ctoCash:200,
-  versements:{pea:22000,crypto:14500,cto:6800},
+  versements:{pea:500,crypto:100,cto:0},
   monthlyIncome:3500,
   divHistory:[{year:2023,total:380},{year:2024,total:620}],
   snapshots:[
