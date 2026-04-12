@@ -1,70 +1,72 @@
-# Getting Started with Create React App
+# PaTra — Tracker Patrimonial
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> L'alternative honnête à Finary. Gratuit, simple, tes données chez toi.
 
-## Available Scripts
+**[→ Accéder à l'app](https://patra-web-phi.vercel.app/)**
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## C'est quoi
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+PaTra est un outil de suivi patrimonial pensé pour les investisseurs français qui ont un PEA, du crypto, des livrets — et qui n'ont pas envie de donner accès à leur banque à une startup.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Pas de compte obligatoire
+- Pas d'abonnement
+- Tes données restent dans ton navigateur (localStorage)
+- Cours en temps réel via Yahoo Finance & CoinGecko
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Features
 
-### `npm run build`
+- **Dashboard** — patrimoine total, plus-values, répartition par poche
+- **PEA / CTO** — suivi ligne par ligne, cours auto, benchmark vs CAC 40 / S&P 500 / MSCI World
+- **Crypto** — cours CoinGecko, PV/MV en temps réel
+- **Livrets** — A, LDDS, LEP et autres
+- **Dividendes** — historique, projection annuelle
+- **Transactions** — journal d'achat/vente
+- **Objectif 1M€** — projection avec taux d'épargne et rendement cible
+- **Snapshots** — photo du patrimoine à date pour suivre l'évolution
+- **Benchmark base 100** — comparer sa perf aux indices
+- **Export CSV / Backup JSON** — tes données t'appartiennent
+- Mode sombre / clair
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Stack
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- React 19 (Create React App)
+- Recharts
+- Lucide Icons
+- Yahoo Finance via corsproxy.io
+- CoinGecko API (public, sans clé)
+- localStorage — zéro backend
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Lancer en local
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+git clone https://github.com/Nomaad0/patra-web.git
+cd patra-web
+npm install
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Ouvre [http://localhost:3000](http://localhost:3000).
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## Philosophie
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Finary c'est bien fait mais c'est 8€/mois, ça demande un accès bancaire, et ça tourne sur leurs serveurs. PaTra c'est l'inverse : open source, gratuit, données locales. Tu exportes ton JSON, tu le gardes où tu veux.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## Contribuer
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Issues et PRs bienvenues. Pas de feuille de route publique pour l'instant — l'app fait ce qu'elle fait, et elle le fait bien.
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+*Fait par un investisseur français pour des investisseurs français.*

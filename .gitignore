@@ -22,8 +22,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Claude Code local settings
+# Claude Code
 .claude/
+CLAUDE.md
 
 # Artefacts divers
 {
