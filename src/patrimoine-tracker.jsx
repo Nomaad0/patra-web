@@ -49,7 +49,7 @@ const DEMO_DATA={
     {id:"d1",name:"Amundi MSCI World CW8",ticker:"CW8.PA",quantity:45,pru:385,currentPrice:430,divPerShare:0,divFreq:"annuel"},
     {id:"d2",name:"Amundi PEA S&P 500 PE500",ticker:"PE500.PA",quantity:20,pru:490,currentPrice:520,divPerShare:0,divFreq:"annuel"},
     {id:"d3",name:"TotalEnergies",ticker:"TTE.PA",quantity:30,pru:52,currentPrice:58,divPerShare:3.0,divFreq:"trim"},
-    {id:"d4",name:"Air Liquide",ticker:"AI.PA",quantity:8,pru:155,currentPrice:170,divPerShare:3.2,divFreq:"annuel"},
+    {id:"d4",name:"Air Liquide",ticker:"AIR.PA",quantity:8,pru:155,currentPrice:170,divPerShare:3.2,divFreq:"annuel"},
   ],
   cto:[
     {id:"d5",name:"Microsoft",ticker:"MSFT",quantity:5,pru:320,currentPrice:380,divPerShare:2.7,divFreq:"trim"},
