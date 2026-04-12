@@ -2,7 +2,10 @@ export default async function handler(req, res) {
   const { ticker } = req.query;
   if (!ticker) return res.status(400).json({ error: "ticker required" });
 
-  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=summaryDetail`;
+  // Use v8/chart with events=dividends (same endpoint as quotes — known to work)
+  const oneYearAgo = Math.floor((Date.now() - 365 * 24 * 3600 * 1000) / 1000);
+  const now = Math.floor(Date.now() / 1000);
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?period1=${oneYearAgo}&period2=${now}&interval=1d&events=dividends`;
 
   try {
     const response = await fetch(url, {
@@ -13,8 +16,13 @@ export default async function handler(req, res) {
       },
     });
     const data = await response.json();
-    const summaryDetail = data?.quoteSummary?.result?.[0]?.summaryDetail;
-    const dividendRate = summaryDetail?.dividendRate?.raw ?? null;
+    const dividends = data?.chart?.result?.[0]?.events?.dividends;
+    let dividendRate = null;
+    if (dividends) {
+      // Sum all dividend payments over the past year
+      const total = Object.values(dividends).reduce((sum, d) => sum + (d.amount || 0), 0);
+      if (total > 0) dividendRate = Math.round(total * 100) / 100;
+    }
     res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=300");
     return res.status(200).json({ dividendRate });
   } catch (err) {
