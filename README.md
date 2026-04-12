@@ -59,7 +59,7 @@ Ouvre [http://localhost:3000](http://localhost:3000).
 
 ## Philosophie
 
-Finary c'est bien fait mais c'est 8€/mois, ça demande un accès bancaire, et ça tourne sur leurs serveurs. PaTra c'est l'inverse : open source, gratuit, données locales. Tu exportes ton JSON, tu le gardes où tu veux.
+Payer un abonnement pour suivre ses investissements, c'est contreproductif. Chaque euro qui part en frais récurrents est un euro qui ne capitalise pas. PaTra c'est l'inverse de ça : open source, gratuit, données locales. Tu exportes ton JSON, tu le gardes où tu veux.
 
 ---
 
