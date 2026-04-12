@@ -107,7 +107,7 @@ function MetricCard({label,value,sub,icon:Icon,trend,color}){
       <span style={{color:C.textDim,fontSize:12,fontWeight:600,letterSpacing:.8,textTransform:"uppercase"}}>{label}</span>
       {Icon&&<Icon size={16} color={color||C.textDim}/>}
     </div>
-    <span style={{fontSize:26,fontWeight:700,color:color||C.text,fontFamily:"'JetBrains Mono',monospace",letterSpacing:-.5}}>{value}</span>
+    <span style={{fontSize:value.length>12?18:value.length>9?22:26,fontWeight:700,color:color||C.text,fontFamily:"'JetBrains Mono',monospace",letterSpacing:-.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{value}</span>
     {sub&&<span style={{fontSize:12,fontWeight:600,color:trend==="up"?C.green:trend==="down"?C.red:C.textDim,display:"flex",alignItems:"center",gap:4}}>
       {trend==="up"&&<ArrowUpRight size={13}/>}{trend==="down"&&<ArrowDownRight size={13}/>}{sub}
     </span>}
