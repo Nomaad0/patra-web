@@ -694,12 +694,15 @@ export default function PatrimoineTracker(){
   const fetchBenchmark=async()=>{
     if(snapshots.length<2){alert("Il faut au moins 2 snapshots pour comparer.");return;}
     setBenchLoading(true);
-    const indices=[{key:"cac",ticker:"^FCHI",name:"CAC 40",color:C.red},{key:"sp500",ticker:"^GSPC",name:"S&P 500",color:C.gold},{key:"msci",ticker:"CW8.PA",name:"MSCI World",color:C.green}];
+    const indices=[{key:"cac",ticker:"^FCHI"},{key:"sp500",ticker:"^GSPC"},{key:"msci",ticker:"CW8.PA"}];
     const startDate=Math.floor(new Date(snapshots[0].date).getTime()/1000);
     const endDate=Math.floor(Date.now()/1000);
-    const result={portfolio:[],indices:{}};
     const baseVal=snapshots[0].total;
-    result.portfolio=snapshots.map(s=>({date:new Date(s.date).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"2-digit"}),value:Math.round((s.total/baseVal)*1000)/10}));
+    // Build unified dataset aligned on snapshot dates
+    const merged=snapshots.map(s=>({
+      date:new Date(s.date).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"2-digit"}),
+      portfolio:Math.round((s.total/baseVal)*1000)/10
+    }));
     for(const idx of indices){
       try{
         const url=`/api/quote?ticker=${encodeURIComponent(idx.ticker)}&period1=${startDate}&period2=${endDate}&interval=1wk`;
@@ -708,11 +711,17 @@ export default function PatrimoineTracker(){
         const timestamps=d?.chart?.result?.[0]?.timestamp;
         if(prices?.length>0){
           const bp=prices.find(p=>p>0);
-          result.indices[idx.key]={name:idx.name,color:idx.color,data:timestamps.map((ts,i)=>({date:new Date(ts*1000).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"2-digit"}),value:prices[i]?Math.round((prices[i]/bp)*1000)/10:null})).filter(p=>p.value)};
+          // For each snapshot date, find the closest index price
+          merged.forEach((point,i)=>{
+            const snapTs=new Date(snapshots[i].date).getTime()/1000;
+            let closest=null,minDiff=Infinity;
+            timestamps.forEach((ts,j)=>{if(prices[j]&&Math.abs(ts-snapTs)<minDiff){minDiff=Math.abs(ts-snapTs);closest=prices[j];}});
+            point[idx.key]=closest?Math.round((closest/bp)*1000)/10:null;
+          });
         }
       }catch(e){console.error(`Bench ${idx.key}:`,e);}
     }
-    setBenchData(result);setBenchLoading(false);
+    setBenchData({merged});setBenchLoading(false);
   };
 
   if(!loaded)return(<div style={{background:"#060a11",minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:20}}>
@@ -1034,16 +1043,16 @@ export default function PatrimoineTracker(){
                   <button onClick={()=>setBenchIndices(p=>({...p,msci:!p.msci}))} style={{padding:"6px 14px",borderRadius:6,border:`1px solid ${benchIndices.msci?C.green:C.border}`,background:benchIndices.msci?C.greenDim:"transparent",color:benchIndices.msci?C.green:C.textDim,cursor:"pointer",fontSize:12,fontWeight:600}}>MSCI World</button>
                 </div>
                 <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart>
+                  <AreaChart data={benchData.merged}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
-                    <XAxis dataKey="date" tick={{fontSize:10,fill:C.textDim}} stroke={C.border} allowDuplicatedCategory={false}/>
-                    <YAxis tick={{fontSize:10,fill:C.textDim}} stroke={C.border} tickFormatter={v=>`${v}`} domain={["auto","auto"]}/>
+                    <XAxis dataKey="date" tick={{fontSize:10,fill:C.textDim}} stroke={C.border}/>
+                    <YAxis tick={{fontSize:10,fill:C.textDim}} stroke={C.border} domain={["auto","auto"]}/>
                     <ReferenceLine y={100} stroke={C.textMuted} strokeDasharray="4 4" strokeWidth={1}/>
                     <Tooltip contentStyle={{background:C.card,border:`1px solid ${C.border}`,borderRadius:10,fontSize:12}} labelStyle={{color:C.text}} itemStyle={{color:C.text}}/>
-                    <Area type="monotone" data={benchData.portfolio} dataKey="value" name="Mon portefeuille" stroke={C.accent} strokeWidth={3} fill="none" dot={false}/>
-                    {benchIndices.cac&&benchData.indices.cac&&<Area type="monotone" data={benchData.indices.cac.data} dataKey="value" name="CAC 40" stroke={C.red} strokeWidth={1.5} fill="none" dot={false} strokeDasharray="4 4"/>}
-                    {benchIndices.sp500&&benchData.indices.sp500&&<Area type="monotone" data={benchData.indices.sp500.data} dataKey="value" name="S&P 500" stroke={C.gold} strokeWidth={1.5} fill="none" dot={false} strokeDasharray="4 4"/>}
-                    {benchIndices.msci&&benchData.indices.msci&&<Area type="monotone" data={benchData.indices.msci.data} dataKey="value" name="MSCI World" stroke={C.green} strokeWidth={1.5} fill="none" dot={false} strokeDasharray="4 4"/>}
+                    <Area type="monotone" dataKey="portfolio" name="Mon portefeuille" stroke={C.accent} strokeWidth={3} fill="none" dot={false}/>
+                    {benchIndices.cac&&<Area type="monotone" dataKey="cac" name="CAC 40" stroke={C.red} strokeWidth={1.5} fill="none" dot={false} strokeDasharray="4 4"/>}
+                    {benchIndices.sp500&&<Area type="monotone" dataKey="sp500" name="S&P 500" stroke={C.gold} strokeWidth={1.5} fill="none" dot={false} strokeDasharray="4 4"/>}
+                    {benchIndices.msci&&<Area type="monotone" dataKey="msci" name="MSCI World" stroke={C.green} strokeWidth={1.5} fill="none" dot={false} strokeDasharray="4 4"/>}
                   </AreaChart>
                 </ResponsiveContainer>
                 <div style={{display:"flex",gap:16,justifyContent:"center",marginTop:12,flexWrap:"wrap"}}>
