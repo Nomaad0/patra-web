@@ -445,7 +445,7 @@ export default function PatrimoineTracker(){
       if(!h.ticker){failed++;continue;}
       try{
         setPeaSyncStatus(`${h.name}...`);
-        const url=`https://corsproxy.io/?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${h.ticker}?range=1d&interval=1d`)}`;
+        const url=`/api/quote?ticker=${encodeURIComponent(h.ticker)}&range=1d&interval=1d`;
         const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
         const d=await r.json();
         const price=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
@@ -469,7 +469,7 @@ export default function PatrimoineTracker(){
     // Fetch USD/EUR rate first
     let usdEur=1;
     try{
-      const fxUrl=`https://corsproxy.io/?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/EURUSD=X?range=1d&interval=1d`)}`;
+      const fxUrl=`/api/quote?ticker=${encodeURIComponent("EURUSD=X")}&range=1d&interval=1d`;
       const fxR=await fetch(fxUrl,{signal:AbortSignal.timeout(8000)});
       const fxD=await fxR.json();
       const eurUsd=fxD?.chart?.result?.[0]?.meta?.regularMarketPrice;
@@ -481,7 +481,7 @@ export default function PatrimoineTracker(){
       if(!h.ticker){failed++;continue;}
       try{
         setCtoSyncStatus(`${h.name}...`);
-        const url=`https://corsproxy.io/?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${h.ticker}?range=1d&interval=1d`)}`;
+        const url=`/api/quote?ticker=${encodeURIComponent(h.ticker)}&range=1d&interval=1d`;
         const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
         const d=await r.json();
         const meta=d?.chart?.result?.[0]?.meta;
@@ -694,7 +694,7 @@ export default function PatrimoineTracker(){
     result.portfolio=snapshots.map(s=>({date:new Date(s.date).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"2-digit"}),value:Math.round((s.total/baseVal)*1000)/10}));
     for(const idx of indices){
       try{
-        const url=`https://corsproxy.io/?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${idx.ticker}?period1=${startDate}&period2=${endDate}&interval=1wk`)}`;
+        const url=`/api/quote?ticker=${encodeURIComponent(idx.ticker)}&period1=${startDate}&period2=${endDate}&interval=1wk`;
         const r=await fetch(url,{signal:AbortSignal.timeout(10000)});const d=await r.json();
         const prices=d?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
         const timestamps=d?.chart?.result?.[0]?.timestamp;
