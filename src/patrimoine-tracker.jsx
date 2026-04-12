@@ -44,6 +44,48 @@ const defaultLivrets=[];
 const defaultVersements={pea:0,crypto:0,cto:0};
 const defaultDivHistory=[];
 
+const DEMO_DATA={
+  pea:[
+    {id:"d1",name:"Amundi MSCI World CW8",ticker:"CW8.PA",quantity:45,pru:385,currentPrice:430,divPerShare:0,divFreq:"annuel"},
+    {id:"d2",name:"Amundi PEA S&P 500 PE500",ticker:"PE500.PA",quantity:20,pru:490,currentPrice:520,divPerShare:0,divFreq:"annuel"},
+    {id:"d3",name:"TotalEnergies",ticker:"TTE.PA",quantity:30,pru:52,currentPrice:58,divPerShare:3.0,divFreq:"trim"},
+    {id:"d4",name:"Air Liquide",ticker:"AI.PA",quantity:8,pru:155,currentPrice:170,divPerShare:3.2,divFreq:"annuel"},
+  ],
+  cto:[
+    {id:"d5",name:"Microsoft",ticker:"MSFT",quantity:5,pru:320,currentPrice:380,divPerShare:2.7,divFreq:"trim"},
+  ],
+  crypto:[
+    {id:"d6",name:"Bitcoin",symbol:"BTC",cgId:"bitcoin",quantity:0.15,avgPrice:38000,currentPrice:75000},
+    {id:"d7",name:"Ethereum",symbol:"ETH",cgId:"ethereum",quantity:1.8,avgPrice:2200,currentPrice:3200},
+  ],
+  livrets:[
+    {id:"d8",name:"Livret A",balance:7500,rate:3},
+    {id:"d9",name:"LDDS",balance:3800,rate:3},
+    {id:"d10",name:"LEP",balance:2000,rate:4},
+  ],
+  peaCash:850,ctoCash:0,
+  versements:{pea:15500,crypto:8900,cto:1600},
+  monthlyIncome:3200,
+  divHistory:[{year:2023,total:210},{year:2024,total:350}],
+  snapshots:[
+    {date:"2025-10-01T08:00:00.000Z",total:42000,invested:38200,pea:28500,cto:1800,crypto:8200,livrets:3500},
+    {date:"2025-11-01T08:00:00.000Z",total:44500,invested:39600,pea:30000,cto:1900,crypto:9100,livrets:3500},
+    {date:"2025-12-01T08:00:00.000Z",total:43800,invested:40200,pea:29200,cto:1850,crypto:9200,livrets:3550},
+    {date:"2026-01-01T08:00:00.000Z",total:46200,invested:41200,pea:31000,cto:1950,crypto:9900,livrets:3350},
+    {date:"2026-02-01T08:00:00.000Z",total:48900,invested:42600,pea:33000,cto:2000,crypto:10500,livrets:3400},
+    {date:"2026-03-01T08:00:00.000Z",total:51200,invested:44000,pea:34500,cto:2050,crypto:11350,livrets:3300},
+  ],
+  transactions:[
+    {date:"2025-09-15",type:"buy",account:"pea",name:"Amundi MSCI World CW8",quantity:5,price:410,notes:"Investissement mensuel"},
+    {date:"2025-10-20",type:"buy",account:"pea",name:"Amundi PEA S&P 500 PE500",quantity:3,price:495,notes:""},
+    {date:"2025-11-08",type:"buy",account:"crypto",name:"Bitcoin",quantity:0.02,price:62000,notes:"DCA mensuel"},
+    {date:"2026-01-15",type:"buy",account:"pea",name:"TotalEnergies",quantity:5,price:55,notes:""},
+    {date:"2026-02-20",type:"buy",account:"crypto",name:"Ethereum",quantity:0.3,price:2800,notes:"DCA"},
+    {date:"2026-03-10",type:"buy",account:"pea",name:"Amundi MSCI World CW8",quantity:5,price:425,notes:"Investissement mensuel"},
+  ],
+  darkMode:true,_isDemo:true,
+};
+
 const fmtEur=v=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",minimumFractionDigits:0,maximumFractionDigits:2}).format(v);
 const fmtPct=v=>(v>=0?"+":"")+v.toFixed(2)+"%";
 const fmtDate=d=>new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"});
@@ -348,21 +390,24 @@ export default function PatrimoineTracker(){
   const [onboardingStep,setOnboardingStep]=useState(0);
   const [transactions,setTransactions]=useState([]);
   const [showTxModal,setShowTxModal]=useState(false);
+  const [isDemo,setIsDemo]=useState(false);
   const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",name:"",quantity:"",price:"",notes:""});
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:"Objectif 1M",patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
 
   // Persistent storage
-  useEffect(()=>{try{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);} else {setShowOnboarding(true);}}catch(e){}setLoaded(true);},[]);
+  useEffect(()=>{try{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);if(p._isDemo)setIsDemo(true);} else {const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);setTransactions(d.transactions);setIsDemo(true);}}catch(e){}setLoaded(true);},[]);
 
-  const persist=useCallback(()=>{try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions}))}catch(e){}},[pea,crypto,cto,livrets,peaCash,ctoCash,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions]);
+  const persist=useCallback(()=>{try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,...(isDemo?{_isDemo:true}:{})}))}catch(e){}},[pea,crypto,cto,livrets,peaCash,ctoCash,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,isDemo]);
   useEffect(()=>{if(loaded)persist()},[loaded,persist]);
 
   // Set active theme
   C = darkMode ? DARK : LIGHT;
 
   // Backup / Restore
+  const clearDemo=()=>{setPea([]);setCrypto([]);setCto([]);setLivrets([]);setPeaCash(0);setCtoCash(0);setVersements({pea:0,crypto:0,cto:0});setSnapshots([]);setDivHistory([]);setMonthlyIncome(0);setTargetAlloc({});setTransactions([]);setIsDemo(false);localStorage.removeItem("patrimoine-v6");};
+
   const exportBackup=()=>{
     const data={pea,crypto,cto,livrets,peaCash,ctoCash,versements,snapshots,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,exportDate:new Date().toISOString()};
     const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
@@ -715,6 +760,12 @@ export default function PatrimoineTracker(){
         </button>
       </div>
     </div>
+
+    {/* DEMO BANNER */}
+    {isDemo&&<div style={{background:`linear-gradient(90deg,${C.accentDim},${C.purpleDim})`,borderBottom:`1px solid ${C.border}`,padding:"9px 28px",display:"flex",alignItems:"center",justifyContent:"space-between",gap:12}}>
+      <span style={{fontSize:12,color:C.textDim}}>Vous explorez avec des <strong style={{color:C.accent}}>données de démo</strong> — rien n'est réel ici.</span>
+      <button onClick={clearDemo} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"5px 12px",color:C.red,cursor:"pointer",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:5,flexShrink:0}}><Trash2 size={12}/>Effacer et commencer</button>
+    </div>}
 
     {/* TABS */}
     <div style={{padding:"12px 28px",display:"flex",gap:6,borderBottom:`1px solid ${C.border}`,overflowX:"auto"}}>
