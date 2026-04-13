@@ -530,6 +530,15 @@ export default function PatrimoineTracker(){
 
   useEffect(()=>{if(loaded){syncCrypto();syncPEA();syncCTO();}},[loaded]);
 
+  // Auto-sync quand on change d'onglet (cooldown 5 min)
+  useEffect(()=>{
+    if(!loaded)return;
+    const stale=(last)=>!last||Date.now()-new Date(last).getTime()>5*60*1000;
+    if(activeTab==="pea"&&stale(lastPeaSync))syncPEA();
+    else if(activeTab==="cto"&&stale(lastCtoSync))syncCTO();
+    else if(activeTab==="crypto"&&stale(lastSync))syncCrypto();
+  },[activeTab,loaded]);
+
   // Calculations
   const peaTitres=pea.reduce((s,h)=>s+h.quantity*h.currentPrice,0);
   const peaTotal=peaTitres+peaCash;
