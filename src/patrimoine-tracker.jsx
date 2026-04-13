@@ -115,7 +115,7 @@ function MetricCard({label,value,sub,icon:Icon,trend,color}){
 }
 
 /* ═══ PV LATENTES VISUAL ═══ */
-function PVLatentesVisual({pea}){
+function PVLatentesVisual({pea,isMobile}){
   const sorted=[...pea].map(h=>({...h,pv:(h.currentPrice-h.pru)*h.quantity,pvPct:((h.currentPrice-h.pru)/h.pru)*100})).sort((a,b)=>b.pv-a.pv);
   const totalPV=sorted.reduce((s,h)=>s+h.pv,0);
   const totalInv=sorted.reduce((s,h)=>s+h.quantity*h.pru,0);
@@ -124,40 +124,40 @@ function PVLatentesVisual({pea}){
 
   return(<div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",marginBottom:20}}>
     {/* Big PV header */}
-    <div style={{padding:"24px 24px 20px",borderBottom:`1px solid ${C.border}`,background:`linear-gradient(135deg,${totalPV>=0?C.greenDim:C.redDim},${C.card})`}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
+    <div style={{padding:isMobile?"16px 16px 14px":"24px 24px 20px",borderBottom:`1px solid ${C.border}`,background:`linear-gradient(135deg,${totalPV>=0?C.greenDim:C.redDim},${C.card})`}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",flexWrap:"wrap",gap:8}}>
         <div>
-          <div style={{fontSize:12,fontWeight:600,color:C.textDim,textTransform:"uppercase",letterSpacing:.8,marginBottom:8}}>PLUS-VALUES LATENTES TOTALES</div>
-          <div style={{fontSize:36,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:totalPV>=0?C.green:C.red,letterSpacing:-1,display:"flex",alignItems:"center",gap:10}}>
-            {totalPV>=0?<ArrowUpRight size={28}/>:<ArrowDownRight size={28}/>}
+          <div style={{fontSize:11,fontWeight:600,color:C.textDim,textTransform:"uppercase",letterSpacing:.8,marginBottom:6}}>PLUS-VALUES LATENTES TOTALES</div>
+          <div style={{fontSize:isMobile?24:36,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:totalPV>=0?C.green:C.red,letterSpacing:-1,display:"flex",alignItems:"center",gap:8}}>
+            {totalPV>=0?<ArrowUpRight size={isMobile?20:28}/>:<ArrowDownRight size={isMobile?20:28}/>}
             {fmtEur(totalPV)}
           </div>
         </div>
         <div style={{textAlign:"right"}}>
-          <div style={{fontSize:28,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:totalPV>=0?C.green:C.red}}>{fmtPct(totalPVPct)}</div>
-          <div style={{fontSize:12,color:C.textDim}}>sur {fmtEur(totalInv)} investis</div>
+          <div style={{fontSize:isMobile?20:28,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:totalPV>=0?C.green:C.red}}>{fmtPct(totalPVPct)}</div>
+          <div style={{fontSize:11,color:C.textDim}}>sur {fmtEur(totalInv)} investis</div>
         </div>
       </div>
     </div>
     {/* Per-line bars */}
-    <div style={{padding:"16px 24px"}}>
+    <div style={{padding:isMobile?"12px 14px":"16px 24px"}}>
       {sorted.map((h,i)=>{
         const pos=h.pv>=0;const barW=Math.min((Math.abs(h.pv)/maxAbsPV)*100,100);
-        return(<div key={h.id} style={{display:"flex",alignItems:"center",gap:12,padding:"8px 0",borderBottom:i<sorted.length-1?`1px solid ${C.border}`:"none"}}>
-          <div style={{width:160,flexShrink:0}}>
-            <div style={{fontSize:12,fontWeight:600,color:C.text}}>{h.name}</div>
+        return(<div key={h.id} style={{display:"flex",alignItems:"center",gap:isMobile?8:12,padding:"8px 0",borderBottom:i<sorted.length-1?`1px solid ${C.border}`:"none"}}>
+          <div style={{width:isMobile?90:160,flexShrink:0}}>
+            <div style={{fontSize:12,fontWeight:600,color:C.text,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.name}</div>
           </div>
           <div style={{flex:1,display:"flex",alignItems:"center",gap:8}}>
-            <div style={{flex:1,height:20,background:C.bg,borderRadius:6,overflow:"hidden",position:"relative"}}>
+            <div style={{flex:1,height:isMobile?14:20,background:C.bg,borderRadius:6,overflow:"hidden",position:"relative"}}>
               <div style={{height:"100%",width:`${barW}%`,background:pos?`linear-gradient(90deg,${C.green}33,${C.green})`:` linear-gradient(90deg,${C.red}33,${C.red})`,borderRadius:6,transition:"width .5s"}}/>
             </div>
           </div>
-          <div style={{width:100,textAlign:"right"}}>
-            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:700,color:pos?C.green:C.red}}>{fmtEur(h.pv)}</span>
+          <div style={{width:isMobile?75:100,textAlign:"right",flexShrink:0}}>
+            <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:isMobile?11:12,fontWeight:700,color:pos?C.green:C.red}}>{fmtEur(h.pv)}</span>
           </div>
-          <div style={{width:70,textAlign:"right"}}>
+          {!isMobile&&<div style={{width:70,textAlign:"right"}}>
             <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,fontWeight:600,color:pos?C.green:C.red}}>{fmtPct(h.pvPct)}</span>
-          </div>
+          </div>}
         </div>);
       })}
     </div>
@@ -165,13 +165,13 @@ function PVLatentesVisual({pea}){
 }
 
 /* ═══ ALLOCATION BARS ═══ */
-function AllocationPie({pea,peaTotal,peaCash=0}){
+function AllocationPie({pea,peaTotal,peaCash=0,isMobile}){
   const items=[...pea].map((h,i)=>({name:h.name,value:h.quantity*h.currentPrice,pct:peaTotal>0?((h.quantity*h.currentPrice)/peaTotal)*100:0,fill:PIE_COLORS[i%PIE_COLORS.length]})).sort((a,b)=>b.value-a.value);
   if(peaCash>0)items.push({name:"Espèces",value:peaCash,pct:peaTotal>0?(peaCash/peaTotal)*100:0,fill:C.cyan});
   const sorted=items;
 
   const RADIAN=Math.PI/180;
-  const renderLabel=({cx,cy,midAngle,innerRadius,outerRadius,pct,name})=>{
+  const renderLabel=({cx,cy,midAngle,innerRadius,outerRadius,pct})=>{
     if(pct<4)return null;
     const radius=innerRadius+(outerRadius-innerRadius)*0.5;
     const x=cx+radius*Math.cos(-midAngle*RADIAN);
@@ -183,16 +183,16 @@ function AllocationPie({pea,peaTotal,peaCash=0}){
     <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`}}>
       <h3 style={{margin:0,fontSize:14,fontWeight:700,color:C.textDim,letterSpacing:.5,textTransform:"uppercase"}}>RÉPARTITION DU PORTEFEUILLE</h3>
     </div>
-    <div style={{padding:20,display:"flex",alignItems:"center",gap:24}}>
-      <ResponsiveContainer width="50%" height={260}>
+    <div style={{padding:20,display:"flex",flexDirection:isMobile?"column":"row",alignItems:isMobile?"stretch":"center",gap:24}}>
+      <ResponsiveContainer width={isMobile?"100%":"50%"} height={isMobile?200:260}>
         <PieChart>
-          <Pie data={sorted} dataKey="value" cx="50%" cy="50%" innerRadius={60} outerRadius={110} paddingAngle={2} stroke="none" labelLine={false} label={renderLabel}>
+          <Pie data={sorted} dataKey="value" cx="50%" cy="50%" innerRadius={isMobile?45:60} outerRadius={isMobile?85:110} paddingAngle={2} stroke="none" labelLine={false} label={renderLabel}>
             {sorted.map((e,i)=><Cell key={i} fill={e.fill}/>)}
           </Pie>
           <Tooltip content={<PieTooltip/>}/>
         </PieChart>
       </ResponsiveContainer>
-      <div style={{flex:1,display:"flex",flexDirection:"column",gap:8,maxHeight:260,overflowY:"auto"}}>
+      <div style={{flex:1,display:"flex",flexDirection:"column",gap:8,maxHeight:isMobile?undefined:260,overflowY:isMobile?"visible":"auto"}}>
         {sorted.map((h,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"6px 0",borderBottom:i<sorted.length-1?`1px solid ${C.border}22`:"none"}}>
           <div style={{width:12,height:12,borderRadius:4,background:h.fill,flexShrink:0}}/>
           <div style={{flex:1,minWidth:0}}>
@@ -1121,10 +1121,10 @@ export default function PatrimoineTracker(){
       {/* ═══ PEA ═══ */}
       {activeTab==="pea"&&<>
         {/* Allocation pie */}
-        <AllocationPie pea={pea} peaTotal={peaTotal} peaCash={peaCash}/>
+        <AllocationPie pea={pea} peaTotal={peaTotal} peaCash={peaCash} isMobile={isMobile}/>
 
         {/* PV Latentes visual */}
-        <PVLatentesVisual pea={pea}/>
+        <PVLatentesVisual pea={pea} isMobile={isMobile}/>
 
         {/* Solde espèces */}
         <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:"16px 20px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -1149,11 +1149,11 @@ export default function PatrimoineTracker(){
 
         {/* Holdings table */}
         <SectionCard scrollable>
-          <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
             <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Lignes du PEA</h3>
-              <span style={{color:C.textDim,fontSize:12}}>{pea.length} lignes · Titres {fmtEur(peaTitres)} · Espèces {fmtEur(peaCash)} · <span style={{fontWeight:600,color:C.text}}>Total {fmtEur(peaTotal)}</span> · <span style={{color:peaPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(peaPV)} ({fmtPct(peaPVPct)})</span></span>
+              <span style={{color:C.textDim,fontSize:12}}>{pea.length} lignes · Total {fmtEur(peaTotal)} · <span style={{color:peaPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(peaPV)} ({fmtPct(peaPVPct)})</span></span>
             </div>
-            <div style={{display:"flex",gap:8}}>
+            <div style={{display:"flex",gap:8,flexShrink:0}}>
               <button onClick={syncPEA} disabled={peaLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
                 <RefreshCw size={13} style={peaLoading?{animation:"spin 1s linear infinite"}:{}}/>{peaLoading?"Sync...":"Sync cours"}
               </button>
@@ -1171,10 +1171,10 @@ export default function PatrimoineTracker(){
       {/* ═══ CTO ═══ */}
       {activeTab==="cto"&&<>
         {/* Allocation pie CTO */}
-        <AllocationPie pea={cto} peaTotal={ctoTotal} peaCash={ctoCash}/>
+        <AllocationPie pea={cto} peaTotal={ctoTotal} peaCash={ctoCash} isMobile={isMobile}/>
 
         {/* PV Latentes visual CTO */}
-        <PVLatentesVisual pea={cto}/>
+        <PVLatentesVisual pea={cto} isMobile={isMobile}/>
 
         {/* Solde espèces CTO */}
         <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:"16px 20px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -1199,11 +1199,11 @@ export default function PatrimoineTracker(){
 
         {/* Holdings table CTO */}
         <SectionCard scrollable>
-          <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
             <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Compte-Titres Ordinaire</h3>
-              <span style={{color:C.textDim,fontSize:12}}>{cto.length} lignes · Titres {fmtEur(ctoTitres)} · Espèces {fmtEur(ctoCash)} · <span style={{fontWeight:600,color:C.text}}>Total {fmtEur(ctoTotal)}</span> · <span style={{color:ctoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(ctoPV)} ({fmtPct(ctoPVPct)})</span></span>
+              <span style={{color:C.textDim,fontSize:12}}>{cto.length} lignes · Total {fmtEur(ctoTotal)} · <span style={{color:ctoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(ctoPV)} ({fmtPct(ctoPVPct)})</span></span>
             </div>
-            <div style={{display:"flex",gap:8}}>
+            <div style={{display:"flex",gap:8,flexShrink:0}}>
               <button onClick={syncCTO} disabled={ctoLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.purple,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
                 <RefreshCw size={13} style={ctoLoading?{animation:"spin 1s linear infinite"}:{}}/>{ctoLoading?"Sync...":"Sync cours"}
               </button>
@@ -1220,11 +1220,11 @@ export default function PatrimoineTracker(){
 
       {/* ═══ CRYPTO ═══ */}
       {activeTab==="crypto"&&<>
-        <AllocationPie pea={crypto} peaTotal={cryptoTotal} peaCash={0}/>
+        <AllocationPie pea={crypto} peaTotal={cryptoTotal} peaCash={0} isMobile={isMobile}/>
         <SectionCard scrollable>
-        <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Portefeuille Crypto</h3><span style={{color:C.textDim,fontSize:12}}>{crypto.length} positions · Investi {fmtEur(cryptoInvested)} · Valeur {fmtEur(cryptoTotal)} · <span style={{color:cryptoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(cryptoPV)} ({fmtPct(cryptoPVPct)})</span></span></div>
-          <div style={{display:"flex",gap:8}}>
+        <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+          <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Portefeuille Crypto</h3><span style={{color:C.textDim,fontSize:12}}>{crypto.length} positions · Valeur {fmtEur(cryptoTotal)} · <span style={{color:cryptoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(cryptoPV)} ({fmtPct(cryptoPVPct)})</span></span></div>
+          <div style={{display:"flex",gap:8,flexShrink:0}}>
             <button onClick={syncCrypto} disabled={cryptoLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.gold,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><RefreshCw size={13} style={cryptoLoading?{animation:"spin 1s linear infinite"}:{}}/>{cryptoLoading?"...":"Actualiser"}</button>
             {addBtn("crypto")}
           </div>
@@ -1238,7 +1238,7 @@ export default function PatrimoineTracker(){
 
       {/* ═══ LIVRETS ═══ */}
       {activeTab==="livrets"&&<>
-        <AllocationPie pea={livrets.map(l=>({...l,quantity:1,currentPrice:l.balance}))} peaTotal={livretsTotal} peaCash={0}/>
+        <AllocationPie pea={livrets.map(l=>({...l,quantity:1,currentPrice:l.balance}))} peaTotal={livretsTotal} peaCash={0} isMobile={isMobile}/>
         <SectionCard scrollable>
         <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Livrets & Épargne</h3><span style={{color:C.textDim,fontSize:12}}>{livrets.length} livrets · Total {fmtEur(livretsTotal)}</span></div>{addBtn("livret")}
