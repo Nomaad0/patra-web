@@ -1148,7 +1148,7 @@ export default function PatrimoineTracker(){
         </div>
 
         {/* Holdings table */}
-        <SectionCard scrollable>
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",marginBottom:20}}>
           <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
             <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Lignes du PEA</h3>
               <span style={{color:C.textDim,fontSize:12}}>{pea.length} lignes · Total {fmtEur(peaTotal)} · <span style={{color:peaPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(peaPV)} ({fmtPct(peaPVPct)})</span></span>
@@ -1160,12 +1160,16 @@ export default function PatrimoineTracker(){
               {addBtn("pea")}
             </div>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
-            <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+          <div style={{overflowX:"auto"}}>
+            <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:580}}>
+              <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+            </div>
+            <div style={{minWidth:580}}>
+              {sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>del("pea",id)}/>)}
+            </div>
+            {peaSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.accent,background:C.bg}}>{peaSyncStatus}</div>}
           </div>
-          {sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>del("pea",id)}/>)}
-          {peaSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.accent,background:C.bg}}>{peaSyncStatus}</div>}
-        </SectionCard>
+        </div>
       </>}
 
       {/* ═══ CTO ═══ */}
@@ -1198,7 +1202,7 @@ export default function PatrimoineTracker(){
         </div>
 
         {/* Holdings table CTO */}
-        <SectionCard scrollable>
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",marginBottom:20}}>
           <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
             <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Compte-Titres Ordinaire</h3>
               <span style={{color:C.textDim,fontSize:12}}>{cto.length} lignes · Total {fmtEur(ctoTotal)} · <span style={{color:ctoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(ctoPV)} ({fmtPct(ctoPVPct)})</span></span>
@@ -1210,44 +1214,57 @@ export default function PatrimoineTracker(){
               {addBtn("cto")}
             </div>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
-            <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+          <div style={{overflowX:"auto"}}>
+            <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:580}}>
+              <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+            </div>
+            <div style={{minWidth:580}}>
+              {sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>del("cto",id)}/>)}
+            </div>
+            {ctoSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.purple,background:C.bg}}>{ctoSyncStatus}</div>}
           </div>
-          {sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>del("cto",id)}/>)}
-          {ctoSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.purple,background:C.bg}}>{ctoSyncStatus}</div>}
-        </SectionCard>
+        </div>
       </>}
 
       {/* ═══ CRYPTO ═══ */}
       {activeTab==="crypto"&&<>
         <AllocationPie pea={crypto} peaTotal={cryptoTotal} peaCash={0} isMobile={isMobile}/>
-        <SectionCard scrollable>
-        <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
-          <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Portefeuille Crypto</h3><span style={{color:C.textDim,fontSize:12}}>{crypto.length} positions · Valeur {fmtEur(cryptoTotal)} · <span style={{color:cryptoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(cryptoPV)} ({fmtPct(cryptoPVPct)})</span></span></div>
-          <div style={{display:"flex",gap:8,flexShrink:0}}>
-            <button onClick={syncCrypto} disabled={cryptoLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.gold,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><RefreshCw size={13} style={cryptoLoading?{animation:"spin 1s linear infinite"}:{}}/>{cryptoLoading?"...":"Actualiser"}</button>
-            {addBtn("crypto")}
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",marginBottom:20}}>
+          <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+            <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Portefeuille Crypto</h3><span style={{color:C.textDim,fontSize:12}}>{crypto.length} positions · Valeur {fmtEur(cryptoTotal)} · <span style={{color:cryptoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(cryptoPV)} ({fmtPct(cryptoPVPct)})</span></span></div>
+            <div style={{display:"flex",gap:8,flexShrink:0}}>
+              <button onClick={syncCrypto} disabled={cryptoLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.gold,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><RefreshCw size={13} style={cryptoLoading?{animation:"spin 1s linear infinite"}:{}}/>{cryptoLoading?"...":"Actualiser"}</button>
+              {addBtn("crypto")}
+            </div>
+          </div>
+          <div style={{overflowX:"auto"}}>
+            <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:580}}>
+              <SortHeader label="CRYPTO" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+            </div>
+            <div style={{minWidth:580}}>
+              {sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)}/>)}
+            </div>
           </div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
-            <SortHeader label="CRYPTO" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
-          </div>
-        {sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)}/>)}
-      </SectionCard>
       </>}
 
       {/* ═══ LIVRETS ═══ */}
       {activeTab==="livrets"&&<>
         <AllocationPie pea={livrets.map(l=>({...l,quantity:1,currentPrice:l.balance}))} peaTotal={livretsTotal} peaCash={0} isMobile={isMobile}/>
-        <SectionCard scrollable>
-        <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Livrets & Épargne</h3><span style={{color:C.textDim,fontSize:12}}>{livrets.length} livrets · Total {fmtEur(livretsTotal)}</span></div>{addBtn("livret")}
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",marginBottom:20}}>
+          <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+            <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Livrets & Épargne</h3><span style={{color:C.textDim,fontSize:12}}>{livrets.length} livrets · Total {fmtEur(livretsTotal)}</span></div>
+            {addBtn("livret")}
+          </div>
+          <div style={{overflowX:"auto"}}>
+            <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 1fr 0.6fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:380}}>
+              <span style={{...thStyle,textAlign:"left"}}>LIVRET</span><span style={thStyle}>SOLDE</span><span style={thStyle}>TAUX</span><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+            </div>
+            <div style={{minWidth:380}}>
+              {livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)}/>)}
+            </div>
+          </div>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 1fr 0.6fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
-          <span style={{...thStyle,textAlign:"left"}}>LIVRET</span><span style={thStyle}>SOLDE</span><span style={thStyle}>TAUX</span><span style={thStyle}>POIDS</span><span style={thStyle}></span>
-        </div>
-        {livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)}/>)}
-      </SectionCard>
       </>}
 
       {/* ═══ DIVIDENDES ═══ */}
