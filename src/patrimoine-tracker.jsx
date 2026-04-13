@@ -633,18 +633,29 @@ export default function PatrimoineTracker(){
 
   const fetchDivForTicker=async(ticker)=>{
     if(!ticker)return;
-    setDivFetchStatus("⏳ Recherche...");
+    setDivFetchStatus("⏳ Récupération cours & dividende...");
     try{
-      const r=await fetch(`/api/dividends?ticker=${encodeURIComponent(ticker)}`);
-      const d=await r.json();
-      if(d.dividendRate!=null&&d.dividendRate>0){
-        setForm(p=>({...p,divPerShare:String(d.dividendRate)}));
-        setDivFetchStatus(`✅ ${d.dividendRate}€/action trouvé`);
+      const [divRes,priceRes]=await Promise.all([
+        fetch(`/api/dividends?ticker=${encodeURIComponent(ticker)}`),
+        fetch(`/api/quote?ticker=${encodeURIComponent(ticker)}&range=1d&interval=1d`)
+      ]);
+      const [divData,priceData]=await Promise.all([divRes.json(),priceRes.json()]);
+      const updates={};
+      const msgs=[];
+      // Prix actuel
+      const closes=priceData?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+      const lastPrice=closes?.filter(Boolean).slice(-1)[0];
+      if(lastPrice){updates.currentPrice=String(Math.round(lastPrice*100)/100);msgs.push(`cours ${fmtEur(lastPrice)}`);}
+      // Dividende
+      if(divData.dividendRate!=null&&divData.dividendRate>0){updates.divPerShare=String(divData.dividendRate);msgs.push(`div. ${divData.dividendRate}€/action`);}
+      if(Object.keys(updates).length>0){
+        setForm(p=>({...p,...updates}));
+        setDivFetchStatus(`✅ ${msgs.join(" · ")}`);
       }else{
-        setDivFetchStatus("ℹ️ Aucun dividende (ETF cap. ou non versant)");
+        setDivFetchStatus("ℹ️ Ticker introuvable ou pas de dividende");
       }
     }catch(e){setDivFetchStatus("❌ Erreur de récupération");}
-    setTimeout(()=>setDivFetchStatus(""),4000);
+    setTimeout(()=>setDivFetchStatus(""),5000);
   };
 
   // Export CSV
@@ -1440,7 +1451,7 @@ export default function PatrimoineTracker(){
             <input value={form.ticker||""} onChange={e=>setForm(p=>({...p,ticker:e.target.value}))} placeholder="TTE.PA"
               style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
               onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>{e.target.style.borderColor=C.border;fetchDivForTicker(form.ticker);}}/>
-            <button type="button" onClick={()=>fetchDivForTicker(form.ticker)} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 14px",color:C.accent,cursor:"pointer",fontSize:12,fontWeight:600,whiteSpace:"nowrap"}}>Récupérer div.</button>
+            <button type="button" onClick={()=>fetchDivForTicker(form.ticker)} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 14px",color:C.accent,cursor:"pointer",fontSize:12,fontWeight:600,whiteSpace:"nowrap"}}>Récupérer</button>
           </div>
           {divFetchStatus&&<div style={{fontSize:11,color:C.textDim,marginTop:5}}>{divFetchStatus}</div>}
         </div>
