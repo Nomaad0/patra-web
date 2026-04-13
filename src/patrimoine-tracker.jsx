@@ -881,10 +881,10 @@ export default function PatrimoineTracker(){
           <span style={{fontSize:14,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:C.text}}>{fmtEur(totalPat)}</span>
         </div>
 
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:20}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:16,marginBottom:20}}>
           <SectionCard title="Allocation Globale">
-            <div style={{padding:20,display:"flex",alignItems:"center",gap:16}}>
-              <ResponsiveContainer width="48%" height={190}><PieChart><Pie data={allocGlobal} dataKey="value" innerRadius={50} outerRadius={80} paddingAngle={3} stroke="none">{allocGlobal.map((e,i)=><Cell key={i} fill={e.fill}/>)}</Pie><Tooltip content={<PieTooltip/>}/></PieChart></ResponsiveContainer>
+            <div style={{padding:20,display:"flex",flexDirection:isMobile?"column":"row",alignItems:isMobile?"stretch":"center",gap:16}}>
+              <ResponsiveContainer width={isMobile?"100%":"48%"} height={190}><PieChart><Pie data={allocGlobal} dataKey="value" innerRadius={50} outerRadius={80} paddingAngle={3} stroke="none">{allocGlobal.map((e,i)=><Cell key={i} fill={e.fill}/>)}</Pie><Tooltip content={<PieTooltip/>}/></PieChart></ResponsiveContainer>
               <div style={{flex:1,display:"flex",flexDirection:"column",gap:10}}>
                 {allocGlobal.map((a,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:10,height:10,borderRadius:3,background:a.fill}}/><span style={{fontSize:12,fontWeight:600}}>{a.name}</span></div>
@@ -1025,17 +1025,17 @@ export default function PatrimoineTracker(){
                   {items.map((h,i)=>{
                     const actual=sectionTotal>0?(h.value/sectionTotal)*100:0;
                     const target=targetAlloc[`${section.cat}:${h.name}`];
-                    return(<div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"6px 0 6px 18px",borderBottom:i<items.length-1?`1px solid ${C.border}22`:"none"}}>
+                    return(<div key={i} style={{display:"flex",alignItems:"center",gap:isMobile?6:12,padding:isMobile?"6px 0 6px 8px":"6px 0 6px 18px",borderBottom:i<items.length-1?`1px solid ${C.border}22`:"none"}}>
                       <span style={{fontSize:12,fontWeight:500,color:C.text,flex:1,minWidth:0,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{h.name}</span>
-                      <span style={{fontSize:11,fontFamily:"'JetBrains Mono',monospace",color:C.textDim,width:55,textAlign:"right"}}>{actual.toFixed(1)}%</span>
-                      <span style={{fontSize:10,color:C.textMuted,width:15,textAlign:"center"}}>→</span>
+                      <span style={{fontSize:11,fontFamily:"'JetBrains Mono',monospace",color:C.textDim,width:isMobile?40:55,textAlign:"right"}}>{actual.toFixed(1)}%</span>
+                      <span style={{fontSize:10,color:C.textMuted,width:10,textAlign:"center"}}>→</span>
                       <input type="number" value={target||""} placeholder="—" onChange={e=>{const v=parseFloat(e.target.value);setTargetAlloc(p=>({...p,[`${section.cat}:${h.name}`]:v||undefined}));}}
-                        style={{width:55,background:C.bg,border:`1px solid ${C.border}`,borderRadius:5,padding:"4px 6px",color:C.text,fontSize:11,fontFamily:"'JetBrains Mono',monospace",textAlign:"right",outline:"none"}}/>
-                      <span style={{fontSize:10,color:C.textMuted,width:10}}>%</span>
-                      {target!==undefined&&Math.abs(actual-target)>=3&&<span style={{fontSize:10,fontWeight:700,color:actual>target?C.red:C.green,width:70,textAlign:"right"}}>
-                        {actual>target?"↓ Alléger":"↑ Renforcer"}
+                        style={{width:isMobile?40:55,background:C.bg,border:`1px solid ${C.border}`,borderRadius:5,padding:"4px 6px",color:C.text,fontSize:11,fontFamily:"'JetBrains Mono',monospace",textAlign:"right",outline:"none"}}/>
+                      <span style={{fontSize:10,color:C.textMuted,width:8}}>%</span>
+                      {target!==undefined&&Math.abs(actual-target)>=3&&<span style={{fontSize:10,fontWeight:700,color:actual>target?C.red:C.green,width:isMobile?50:70,textAlign:"right"}}>
+                        {actual>target?(isMobile?"↓":"↓ Alléger"):(isMobile?"↑":"↑ Renforcer")}
                       </span>}
-                      {(target===undefined||Math.abs(actual-target)<3)&&<span style={{width:70}}/>}
+                      {(target===undefined||Math.abs(actual-target)<3)&&<span style={{width:isMobile?50:70}}/>}
                     </div>);
                   })}
                 </div>);
