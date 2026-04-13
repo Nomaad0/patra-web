@@ -838,6 +838,15 @@ export default function PatrimoineTracker(){
 
       {/* ═══ DASHBOARD ═══ */}
       {activeTab==="dashboard"&&<>
+        {/* Snapshot reminder */}
+        {snapshots.length>0&&(()=>{const daysSince=Math.floor((Date.now()-new Date(snapshots[snapshots.length-1].date).getTime())/(1000*60*60*24));return daysSince>=30;})()&&<div style={{background:C.goldDim,border:`1px solid ${C.gold}44`,borderRadius:12,padding:"12px 20px",marginBottom:16,display:"flex",alignItems:"center",gap:12}}>
+          <Camera size={18} color={C.gold}/>
+          <div style={{flex:1}}>
+            <span style={{fontSize:13,fontWeight:600,color:C.text}}>Snapshot en retard</span>
+            <span style={{fontSize:13,color:C.textDim,marginLeft:8}}>Dernier il y a {Math.floor((Date.now()-new Date(snapshots[snapshots.length-1].date).getTime())/(1000*60*60*24))} jours — prends-en un pour suivre ta progression</span>
+          </div>
+          <button onClick={takeSnap} style={{background:C.gold,border:"none",borderRadius:8,padding:"7px 14px",color:"#000",cursor:"pointer",fontSize:12,fontWeight:700,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap"}}><Camera size={12}/>Snapshot</button>
+        </div>}
         {/* Dividend notification */}
         {currentMonthDiv>0&&<div style={{background:C.greenDim,border:`1px solid ${C.green}33`,borderRadius:12,padding:"12px 20px",marginBottom:16,display:"flex",alignItems:"center",gap:12}}>
           <Banknote size={18} color={C.green}/>
