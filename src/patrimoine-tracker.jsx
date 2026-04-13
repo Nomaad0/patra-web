@@ -208,12 +208,44 @@ function AllocationPie({pea,peaTotal,peaCash=0,isMobile}){
   </div>);
 }
 
-function HoldingRow({item,onEdit,onDelete,type,totalValue}){
+function HoldingRow({item,onEdit,onDelete,type,totalValue,isMobile}){
   const montant=type==="livret"?item.balance:item.quantity*item.currentPrice;
   const pv=type==="pea"?(item.currentPrice-item.pru)*item.quantity:type==="crypto"?(item.currentPrice-item.avgPrice)*item.quantity:0;
   const pvPct=type==="pea"?((item.currentPrice-item.pru)/item.pru)*100:type==="crypto"?((item.currentPrice-item.avgPrice)/item.avgPrice)*100:0;
   const weight=totalValue>0?(montant/totalValue)*100:0;
   const pos=pv>=0;
+  const editBtn=<button onClick={()=>onEdit(item)} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={13}/></button>;
+  const delBtn=<button onClick={()=>onDelete(item.id)} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>;
+
+  if(isMobile){
+    return(<div style={{padding:"12px 16px",borderBottom:`1px solid ${C.border}`}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
+        <div>
+          <span style={{fontWeight:700,fontSize:14,color:C.text}}>{item.name}</span>
+          {item.ticker&&<span style={{color:C.textMuted,marginLeft:6,fontSize:10}}>{item.ticker}</span>}
+          {item.symbol&&<span style={{color:C.gold,marginLeft:6,fontSize:11,fontWeight:700}}>{item.symbol}</span>}
+        </div>
+        <div style={{display:"flex",gap:2}}>{editBtn}{delBtn}</div>
+      </div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end"}}>
+        <div>
+          <div style={{fontSize:17,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:C.text}}>{fmtEur(montant)}</div>
+          {type!=="livret"&&<div style={{fontSize:11,color:C.textDim,marginTop:2}}>{type==="crypto"?item.quantity.toFixed(4):item.quantity} × {fmtEur(item.currentPrice)}</div>}
+          {type==="livret"&&<div style={{fontSize:11,color:C.accent,marginTop:2}}>{item.rate}% / an</div>}
+        </div>
+        {type!=="livret"&&<div style={{textAlign:"right"}}>
+          <div style={{fontSize:15,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:pos?C.green:C.red,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
+            {pos?<ArrowUpRight size={12}/>:<ArrowDownRight size={12}/>}{fmtPct(pvPct)}
+          </div>
+          <div style={{fontSize:11,color:pos?C.green:C.red,fontFamily:"'JetBrains Mono',monospace"}}>{fmtEur(pv)}</div>
+        </div>}
+      </div>
+      <div style={{marginTop:5,fontSize:10,color:C.textDim}}>
+        Poids {weight.toFixed(1)}%{type!=="livret"?` · PRU ${fmtEur(type==="pea"?item.pru:item.avgPrice)}`:""}
+      </div>
+    </div>);
+  }
+
   const cols=type==="livret"?{gridTemplateColumns:"2fr 0.6fr 1fr 0.6fr 50px"}:{gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px"};
   return(<div style={{display:"grid",...cols,alignItems:"center",padding:"12px 16px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,transition:"background .15s"}}
     onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
@@ -235,10 +267,7 @@ function HoldingRow({item,onEdit,onDelete,type,totalValue}){
     </>}
     {type==="livret"&&<span style={{color:C.accent,fontFamily:"'JetBrains Mono',monospace",textAlign:"right"}}>{item.rate}%</span>}
     <span style={{fontFamily:"'JetBrains Mono',monospace",textAlign:"right",fontSize:11,color:C.textDim}}>{weight.toFixed(1)}%</span>
-    <div style={{display:"flex",gap:4,justifyContent:"flex-end"}}>
-      <button onClick={()=>onEdit(item)} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={13}/></button>
-      <button onClick={()=>onDelete(item.id)} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
-    </div>
+    <div style={{display:"flex",gap:4,justifyContent:"flex-end"}}>{editBtn}{delBtn}</div>
   </div>);
 }
 
@@ -1160,15 +1189,16 @@ export default function PatrimoineTracker(){
               {addBtn("pea")}
             </div>
           </div>
-          <div style={{overflowX:"auto"}}>
-            <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:640}}>
-              <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
-            </div>
-            <div style={{minWidth:640}}>
-              {sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>del("pea",id)}/>)}
-            </div>
-            {peaSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.accent,background:C.bg}}>{peaSyncStatus}</div>}
-          </div>
+          {isMobile
+            ? <div>{sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>del("pea",id)} isMobile/>)}</div>
+            : <div style={{overflowX:"auto"}}>
+                <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:640}}>
+                  <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+                </div>
+                <div style={{minWidth:640}}>{sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>del("pea",id)}/>)}</div>
+              </div>
+          }
+          {peaSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.accent,background:C.bg}}>{peaSyncStatus}</div>}
         </div>
       </>}
 
@@ -1214,15 +1244,16 @@ export default function PatrimoineTracker(){
               {addBtn("cto")}
             </div>
           </div>
-          <div style={{overflowX:"auto"}}>
-            <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:640}}>
-              <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
-            </div>
-            <div style={{minWidth:640}}>
-              {sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>del("cto",id)}/>)}
-            </div>
-            {ctoSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.purple,background:C.bg}}>{ctoSyncStatus}</div>}
-          </div>
+          {isMobile
+            ? <div>{sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>del("cto",id)} isMobile/>)}</div>
+            : <div style={{overflowX:"auto"}}>
+                <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:640}}>
+                  <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+                </div>
+                <div style={{minWidth:640}}>{sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>del("cto",id)}/>)}</div>
+              </div>
+          }
+          {ctoSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.purple,background:C.bg}}>{ctoSyncStatus}</div>}
         </div>
       </>}
 
@@ -1237,14 +1268,15 @@ export default function PatrimoineTracker(){
               {addBtn("crypto")}
             </div>
           </div>
-          <div style={{overflowX:"auto"}}>
-            <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 0.8fr 0.8fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:680}}>
-              <SortHeader label="CRYPTO" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
-            </div>
-            <div style={{minWidth:680}}>
-              {sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)}/>)}
-            </div>
-          </div>
+          {isMobile
+            ? <div>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)} isMobile/>)}</div>
+            : <div style={{overflowX:"auto"}}>
+                <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 0.8fr 0.8fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:680}}>
+                  <SortHeader label="CRYPTO" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+                </div>
+                <div style={{minWidth:680}}>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)}/>)}</div>
+              </div>
+          }
         </div>
       </>}
 
@@ -1256,14 +1288,15 @@ export default function PatrimoineTracker(){
             <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Livrets & Épargne</h3><span style={{color:C.textDim,fontSize:12}}>{livrets.length} livrets · Total {fmtEur(livretsTotal)}</span></div>
             {addBtn("livret")}
           </div>
-          <div style={{overflowX:"auto"}}>
-            <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 1fr 0.6fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:380}}>
-              <span style={{...thStyle,textAlign:"left"}}>LIVRET</span><span style={thStyle}>SOLDE</span><span style={thStyle}>TAUX</span><span style={thStyle}>POIDS</span><span style={thStyle}></span>
-            </div>
-            <div style={{minWidth:380}}>
-              {livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)}/>)}
-            </div>
-          </div>
+          {isMobile
+            ? <div>{livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)} isMobile/>)}</div>
+            : <div style={{overflowX:"auto"}}>
+                <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 1fr 0.6fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:380}}>
+                  <span style={{...thStyle,textAlign:"left"}}>LIVRET</span><span style={thStyle}>SOLDE</span><span style={thStyle}>TAUX</span><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+                </div>
+                <div style={{minWidth:380}}>{livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)}/>)}</div>
+              </div>
+          }
         </div>
       </>}
 
