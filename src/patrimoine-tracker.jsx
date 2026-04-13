@@ -280,11 +280,12 @@ function TabBtn({active,label,icon:Icon,onClick,badge}){
   </button>);
 }
 
-function SectionCard({title,rightContent,children}){
+function SectionCard({title,rightContent,children,scrollable}){
   return(<div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",marginBottom:20}}>
-    {title&&<div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+    {title&&<div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
       <h3 style={{margin:0,fontSize:14,fontWeight:700,color:C.textDim,letterSpacing:.5,textTransform:"uppercase"}}>{title}</h3>{rightContent}
-    </div>}{children}
+    </div>}
+    {scrollable?<div style={{overflowX:"auto"}}>{children}</div>:children}
   </div>);
 }
 
@@ -396,6 +397,7 @@ export default function PatrimoineTracker(){
   const [monthlyIncome,setMonthlyIncome]=useState(0);
   const [targetAlloc,setTargetAlloc]=useState({});
   const [darkMode,setDarkMode]=useState(true);
+  const [isMobile,setIsMobile]=useState(()=>window.innerWidth<768);
   const [showOnboarding,setShowOnboarding]=useState(false);
   const [onboardingStep,setOnboardingStep]=useState(0);
   const [transactions,setTransactions]=useState([]);
@@ -529,6 +531,7 @@ export default function PatrimoineTracker(){
   };
 
   useEffect(()=>{if(loaded){syncCrypto();syncPEA();syncCTO();}},[loaded]);
+  useEffect(()=>{const h=()=>setIsMobile(window.innerWidth<768);window.addEventListener("resize",h);return()=>window.removeEventListener("resize",h);},[]);
 
   // Auto-sync quand on change d'onglet (cooldown 5 min)
   useEffect(()=>{
@@ -783,7 +786,7 @@ export default function PatrimoineTracker(){
     <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}} ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:${C.bg}} ::-webkit-scrollbar-thumb{background:${C.border};border-radius:3px}`}</style>
 
     {/* HEADER */}
-    <div style={{padding:"16px 28px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:`linear-gradient(180deg,${C.card},${C.bg})`}}>
+    <div style={{padding:isMobile?"12px 14px":"16px 28px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:`linear-gradient(180deg,${C.card},${C.bg})`,flexWrap:"wrap",gap:8}}>
       <div style={{display:"flex",alignItems:"center",gap:12}}>
         <div style={{width:38,height:38,borderRadius:10,background:`linear-gradient(135deg,${C.accent},${C.purple})`,display:"flex",alignItems:"center",justifyContent:"center"}}><Layers size={18} color="#fff"/></div>
         <div><h1 style={{margin:0,fontSize:22,fontWeight:900,letterSpacing:-.5}}>PaTra</h1>
@@ -795,22 +798,22 @@ export default function PatrimoineTracker(){
           </span>
         </div>
       </div>
-      <div style={{display:"flex",gap:8,alignItems:"center"}}>
+      <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
         {peaSyncStatus&&<span style={{fontSize:11,color:C.accent,fontWeight:500}}>{peaSyncStatus}</span>}
         {ctoSyncStatus&&<span style={{fontSize:11,color:C.purple,fontWeight:500}}>{ctoSyncStatus}</span>}
-        <button onClick={()=>{syncPEA();syncCTO();}} disabled={peaLoading||ctoLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
+        {!isMobile&&<><button onClick={()=>{syncPEA();syncCTO();}} disabled={peaLoading||ctoLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
           <RefreshCw size={13} style={peaLoading||ctoLoading?{animation:"spin 1s linear infinite"}:{}}/>{peaLoading||ctoLoading?"...":t.syncActions}
         </button>
         <button onClick={syncCrypto} disabled={cryptoLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.gold,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
           <RefreshCw size={13} style={cryptoLoading?{animation:"spin 1s linear infinite"}:{}}/>{cryptoLoading?"...":t.syncCrypto}
-        </button>
-        <button onClick={takeSnap} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Camera size={13}/>{t.snapshot}</button>
-        {<button onClick={exportCSV} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.textDim,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Download size={13}/>CSV</button>}
-        <button onClick={exportBackup} title="Sauvegarder mes données" style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.green,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Download size={13}/>{t.backup}</button>
-        <label title="Restaurer mes données" style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.gold,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
-          <Upload size={13}/>{t.restore}<input type="file" accept=".json" onChange={importBackup} style={{display:"none"}}/>
+        </button></>}
+        <button onClick={takeSnap} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 12px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Camera size={13}/>{!isMobile&&t.snapshot}</button>
+        {!isMobile&&<button onClick={exportCSV} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.textDim,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Download size={13}/>CSV</button>}
+        <button onClick={exportBackup} title="Sauvegarder mes données" style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 12px",color:C.green,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Download size={13}/>{!isMobile&&t.backup}</button>
+        <label title="Restaurer mes données" style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 12px",color:C.gold,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
+          <Upload size={13}/>{!isMobile&&t.restore}<input type="file" accept=".json" onChange={importBackup} style={{display:"none"}}/>
         </label>
-        <button onClick={()=>setDarkMode(!darkMode)} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 12px",color:C.textDim,cursor:"pointer",display:"flex",alignItems:"center",gap:0,fontSize:12}}>
+        <button onClick={()=>setDarkMode(!darkMode)} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 12px",color:C.textDim,cursor:"pointer",display:"flex",alignItems:"center",fontSize:12}}>
           {darkMode?<Sun size={15}/>:<Moon size={15}/>}
         </button>
       </div>
@@ -823,7 +826,7 @@ export default function PatrimoineTracker(){
     </div>}
 
     {/* TABS */}
-    <div style={{padding:"12px 28px",display:"flex",gap:6,borderBottom:`1px solid ${C.border}`,overflowX:"auto"}}>
+    <div style={{padding:isMobile?"8px 10px":"12px 28px",display:"flex",gap:6,borderBottom:`1px solid ${C.border}`,overflowX:"auto"}}>
       <TabBtn active={activeTab==="dashboard"} label={t.dashboard} icon={BarChart3} onClick={()=>setActiveTab("dashboard")}/>
       <TabBtn active={activeTab==="pea"} label={t.pea} icon={TrendingUp} onClick={()=>setActiveTab("pea")} badge={pea.length}/>
       <TabBtn active={activeTab==="cto"} label={t.cto} icon={DollarSign} onClick={()=>setActiveTab("cto")} badge={cto.length}/>
@@ -834,7 +837,7 @@ export default function PatrimoineTracker(){
       {<TabBtn active={activeTab==="transactions"} label={t.transactions} icon={Layers} onClick={()=>setActiveTab("transactions")} badge={transactions.length||undefined}/>}
     </div>
 
-    <div style={{padding:"20px 28px",maxWidth:1400,margin:"0 auto"}}>
+    <div style={{padding:isMobile?"12px":"20px 28px",maxWidth:1400,margin:"0 auto"}}>
 
       {/* ═══ DASHBOARD ═══ */}
       {activeTab==="dashboard"&&<>
@@ -1145,7 +1148,7 @@ export default function PatrimoineTracker(){
         </div>
 
         {/* Holdings table */}
-        <SectionCard>
+        <SectionCard scrollable>
           <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Lignes du PEA</h3>
               <span style={{color:C.textDim,fontSize:12}}>{pea.length} lignes · Titres {fmtEur(peaTitres)} · Espèces {fmtEur(peaCash)} · <span style={{fontWeight:600,color:C.text}}>Total {fmtEur(peaTotal)}</span> · <span style={{color:peaPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(peaPV)} ({fmtPct(peaPVPct)})</span></span>
@@ -1195,7 +1198,7 @@ export default function PatrimoineTracker(){
         </div>
 
         {/* Holdings table CTO */}
-        <SectionCard>
+        <SectionCard scrollable>
           <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Compte-Titres Ordinaire</h3>
               <span style={{color:C.textDim,fontSize:12}}>{cto.length} lignes · Titres {fmtEur(ctoTitres)} · Espèces {fmtEur(ctoCash)} · <span style={{fontWeight:600,color:C.text}}>Total {fmtEur(ctoTotal)}</span> · <span style={{color:ctoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(ctoPV)} ({fmtPct(ctoPVPct)})</span></span>
@@ -1218,7 +1221,7 @@ export default function PatrimoineTracker(){
       {/* ═══ CRYPTO ═══ */}
       {activeTab==="crypto"&&<>
         <AllocationPie pea={crypto} peaTotal={cryptoTotal} peaCash={0}/>
-        <SectionCard>
+        <SectionCard scrollable>
         <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Portefeuille Crypto</h3><span style={{color:C.textDim,fontSize:12}}>{crypto.length} positions · Investi {fmtEur(cryptoInvested)} · Valeur {fmtEur(cryptoTotal)} · <span style={{color:cryptoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(cryptoPV)} ({fmtPct(cryptoPVPct)})</span></span></div>
           <div style={{display:"flex",gap:8}}>
@@ -1236,7 +1239,7 @@ export default function PatrimoineTracker(){
       {/* ═══ LIVRETS ═══ */}
       {activeTab==="livrets"&&<>
         <AllocationPie pea={livrets.map(l=>({...l,quantity:1,currentPrice:l.balance}))} peaTotal={livretsTotal} peaCash={0}/>
-        <SectionCard>
+        <SectionCard scrollable>
         <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
           <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Livrets & Épargne</h3><span style={{color:C.textDim,fontSize:12}}>{livrets.length} livrets · Total {fmtEur(livretsTotal)}</span></div>{addBtn("livret")}
         </div>
@@ -1297,7 +1300,7 @@ export default function PatrimoineTracker(){
           </div>}
         </SectionCard>
 
-        <SectionCard title="Détail par ligne">
+        <SectionCard scrollable title="Détail par ligne">
           <div style={{display:"grid",gridTemplateColumns:"2fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
             <span style={{...thStyle,textAlign:"left"}}>VALEUR</span><span style={thStyle}>DIV/ACTION</span><span style={thStyle}>TOTAL/AN</span><span style={thStyle}>YIELD</span><span style={thStyle}>YIELD/PRU</span><span style={thStyle}>FRÉQUENCE</span><span style={thStyle}></span>
           </div>
@@ -1360,7 +1363,7 @@ export default function PatrimoineTracker(){
           <div style={{color:C.textDim,fontSize:14}}>{t.noTx}</div>
           <div style={{color:C.textMuted,fontSize:12,marginTop:6}}>Enregistre tes achats et ventes pour garder un historique.</div>
         </div>}
-        {transactions.length>0&&<SectionCard>
+        {transactions.length>0&&<SectionCard scrollable>
           <div style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
             <span style={{...thStyle,textAlign:"left"}}>{t.date}</span>
             <span style={thStyle}>{t.type}</span>
