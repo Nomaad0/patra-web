@@ -346,16 +346,43 @@ const DivBarTooltip=({active,payload,label})=>{
   </div>);
 };
 
-function MillionGoal({current,monthly,projData}){
-  const goal=1000000;const pct=Math.min((current/goal)*100,100);
+function MillionGoal({current,monthly,projData,goal,onGoalChange}){
+  const [editingGoal,setEditingGoal]=useState(false);
+  const [goalInput,setGoalInput]=useState("");
+  const pct=Math.min((current/goal)*100,100);
   const yearToGoal=projData.find(p=>p.capital>=goal);
-  const milestones=[{val:50000,label:"50k",icon:"🎯"},{val:100000,label:"100k",icon:"🔥"},{val:250000,label:"250k",icon:"💪"},{val:500000,label:"500k",icon:"🚀"},{val:750000,label:"750k",icon:"⚡"},{val:1000000,label:"1M",icon:"🏆"}];
+  const milestones=[
+    {val:goal*0.05,label:fmtK(goal*0.05),icon:"🎯"},
+    {val:goal*0.10,label:fmtK(goal*0.10),icon:"🔥"},
+    {val:goal*0.25,label:fmtK(goal*0.25),icon:"💪"},
+    {val:goal*0.50,label:fmtK(goal*0.50),icon:"🚀"},
+    {val:goal*0.75,label:fmtK(goal*0.75),icon:"⚡"},
+    {val:goal,label:fmtK(goal),icon:"🏆"},
+  ];
   const next=milestones.find(m=>m.val>current);
+  const confirmGoal=()=>{const v=parseInt(goalInput.replace(/\s/g,""));if(v>0)onGoalChange(v);setEditingGoal(false);};
   return(<div style={{background:`linear-gradient(135deg,${C.card} 0%,#0f1a30 100%)`,border:`1px solid ${C.border}`,borderRadius:16,padding:28,marginBottom:20,position:"relative",overflow:"hidden"}}>
     <div style={{position:"absolute",top:0,right:0,width:300,height:300,background:`radial-gradient(circle,${C.accentDim}22 0%,transparent 70%)`,pointerEvents:"none"}}/>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:24,position:"relative"}}>
       <div>
-        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}><Flag size={18} color={C.gold}/><span style={{fontSize:18,fontWeight:800,color:C.text}}>OBJECTIF 1 MILLION €</span></div>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+          <Flag size={18} color={C.gold}/>
+          <span style={{fontSize:18,fontWeight:800,color:C.text}}>OBJECTIF</span>
+          {editingGoal
+            ?<div style={{display:"flex",alignItems:"center",gap:6}}>
+              <input autoFocus type="number" value={goalInput} onChange={e=>setGoalInput(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Enter")confirmGoal();if(e.key==="Escape")setEditingGoal(false);}}
+                style={{background:C.bg,border:`1px solid ${C.gold}`,borderRadius:6,padding:"4px 8px",color:C.text,fontSize:14,fontFamily:"'JetBrains Mono',monospace",width:130,outline:"none",textAlign:"right"}}/>
+              <button onClick={confirmGoal} style={{background:"none",border:`1px solid ${C.gold}`,borderRadius:6,padding:"4px 8px",color:C.gold,cursor:"pointer",fontSize:11,fontWeight:600}}><Check size={12}/></button>
+              <button onClick={()=>setEditingGoal(false)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:6,padding:"4px 8px",color:C.textDim,cursor:"pointer",fontSize:11}}><X size={12}/></button>
+            </div>
+            :<div style={{display:"flex",alignItems:"center",gap:6}}>
+              <span style={{fontSize:18,fontWeight:800,color:C.gold}}>{fmtEur(goal)}</span>
+              <button onClick={()=>{setGoalInput(String(goal));setEditingGoal(true);}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:2}}
+                onMouseEnter={e=>e.currentTarget.style.color=C.gold} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={13}/></button>
+            </div>
+          }
+        </div>
         <span style={{color:C.textDim,fontSize:13}}>{yearToGoal?`Estimé en ${yearToGoal.year} à ${fmtEur(monthly)}/mois`:"Continue d'investir !"}</span>
       </div>
       <div style={{textAlign:"right"}}><div style={{fontSize:32,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:C.gold}}>{pct.toFixed(1)}%</div><div style={{fontSize:12,color:C.textDim}}>{fmtEur(current)} / {fmtEur(goal)}</div></div>
@@ -442,6 +469,8 @@ export default function PatrimoineTracker(){
   const [divFetchStatus,setDivFetchStatus]=useState("");
   const [monthlyIncome,setMonthlyIncome]=useState(0);
   const [targetAlloc,setTargetAlloc]=useState({});
+  const [goalAmount,setGoalAmount]=useState(()=>{try{const r=localStorage.getItem("patra-goal");return r?parseInt(r):1000000;}catch(e){return 1000000;}});
+  useEffect(()=>{try{localStorage.setItem("patra-goal",String(goalAmount));}catch(e){}},[goalAmount]);
   const [darkMode,setDarkMode]=useState(true);
   const [isMobile,setIsMobile]=useState(()=>window.innerWidth<768);
   const [showOnboarding,setShowOnboarding]=useState(false);
@@ -452,7 +481,7 @@ export default function PatrimoineTracker(){
   const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:""});
 
   // Labels
-  const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:"Objectif 1M",patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
+  const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
 
   // Persistent storage
   useEffect(()=>{try{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.cryptoCash!==undefined)setCryptoCash(p.cryptoCash);if(p.stablecoins)setStablecoins(p.stablecoins);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);if(p._isDemo)setIsDemo(true);} else {const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);setTransactions(d.transactions);setIsDemo(true);}}catch(e){}setLoaded(true);},[]);
@@ -939,10 +968,10 @@ export default function PatrimoineTracker(){
           <Flag size={16} color={C.gold}/>
           <div style={{flex:1}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
-              <span style={{fontSize:12,fontWeight:600,color:C.textDim}}>Objectif 1M€</span>
-              <span style={{fontSize:12,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:C.gold}}>{((totalPat/1000000)*100).toFixed(1)}%</span>
+              <span style={{fontSize:12,fontWeight:600,color:C.textDim}}>Objectif {fmtK(goalAmount)}</span>
+              <span style={{fontSize:12,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:C.gold}}>{((totalPat/goalAmount)*100).toFixed(1)}%</span>
             </div>
-            <div style={{height:8,background:C.bg,borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${(totalPat/1000000)*100}%`,background:`linear-gradient(90deg,${C.accent},${C.gold})`,borderRadius:4,transition:"width .5s"}}/></div>
+            <div style={{height:8,background:C.bg,borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${Math.min((totalPat/goalAmount)*100,100)}%`,background:`linear-gradient(90deg,${C.accent},${C.gold})`,borderRadius:4,transition:"width .5s"}}/></div>
           </div>
           <span style={{fontSize:14,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:C.text}}>{fmtEur(totalPat)}</span>
         </div>
@@ -1550,7 +1579,7 @@ export default function PatrimoineTracker(){
 
       {/* ═══ OBJECTIF 1M ═══ */}
       {activeTab==="objectif"&&<>
-        <MillionGoal current={totalPat} monthly={mensuel} projData={projData}/>
+        <MillionGoal current={totalPat} monthly={mensuel} projData={projData} goal={goalAmount} onGoalChange={setGoalAmount}/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:20}}>
           <MetricCard label="PROJECTION 5 ANS" value={fmtEur(projData[5]?.capital||0)} sub={`+${fmtEur((projData[5]?.capital||0)-totalPat)}`} icon={Target} trend="up" color={C.accent}/>
           <MetricCard label="PROJECTION 10 ANS" value={fmtEur(projData[10]?.capital||0)} sub={`+${fmtEur((projData[10]?.capital||0)-totalPat)}`} icon={Target} trend="up" color={C.green}/>
@@ -1567,7 +1596,7 @@ export default function PatrimoineTracker(){
               <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
               <XAxis dataKey="year" tick={{fontSize:10,fill:C.textDim}} stroke={C.border}/>
               <YAxis tick={{fontSize:10,fill:C.textDim}} stroke={C.border} tickFormatter={fmtK}/>
-              <ReferenceLine y={1000000} stroke={C.gold} strokeDasharray="8 4" strokeWidth={2} label={{value:"1M€",position:"insideTopRight",fill:C.gold,fontSize:13,fontWeight:700}}/>
+              <ReferenceLine y={goalAmount} stroke={C.gold} strokeDasharray="8 4" strokeWidth={2} label={{value:fmtK(goalAmount),position:"insideTopRight",fill:C.gold,fontSize:13,fontWeight:700}}/>
               <Tooltip contentStyle={{background:C.card,border:`1px solid ${C.border}`,borderRadius:10,fontSize:12}} labelStyle={{color:C.text}} itemStyle={{color:C.text}} formatter={(v,name)=>[fmtEur(v),name==="optimiste"?"Optimiste (11%)":name==="moyen"?"Moyen (8%)":"Pessimiste (5%)"]}/>
               <Area type="monotone" dataKey="optimiste" stroke={C.green} strokeWidth={2} fill="url(#gOpt)" strokeDasharray="none"/>
               <Area type="monotone" dataKey="moyen" stroke={C.accent} strokeWidth={2.5} fill="url(#gMoy)"/>
