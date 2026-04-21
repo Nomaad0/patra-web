@@ -432,7 +432,7 @@ export default function PatrimoineTracker(){
   const [transactions,setTransactions]=useState([]);
   const [showTxModal,setShowTxModal]=useState(false);
   const [isDemo,setIsDemo]=useState(false);
-  const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",name:"",quantity:"",price:"",notes:""});
+  const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:""});
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:"Objectif 1M",patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
@@ -1610,8 +1610,9 @@ export default function PatrimoineTracker(){
         <InputField label={t.date} value={txForm.date} onChange={v=>setTxForm(p=>({...p,date:v}))} type="date"/>
         <SelectField label={t.type} value={txForm.type} onChange={v=>setTxForm(p=>({...p,type:v}))} options={[{value:"buy",label:t.buy},{value:"sell",label:t.sell}]}/>
       </div>
-      <SelectField label={t.account} value={txForm.account} onChange={v=>setTxForm(p=>({...p,account:v}))} options={[{value:"pea",label:"PEA"},{value:"cto",label:"CTO"},{value:"crypto",label:"Crypto"}]}/>
-      <InputField label={t.name} value={txForm.name} onChange={v=>setTxForm(p=>({...p,name:v}))} placeholder="TOTALENERGIES"/>
+      <SelectField label={t.account} value={txForm.account} onChange={v=>setTxForm(p=>({...p,account:v,holdingId:"new",name:""}))} options={[{value:"pea",label:"PEA"},{value:"cto",label:"CTO"},{value:"crypto",label:"Crypto"}]}/>
+      <SelectField label={t.name} value={txForm.holdingId} onChange={v=>setTxForm(p=>({...p,holdingId:v,name:""}))} options={[{value:"new",label:"— Nouvelle ligne —"},...(txForm.account==="pea"?pea:txForm.account==="cto"?cto:crypto).map(h=>({value:h.id,label:h.name}))]}/>
+      {txForm.holdingId==="new"&&<InputField label={t.name} value={txForm.name} onChange={v=>setTxForm(p=>({...p,name:v}))} placeholder={txForm.account==="crypto"?"Bitcoin":"TOTALENERGIES"}/>}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
         <InputField label={t.quantity} value={txForm.quantity} onChange={v=>setTxForm(p=>({...p,quantity:v}))} type="number"/>
         <InputField label={`${t.price} (€)`} value={txForm.price} onChange={v=>setTxForm(p=>({...p,price:v}))} type="number"/>
@@ -1622,8 +1623,39 @@ export default function PatrimoineTracker(){
         <span style={{fontSize:16,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:txForm.type==="buy"?C.green:C.red}}>{fmtEur(parseFloat(txForm.quantity)*parseFloat(txForm.price))}</span>
       </div>}
       <button onClick={()=>{
-        const tx={date:txForm.date,type:txForm.type,account:txForm.account,name:txForm.name||"",quantity:parseFloat(txForm.quantity)||0,price:parseFloat(txForm.price)||0,notes:txForm.notes||""};
-        if(tx.quantity&&tx.price){setTransactions(p=>[...p,tx]);setShowTxModal(false);setTxForm({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",name:"",quantity:"",price:"",notes:""});}
+        const qty=parseFloat(txForm.quantity)||0;
+        const price=parseFloat(txForm.price)||0;
+        if(!qty||!price)return;
+        const {holdingId,account,type:txType,date,notes}=txForm;
+        const isBuy=txType==="buy";
+        const arr=account==="pea"?pea:account==="cto"?cto:crypto;
+        const existing=holdingId!=="new"?arr.find(h=>h.id===holdingId):null;
+        const txName=existing?existing.name:(txForm.name||"");
+        if(holdingId==="new"&&!txName)return;
+        // Update portfolio
+        if(existing){
+          const updater=h=>{
+            if(h.id!==holdingId)return h;
+            if(isBuy){
+              const newQty=h.quantity+qty;
+              if(account==="crypto"){const newAvg=(h.quantity*h.avgPrice+qty*price)/newQty;return{...h,quantity:newQty,avgPrice:newAvg};}
+              else{const newPru=(h.quantity*h.pru+qty*price)/newQty;return{...h,quantity:newQty,pru:newPru};}
+            }else{
+              return{...h,quantity:Math.max(0,h.quantity-qty)};
+            }
+          };
+          if(account==="pea")setPea(p=>p.map(updater));
+          else if(account==="cto")setCto(p=>p.map(updater));
+          else setCrypto(p=>p.map(updater));
+        }else if(isBuy){
+          const id=Date.now().toString();
+          if(account==="pea")setPea(p=>[...p,{id,name:txName,ticker:"",quantity:qty,pru:price,currentPrice:price,divPerShare:0,divFreq:"annuel"}]);
+          else if(account==="cto")setCto(p=>[...p,{id,name:txName,ticker:"",quantity:qty,pru:price,currentPrice:price,divPerShare:0,divFreq:"annuel"}]);
+          else setCrypto(p=>[...p,{id,name:txName,symbol:"",cgId:"",quantity:qty,avgPrice:price,currentPrice:price}]);
+        }
+        setTransactions(p=>[...p,{date,type:txType,account,name:txName,quantity:qty,price,notes:notes||""}]);
+        setShowTxModal(false);
+        setTxForm({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:""});
       }} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginTop:6}}>
         <Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>{t.logTx}
       </button>
