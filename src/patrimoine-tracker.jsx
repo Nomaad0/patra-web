@@ -766,6 +766,8 @@ export default function PatrimoineTracker(){
       else if(key==="montant"){vA=a.quantity*a.currentPrice;vB=b.quantity*b.currentPrice;}
       else if(key==="pv"){vA=type==="crypto"?(a.currentPrice-a.avgPrice)*a.quantity:(a.currentPrice-a.pru)*a.quantity;vB=type==="crypto"?(b.currentPrice-b.avgPrice)*b.quantity:(b.currentPrice-b.pru)*b.quantity;}
       else if(key==="pvpct"){vA=type==="crypto"?(a.currentPrice-a.avgPrice)/Math.max(a.avgPrice,.01):(a.currentPrice-a.pru)/Math.max(a.pru,.01);vB=type==="crypto"?(b.currentPrice-b.avgPrice)/Math.max(b.avgPrice,.01):(b.currentPrice-b.pru)/Math.max(b.pru,.01);}
+      else if(key==="solde"||key==="poids"){vA=a.balance||0;vB=b.balance||0;}
+      else if(key==="taux"){vA=a.rate||0;vB=b.rate||0;}
       else{vA=a.quantity*a.currentPrice;vB=b.quantity*b.currentPrice;}
       return dir==="asc"?(vA||0)-(vB||0):(vB||0)-(vA||0);
     });
@@ -1303,9 +1305,9 @@ export default function PatrimoineTracker(){
             ? <div>{livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)} isMobile/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 1fr 0.6fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:380}}>
-                  <span style={{...thStyle,textAlign:"left"}}>LIVRET</span><span style={thStyle}>SOLDE</span><span style={thStyle}>TAUX</span><span style={thStyle}>POIDS</span><span style={thStyle}></span>
+                  <SortHeader label="LIVRET" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="SOLDE" sortKey="solde"/><SortHeader label="TAUX" sortKey="taux"/><SortHeader label="POIDS" sortKey="poids"/><span style={thStyle}></span>
                 </div>
-                <div style={{minWidth:380}}>{livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)}/>)}</div>
+                <div style={{minWidth:380}}>{sortHoldings(livrets,"livret").map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)}/>)}</div>
               </div>
           }
         </div>
