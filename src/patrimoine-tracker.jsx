@@ -596,7 +596,8 @@ export default function PatrimoineTracker(){
   const peaInvested=pea.reduce((s,h)=>s+h.quantity*h.pru,0);
   const peaPV=peaTitres-peaInvested;const peaPVPct=peaInvested>0?(peaPV/peaInvested)*100:0;
   const cryptoTitres=crypto.reduce((s,h)=>s+h.quantity*h.currentPrice,0);
-  const stablecoinsTotal=stablecoins.reduce((s,st)=>{const meta=STABLE_LIST.find(m=>m.symbol===st.symbol);return s+st.quantity*(meta?stablecoinPrices[meta.cgId]??0:0);},0);
+  const stableHoldings=stablecoins.map(st=>{const meta=STABLE_LIST.find(m=>m.symbol===st.symbol);const price=meta?(stablecoinPrices[meta.cgId]??0):0;return{id:st.id,name:st.symbol,symbol:st.symbol,cgId:meta?.cgId||"",quantity:st.quantity,avgPrice:price,currentPrice:price,_isStable:true};});
+  const stablecoinsTotal=stableHoldings.reduce((s,h)=>s+h.quantity*h.currentPrice,0);
   const cryptoTotal=cryptoTitres+cryptoCash+stablecoinsTotal;
   const cryptoInvested=crypto.reduce((s,h)=>s+h.quantity*h.avgPrice,0);
   const cryptoPV=cryptoTotal-cryptoInvested;const cryptoPVPct=cryptoInvested>0?(cryptoPV/cryptoInvested)*100:0;
@@ -1294,7 +1295,7 @@ export default function PatrimoineTracker(){
 
       {/* ═══ CRYPTO ═══ */}
       {activeTab==="crypto"&&<>
-        <AllocationPie pea={crypto} peaTotal={cryptoTotal} peaCash={cryptoCash} isMobile={isMobile}/>
+        <AllocationPie pea={[...crypto,...stableHoldings]} peaTotal={cryptoTotal} peaCash={cryptoCash} isMobile={isMobile}/>
 
         {/* Cash € */}
         <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:"16px 20px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -1362,12 +1363,12 @@ export default function PatrimoineTracker(){
             </div>
           </div>
           {isMobile
-            ? <div>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)} isMobile/>)}</div>
+            ? <div>{[...stableHoldings,...sortHoldings(crypto,"crypto")].map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={h._isStable?()=>{}:i=>openEdit(i,"crypto")} onDelete={h._isStable?id=>setStablecoins(p=>p.filter(s=>s.id!==id)):id=>del("crypto",id)} isMobile/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 0.8fr 0.8fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:680}}>
                   <SortHeader label="CRYPTO" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
                 </div>
-                <div style={{minWidth:680}}>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)}/>)}</div>
+                <div style={{minWidth:680}}>{[...stableHoldings,...sortHoldings(crypto,"crypto")].map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={h._isStable?()=>{}:i=>openEdit(i,"crypto")} onDelete={h._isStable?id=>setStablecoins(p=>p.filter(s=>s.id!==id)):id=>del("crypto",id)}/>)}</div>
               </div>
           }
         </div>
