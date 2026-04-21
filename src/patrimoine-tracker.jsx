@@ -414,7 +414,8 @@ export default function PatrimoineTracker(){
   const [versements,setVersements]=useState(defaultVersements);
   const [divHistory,setDivHistory]=useState(defaultDivHistory);
   const [snapshots,setSnapshots]=useState([]);
-  const [activeTab,setActiveTab]=useState("dashboard");
+  const [activeTab,setActiveTab]=useState(()=>{try{return localStorage.getItem("patra-tab")||"dashboard";}catch(e){return"dashboard";}});
+  useEffect(()=>{try{localStorage.setItem("patra-tab",activeTab);}catch(e){}},[activeTab]);
   const [showModal,setShowModal]=useState(null);
   const [editItem,setEditItem]=useState(null);
   const [form,setForm]=useState({});
