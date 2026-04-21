@@ -405,6 +405,7 @@ export default function PatrimoineTracker(){
   const [form,setForm]=useState({});
   const [loaded,setLoaded]=useState(false);
   const [sortConfig,setSortConfig]=useState({key:"montant",dir:"desc"});
+  const [txSortConfig,setTxSortConfig]=useState({key:"date",dir:"desc"});
   const [benchData,setBenchData]=useState(null);
   const [benchLoading,setBenchLoading]=useState(false);
   const [benchIndices,setBenchIndices]=useState({cac:true,sp500:true,msci:true});
@@ -740,6 +741,16 @@ export default function PatrimoineTracker(){
       style={{...thStyle,...s,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:s?.textAlign==="left"?"flex-start":"flex-end",gap:3,userSelect:"none"}}
       onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=active?C.accent:C.textMuted}>
       {label}{active&&<span style={{fontSize:8}}>{sortConfig.dir==="desc"?"▼":"▲"}</span>}
+    </span>);
+  };
+
+  // Sortable header for transactions
+  const TxSortHeader=({label,sortKey,style:s})=>{
+    const active=txSortConfig.key===sortKey;
+    return(<span onClick={()=>setTxSortConfig(prev=>({key:sortKey,dir:prev.key===sortKey&&prev.dir==="desc"?"asc":"desc"}))}
+      style={{...thStyle,...s,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:s?.textAlign==="left"?"flex-start":"flex-end",gap:3,userSelect:"none"}}
+      onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=active?C.accent:C.textMuted}>
+      {label}{active&&<span style={{fontSize:8}}>{txSortConfig.dir==="desc"?"▼":"▲"}</span>}
     </span>);
   };
 
@@ -1415,16 +1426,26 @@ export default function PatrimoineTracker(){
         </div>}
         {transactions.length>0&&<SectionCard scrollable>
           <div style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
-            <span style={{...thStyle,textAlign:"left"}}>{t.date}</span>
-            <span style={thStyle}>{t.type}</span>
-            <span style={thStyle}>{t.account}</span>
-            <span style={{...thStyle,textAlign:"left"}}>{t.name}</span>
-            <span style={thStyle}>{t.quantity}</span>
-            <span style={thStyle}>{t.price}</span>
-            <span style={thStyle}>{t.total}</span>
+            <TxSortHeader label={t.date} sortKey="date" style={{textAlign:"left"}}/>
+            <TxSortHeader label={t.type} sortKey="type"/>
+            <TxSortHeader label={t.account} sortKey="account"/>
+            <TxSortHeader label={t.name} sortKey="name" style={{textAlign:"left"}}/>
+            <TxSortHeader label={t.quantity} sortKey="quantity"/>
+            <TxSortHeader label={t.price} sortKey="price"/>
+            <TxSortHeader label={t.total} sortKey="total"/>
             <span style={thStyle}></span>
           </div>
-          {[...transactions].sort((a,b)=>new Date(b.date)-new Date(a.date)).map((tx,i)=>(
+          {[...transactions].map((tx,origIdx)=>({...tx,_origIdx:origIdx})).sort((a,b)=>{
+            const {key,dir}=txSortConfig;
+            if(key==="date"){const d=new Date(a.date).getTime()-new Date(b.date).getTime();return dir==="asc"?d:-d;}
+            if(key==="type"||key==="account"||key==="name"){const s=a[key].localeCompare(b[key]);return dir==="asc"?s:-s;}
+            let vA,vB;
+            if(key==="quantity"){vA=a.quantity;vB=b.quantity;}
+            else if(key==="price"){vA=a.price;vB=b.price;}
+            else if(key==="total"){vA=a.quantity*a.price;vB=b.quantity*b.price;}
+            else{vA=new Date(a.date).getTime();vB=new Date(b.date).getTime();}
+            return dir==="asc"?vA-vB:vB-vA;
+          }).map((tx,i)=>(
             <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"10px 16px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,alignItems:"center"}}
               onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
               <span style={{color:C.text,fontWeight:500}}>{fmtDate(tx.date)}</span>
@@ -1435,7 +1456,7 @@ export default function PatrimoineTracker(){
               <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{fmtEur(tx.price)}</span>
               <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:tx.type==="buy"?C.green:C.red}}>{tx.type==="buy"?"-":"+"}{fmtEur(tx.quantity*tx.price)}</span>
               <div style={{display:"flex",justifyContent:"flex-end"}}>
-                <button onClick={()=>setTransactions(p=>p.filter((_,j)=>j!==(transactions.length-1-i)))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
+                <button onClick={()=>setTransactions(p=>p.filter((_,j)=>j!==tx._origIdx))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
                   onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
               </div>
             </div>
@@ -1632,6 +1653,8 @@ export default function PatrimoineTracker(){
         const existing=holdingId!=="new"?arr.find(h=>h.id===holdingId):null;
         const txName=existing?existing.name:(txForm.name||"");
         if(holdingId==="new"&&!txName)return;
+        // Validation vente
+        if(!isBuy&&existing&&qty>existing.quantity){alert(`Vente impossible : tu n'as que ${existing.quantity} ${existing.name}.`);return;}
         // Update portfolio
         if(existing){
           const updater=h=>{
