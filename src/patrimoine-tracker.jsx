@@ -1676,7 +1676,8 @@ export default function PatrimoineTracker(){
           else if(account==="cto")setCto(p=>[...p,{id,name:txName,ticker:"",quantity:qty,pru:price,currentPrice:price,divPerShare:0,divFreq:"annuel"}]);
           else setCrypto(p=>[...p,{id,name:txName,symbol:"",cgId:"",quantity:qty,avgPrice:price,currentPrice:price}]);
         }
-        setTransactions(p=>[...p,{date,type:txType,account,name:txName,quantity:qty,price,notes:notes||""}]);
+        const fullDate=date===new Date().toISOString().slice(0,10)?new Date().toISOString():date+"T"+new Date().toISOString().slice(11);
+        setTransactions(p=>[...p,{date:fullDate,type:txType,account,name:txName,quantity:qty,price,notes:notes||""}]);
         setShowTxModal(false);
         setTxForm({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:""});
       }} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginTop:6}}>
