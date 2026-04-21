@@ -1836,6 +1836,8 @@ export default function PatrimoineTracker(){
           <div style={{fontSize:15,fontWeight:700,color:C.red,marginBottom:6}}>⚠️ Action irréversible</div>
           <div style={{fontSize:13,color:C.textDim,lineHeight:1.6}}>Cette action supprimera définitivement <strong style={{color:C.text}}>TOUTES vos données</strong> — portefeuilles, snapshots, transactions, historique. Rien ne pourra être récupéré.</div>
         </div>
+        <div style={{background:C.greenDim,border:`1px solid ${C.green}44`,borderRadius:10,padding:"10px 14px",marginBottom:18,fontSize:12,color:C.textDim,lineHeight:1.5}}>
+          ✅ <strong style={{color:C.green}}>Vos exports JSON ne sont pas affectés.</strong> Si vous avez fait un Backup, vous pourrez restaurer vos données via "Restore JSON" après la réinitialisation.</div>
         <div style={{fontSize:13,color:C.textDim,marginBottom:8}}>Pour confirmer, tapez exactement <strong style={{color:C.text,fontFamily:"'JetBrains Mono',monospace"}}>Supprimer</strong> :</div>
         <input type="text" value={resetInput} onChange={e=>setResetInput(e.target.value)} placeholder="Supprimer"
           style={{width:"100%",background:C.bg,border:`1px solid ${resetInput==="Supprimer"?C.red:C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box",marginBottom:16}}/>
