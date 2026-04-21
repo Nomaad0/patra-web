@@ -748,7 +748,7 @@ export default function PatrimoineTracker(){
   const TxSortHeader=({label,sortKey,style:s})=>{
     const active=txSortConfig.key===sortKey;
     return(<span onClick={()=>setTxSortConfig(prev=>({key:sortKey,dir:prev.key===sortKey&&prev.dir==="desc"?"asc":"desc"}))}
-      style={{...thStyle,...s,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:s?.textAlign==="left"?"flex-start":"flex-end",gap:3,userSelect:"none"}}
+      style={{...thStyle,...s,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:s?.textAlign==="left"?"flex-start":s?.textAlign==="center"?"center":"flex-end",gap:3,userSelect:"none"}}
       onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=active?C.accent:C.textMuted}>
       {label}{active&&<span style={{fontSize:8}}>{txSortConfig.dir==="desc"?"▼":"▲"}</span>}
     </span>);
@@ -1430,7 +1430,7 @@ export default function PatrimoineTracker(){
           <div style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
             <TxSortHeader label={t.date} sortKey="date" style={{textAlign:"left"}}/>
             <TxSortHeader label={t.type} sortKey="type"/>
-            <TxSortHeader label={t.account} sortKey="account"/>
+            <TxSortHeader label={t.account} sortKey="account" style={{textAlign:"center"}}/>
             <TxSortHeader label={t.name} sortKey="name" style={{textAlign:"left",paddingLeft:12}}/>
             <TxSortHeader label={t.quantity} sortKey="quantity"/>
             <TxSortHeader label={t.price} sortKey="price"/>
@@ -1452,7 +1452,7 @@ export default function PatrimoineTracker(){
               onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
               <span style={{color:C.text,fontWeight:500}}>{fmtDate(tx.date)}{tx.date.includes("T")&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontFamily:"'JetBrains Mono',monospace"}}>{new Date(tx.date).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}</span>
               <span style={{textAlign:"right"}}><span style={{padding:"2px 8px",borderRadius:4,fontSize:10,fontWeight:700,background:tx.type==="buy"?C.greenDim:C.redDim,color:tx.type==="buy"?C.green:C.red}}>{tx.type==="buy"?t.buy:t.sell}</span></span>
-              <span style={{textAlign:"right",color:C.textDim,fontSize:11,fontWeight:600}}>{tx.account.toUpperCase()}</span>
+              <span style={{textAlign:"center",color:C.textDim,fontSize:11,fontWeight:600}}>{tx.account.toUpperCase()}</span>
               <span style={{color:C.text,fontWeight:600,paddingLeft:12}}>{tx.name}{tx.notes&&<span style={{display:"block",color:C.textMuted,fontSize:10,fontWeight:400}}>{tx.notes}</span>}</span>
               <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{tx.quantity}</span>
               <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{fmtEur(tx.price)}</span>
