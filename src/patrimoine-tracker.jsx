@@ -394,6 +394,7 @@ export default function PatrimoineTracker(){
   const [livrets,setLivrets]=useState(defaultLivrets);
   const [peaCash,setPeaCash]=useState(0);
   const [ctoCash,setCtoCash]=useState(0);
+  const [cryptoCash,setCryptoCash]=useState(0);
   const [editingCash,setEditingCash]=useState(null);
   const [cashInput,setCashInput]=useState("");
   const [versements,setVersements]=useState(defaultVersements);
@@ -439,19 +440,19 @@ export default function PatrimoineTracker(){
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:"Objectif 1M",patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
 
   // Persistent storage
-  useEffect(()=>{try{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);if(p._isDemo)setIsDemo(true);} else {const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);setTransactions(d.transactions);setIsDemo(true);}}catch(e){}setLoaded(true);},[]);
+  useEffect(()=>{try{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.cryptoCash!==undefined)setCryptoCash(p.cryptoCash);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);if(p._isDemo)setIsDemo(true);} else {const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);setTransactions(d.transactions);setIsDemo(true);}}catch(e){}setLoaded(true);},[]);
 
-  const persist=useCallback(()=>{try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,...(isDemo?{_isDemo:true}:{})}))}catch(e){}},[pea,crypto,cto,livrets,peaCash,ctoCash,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,isDemo]);
+  const persist=useCallback(()=>{try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,...(isDemo?{_isDemo:true}:{})}))}catch(e){}},[pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,isDemo]);
   useEffect(()=>{if(loaded)persist()},[loaded,persist]);
 
   // Set active theme
   C = darkMode ? DARK : LIGHT;
 
   // Backup / Restore
-  const clearDemo=()=>{setPea([]);setCrypto([]);setCto([]);setLivrets([]);setPeaCash(0);setCtoCash(0);setVersements({pea:0,crypto:0,cto:0});setSnapshots([]);setDivHistory([]);setMonthlyIncome(0);setTargetAlloc({});setTransactions([]);setIsDemo(false);localStorage.removeItem("patrimoine-v6");};
+  const clearDemo=()=>{setPea([]);setCrypto([]);setCto([]);setLivrets([]);setPeaCash(0);setCtoCash(0);setCryptoCash(0);setVersements({pea:0,crypto:0,cto:0});setSnapshots([]);setDivHistory([]);setMonthlyIncome(0);setTargetAlloc({});setTransactions([]);setIsDemo(false);localStorage.removeItem("patrimoine-v6");};
 
   const exportBackup=()=>{
-    const data={pea,crypto,cto,livrets,peaCash,ctoCash,versements,snapshots,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,exportDate:new Date().toISOString()};
+    const data={pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,versements,snapshots,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,exportDate:new Date().toISOString()};
     const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
     const url=URL.createObjectURL(blob);const a=document.createElement("a");
     a.href=url;a.download=`patrimoine_backup_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);
@@ -464,7 +465,7 @@ export default function PatrimoineTracker(){
         const d=JSON.parse(ev.target.result);
         if(d.pea)setPea(d.pea);if(d.crypto)setCrypto(d.crypto);if(d.cto)setCto(d.cto);
         if(d.livrets)setLivrets(d.livrets);if(d.peaCash!==undefined)setPeaCash(d.peaCash);
-        if(d.ctoCash!==undefined)setCtoCash(d.ctoCash);if(d.versements)setVersements(d.versements);
+        if(d.ctoCash!==undefined)setCtoCash(d.ctoCash);if(d.cryptoCash!==undefined)setCryptoCash(d.cryptoCash);if(d.versements)setVersements(d.versements);
         if(d.snapshots)setSnapshots(d.snapshots);if(d.divHistory)setDivHistory(d.divHistory);
         
         if(d.monthlyIncome)setMonthlyIncome(d.monthlyIncome);if(d.targetAlloc)setTargetAlloc(d.targetAlloc);
@@ -577,7 +578,8 @@ export default function PatrimoineTracker(){
   const peaTotal=peaTitres+peaCash;
   const peaInvested=pea.reduce((s,h)=>s+h.quantity*h.pru,0);
   const peaPV=peaTitres-peaInvested;const peaPVPct=peaInvested>0?(peaPV/peaInvested)*100:0;
-  const cryptoTotal=crypto.reduce((s,h)=>s+h.quantity*h.currentPrice,0);
+  const cryptoTitres=crypto.reduce((s,h)=>s+h.quantity*h.currentPrice,0);
+  const cryptoTotal=cryptoTitres+cryptoCash;
   const cryptoInvested=crypto.reduce((s,h)=>s+h.quantity*h.avgPrice,0);
   const cryptoPV=cryptoTotal-cryptoInvested;const cryptoPVPct=cryptoInvested>0?(cryptoPV/cryptoInvested)*100:0;
   const ctoTitres=cto.reduce((s,h)=>s+h.quantity*h.currentPrice,0);
@@ -1272,7 +1274,29 @@ export default function PatrimoineTracker(){
 
       {/* ═══ CRYPTO ═══ */}
       {activeTab==="crypto"&&<>
-        <AllocationPie pea={crypto} peaTotal={cryptoTotal} peaCash={0} isMobile={isMobile}/>
+        <AllocationPie pea={crypto} peaTotal={cryptoTotal} peaCash={cryptoCash} isMobile={isMobile}/>
+
+        {/* Solde stablecoins / cash crypto */}
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:"16px 20px",marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+          <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <Wallet size={16} color={C.gold}/>
+            <span style={{fontSize:13,fontWeight:600,color:C.textDim}}>Stablecoins / Cash</span>
+          </div>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            {editingCash==="crypto"?<>
+              <input type="number" value={cashInput} onChange={e=>setCashInput(e.target.value)} autoFocus
+                onKeyDown={e=>{if(e.key==="Enter"){setCryptoCash(parseFloat(cashInput)||0);setEditingCash(null);}if(e.key==="Escape")setEditingCash(null);}}
+                style={{background:C.bg,border:`1px solid ${C.gold}`,borderRadius:6,padding:"6px 10px",color:C.text,fontSize:14,fontFamily:"'JetBrains Mono',monospace",width:120,outline:"none",textAlign:"right"}}/>
+              <button onClick={()=>{setCryptoCash(parseFloat(cashInput)||0);setEditingCash(null);}} style={{background:C.goldDim,border:`1px solid ${C.gold}`,borderRadius:6,padding:"6px 10px",color:C.gold,cursor:"pointer",fontSize:11,fontWeight:600}}><Check size={12}/></button>
+              <button onClick={()=>setEditingCash(null)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:6,padding:"6px 10px",color:C.textDim,cursor:"pointer",fontSize:11}}><X size={12}/></button>
+            </>:<>
+              <span style={{fontSize:18,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:C.gold}}>{fmtEur(cryptoCash)}</span>
+              <button onClick={()=>{setCashInput(String(cryptoCash));setEditingCash("crypto");}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
+                onMouseEnter={e=>e.currentTarget.style.color=C.gold} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={14}/></button>
+            </>}
+          </div>
+        </div>
+
         <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,overflow:"hidden",marginBottom:20}}>
           <div style={{padding:"16px 20px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
             <div><h3 style={{margin:0,fontSize:15,fontWeight:700}}>Portefeuille Crypto</h3><span style={{color:C.textDim,fontSize:12}}>{crypto.length} positions · Valeur {fmtEur(cryptoTotal)} · <span style={{color:cryptoPV>=0?C.green:C.red,fontWeight:600}}>PV {fmtEur(cryptoPV)} ({fmtPct(cryptoPVPct)})</span></span></div>
