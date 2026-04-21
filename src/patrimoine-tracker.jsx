@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
   AreaChart, Area, XAxis, YAxis, CartesianGrid, BarChart, Bar,
   ReferenceLine, Legend
 } from "recharts";
 import {
-  TrendingUp, Wallet, Plus, Edit3, RefreshCw,
+  TrendingUp, Wallet, Plus, Edit3, RefreshCw, Settings,
   Trash2, Save, X, DollarSign, BarChart3,
   Target, Layers, ArrowUpRight,
   ArrowDownRight, Check, AlertCircle, Camera, Award,
@@ -471,6 +471,15 @@ export default function PatrimoineTracker(){
   const [targetAlloc,setTargetAlloc]=useState({});
   const [goalAmount,setGoalAmount]=useState(()=>{try{const r=localStorage.getItem("patra-goal");return r?parseInt(r):1000000;}catch(e){return 1000000;}});
   useEffect(()=>{try{localStorage.setItem("patra-goal",String(goalAmount));}catch(e){}},[goalAmount]);
+  const settingsRef=useRef(null);
+  const [showSettings,setShowSettings]=useState(false);
+  const [showResetModal,setShowResetModal]=useState(false);
+  const [resetInput,setResetInput]=useState("");
+  useEffect(()=>{
+    const handler=e=>{if(settingsRef.current&&!settingsRef.current.contains(e.target))setShowSettings(false);};
+    if(showSettings)document.addEventListener("mousedown",handler);
+    return()=>document.removeEventListener("mousedown",handler);
+  },[showSettings]);
   const [darkMode,setDarkMode]=useState(true);
   const [isMobile,setIsMobile]=useState(()=>window.innerWidth<768);
   const [showOnboarding,setShowOnboarding]=useState(false);
@@ -903,14 +912,36 @@ export default function PatrimoineTracker(){
           <RefreshCw size={13} style={cryptoLoading?{animation:"spin 1s linear infinite"}:{}}/>{cryptoLoading?"...":t.syncCrypto}
         </button></>}
         <button onClick={takeSnap} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 12px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Camera size={13}/>{!isMobile&&t.snapshot}</button>
-        {!isMobile&&<button onClick={exportCSV} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.textDim,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Download size={13}/>CSV</button>}
-        <button onClick={exportBackup} title="Sauvegarder mes données" style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 12px",color:C.green,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Download size={13}/>{!isMobile&&t.backup}</button>
-        <label title="Restaurer mes données" style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 12px",color:C.gold,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
-          <Upload size={13}/>{!isMobile&&t.restore}<input type="file" accept=".json" onChange={importBackup} style={{display:"none"}}/>
-        </label>
         <button onClick={()=>setDarkMode(!darkMode)} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 12px",color:C.textDim,cursor:"pointer",display:"flex",alignItems:"center",fontSize:12}}>
           {darkMode?<Sun size={15}/>:<Moon size={15}/>}
         </button>
+        <div ref={settingsRef} style={{position:"relative"}}>
+          <button onClick={()=>setShowSettings(p=>!p)} style={{background:showSettings?C.accentDim:C.card,border:`1px solid ${showSettings?C.accent:C.border}`,borderRadius:8,padding:"7px 12px",color:showSettings?C.accent:C.textDim,cursor:"pointer",display:"flex",alignItems:"center",fontSize:12}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor=C.accent;e.currentTarget.style.color=C.accent;}} onMouseLeave={e=>{if(!showSettings){e.currentTarget.style.borderColor=C.border;e.currentTarget.style.color=C.textDim;}}}>
+            <Settings size={15}/>
+          </button>
+          {showSettings&&<div style={{position:"absolute",right:0,top:"calc(100% + 6px)",background:C.card,border:`1px solid ${C.border}`,borderRadius:12,width:210,zIndex:500,boxShadow:`0 8px 32px rgba(0,0,0,.4)`,padding:"6px 0",animation:"fadeIn .12s ease"}}>
+            <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}`}</style>
+            {[
+              {icon:<Download size={14}/>,label:"Export CSV",action:()=>{exportCSV();setShowSettings(false);}},
+              {icon:<Download size={14}/>,label:"Backup JSON",action:()=>{exportBackup();setShowSettings(false);}},
+            ].map(item=>(
+              <button key={item.label} onClick={item.action} style={{width:"100%",background:"none",border:"none",padding:"9px 14px",display:"flex",alignItems:"center",gap:10,color:C.textDim,fontSize:13,cursor:"pointer",textAlign:"left",fontFamily:"'Outfit',sans-serif"}}
+                onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="none"}>
+                {item.icon}{item.label}
+              </button>
+            ))}
+            <label style={{width:"100%",background:"none",border:"none",padding:"9px 14px",display:"flex",alignItems:"center",gap:10,color:C.textDim,fontSize:13,cursor:"pointer",fontFamily:"'Outfit',sans-serif",boxSizing:"border-box"}}
+              onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="none"}>
+              <Upload size={14}/>Restore JSON<input type="file" accept=".json" onChange={e=>{importBackup(e);setShowSettings(false);}} style={{display:"none"}}/>
+            </label>
+            <div style={{borderTop:`1px solid ${C.border}`,margin:"4px 0"}}/>
+            <button onClick={()=>{setShowSettings(false);setResetInput("");setShowResetModal(true);}} style={{width:"100%",background:"none",border:"none",padding:"9px 14px",display:"flex",alignItems:"center",gap:10,color:C.red,fontSize:13,cursor:"pointer",textAlign:"left",fontFamily:"'Outfit',sans-serif"}}
+              onMouseEnter={e=>e.currentTarget.style.background=C.redDim} onMouseLeave={e=>e.currentTarget.style.background="none"}>
+              <Trash2 size={14}/>Réinitialiser l'application
+            </button>
+          </div>}
+        </div>
       </div>
     </div>
 
@@ -1796,6 +1827,26 @@ export default function PatrimoineTracker(){
       }} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginTop:6}}>
         <Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>{t.logTx}
       </button>
+    </Modal>
+
+    {/* ═══ RESET MODAL ═══ */}
+    <Modal show={showResetModal} onClose={()=>{setShowResetModal(false);setResetInput("");}} title="Réinitialiser l'application">
+      <div style={{padding:"4px 0 12px"}}>
+        <div style={{background:C.redDim,border:`1px solid ${C.red}44`,borderRadius:10,padding:"14px 16px",marginBottom:18}}>
+          <div style={{fontSize:15,fontWeight:700,color:C.red,marginBottom:6}}>⚠️ Action irréversible</div>
+          <div style={{fontSize:13,color:C.textDim,lineHeight:1.6}}>Cette action supprimera définitivement <strong style={{color:C.text}}>TOUTES vos données</strong> — portefeuilles, snapshots, transactions, historique. Rien ne pourra être récupéré.</div>
+        </div>
+        <div style={{fontSize:13,color:C.textDim,marginBottom:8}}>Pour confirmer, tapez exactement <strong style={{color:C.text,fontFamily:"'JetBrains Mono',monospace"}}>Supprimer</strong> :</div>
+        <input type="text" value={resetInput} onChange={e=>setResetInput(e.target.value)} placeholder="Supprimer"
+          style={{width:"100%",background:C.bg,border:`1px solid ${resetInput==="Supprimer"?C.red:C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box",marginBottom:16}}/>
+        <div style={{display:"flex",gap:10}}>
+          <button onClick={()=>{setShowResetModal(false);setResetInput("");}} style={{flex:1,padding:11,borderRadius:8,border:`1px solid ${C.border}`,background:"none",color:C.textDim,cursor:"pointer",fontSize:13,fontWeight:600}}>Annuler</button>
+          <button disabled={resetInput!=="Supprimer"} onClick={()=>{localStorage.removeItem("patrimoine-v6");localStorage.removeItem("patra-tab");localStorage.removeItem("patra-goal");window.location.reload();}}
+            style={{flex:1,padding:11,borderRadius:8,border:"none",background:resetInput==="Supprimer"?C.red:"#333",color:resetInput==="Supprimer"?"#fff":C.textMuted,cursor:resetInput==="Supprimer"?"pointer":"not-allowed",fontSize:13,fontWeight:700,transition:"background .2s"}}>
+            Confirmer la suppression
+          </button>
+        </div>
+      </div>
     </Modal>
 
     {/* ═══ ONBOARDING ═══ */}
