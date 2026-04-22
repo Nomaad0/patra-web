@@ -510,13 +510,14 @@ export default function PatrimoineTracker(){
   const [transactions,setTransactions]=useState([]);
   const [showTxModal,setShowTxModal]=useState(false);
   const [isDemo,setIsDemo]=useState(false);
+  const [showLanding,setShowLanding]=useState(false);
   const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:"",payWith:"cash"});
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
 
   // Persistent storage
-  useEffect(()=>{try{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.cryptoCash!==undefined)setCryptoCash(p.cryptoCash);if(p.stablecoins)setStablecoins(p.stablecoins);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);if(p._isDemo)setIsDemo(true);} else {const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setCryptoCash(d.cryptoCash||0);setStablecoins(d.stablecoins||[]);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);if(d.targetAlloc)setTargetAlloc(d.targetAlloc);setTransactions(d.transactions);setIsDemo(true);}}catch(e){}setLoaded(true);},[]);
+  useEffect(()=>{try{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.cryptoCash!==undefined)setCryptoCash(p.cryptoCash);if(p.stablecoins)setStablecoins(p.stablecoins);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);if(p._isDemo)setIsDemo(true);} else {setShowLanding(true);}}catch(e){}setLoaded(true);},[]);
 
   const persist=useCallback(()=>{try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,...(isDemo?{_isDemo:true}:{})}))}catch(e){}},[pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,isDemo]);
   useEffect(()=>{if(loaded)persist()},[loaded,persist]);
@@ -908,6 +909,9 @@ export default function PatrimoineTracker(){
     `}</style>
   </div>);
 
+  // ── Load demo data ──
+  const loadDemo=()=>{const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setCryptoCash(d.cryptoCash||0);setStablecoins(d.stablecoins||[]);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);if(d.targetAlloc)setTargetAlloc(d.targetAlloc);setTransactions(d.transactions);setIsDemo(true);setShowLanding(false);};
+
   // ── Transaction form live validation ──
   const _txQty=parseFloat(txForm.quantity)||0;
   const _txPrice=parseFloat(txForm.price)||0;
@@ -935,6 +939,43 @@ export default function PatrimoineTracker(){
     }
     return"";
   })();
+
+  if(showLanding)return(<div style={{background:C.bg,minHeight:"100vh",color:C.text,fontFamily:"'Outfit',-apple-system,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px"}}>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>{`:root{color-scheme:dark} *{box-sizing:border-box}`}</style>
+    <div style={{maxWidth:560,width:"100%",textAlign:"center"}}>
+      {/* Logo */}
+      <div style={{display:"inline-flex",alignItems:"center",gap:8,marginBottom:32}}>
+        <div style={{width:10,height:10,borderRadius:"50%",background:C.accent}}/>
+        <span style={{fontSize:15,fontWeight:800,letterSpacing:2,color:C.accent}}>PATRA</span>
+      </div>
+
+      {/* Hero */}
+      <h1 style={{fontSize:isMobile?36:52,fontWeight:900,lineHeight:1.08,letterSpacing:-1.5,margin:"0 0 18px"}}>Ton patrimoine,<br/><span style={{color:C.accent}}>enfin lisible.</span></h1>
+      <p style={{fontSize:17,color:C.textDim,lineHeight:1.6,margin:"0 0 40px"}}>Suis ton PEA, ta crypto et tes livrets en un seul endroit.<br/>Gratuit, sans compte, tes données restent chez toi.</p>
+
+      {/* Feature pills */}
+      <div style={{display:"flex",flexWrap:"wrap",gap:10,justifyContent:"center",marginBottom:44}}>
+        {[["📈","PEA · CTO · Crypto · Livrets"],["🔒","Zéro compte, zéro serveur"],["💾","Backup JSON / Export CSV"],["🎯","Objectif & suivi de progression"]].map(([icon,label])=>(
+          <div key={label} style={{display:"flex",alignItems:"center",gap:8,background:C.card,border:`1px solid ${C.border}`,borderRadius:20,padding:"8px 16px",fontSize:13,color:C.textDim}}>
+            <span>{icon}</span><span>{label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* CTAs */}
+      <div style={{display:"flex",flexDirection:"column",gap:12,alignItems:"center"}}>
+        <button onClick={loadDemo} style={{width:"100%",maxWidth:360,padding:"14px 24px",borderRadius:12,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",fontFamily:"'Outfit',sans-serif",letterSpacing:.3}}>
+          Explorer la démo →
+        </button>
+        <button onClick={()=>setShowLanding(false)} style={{width:"100%",maxWidth:360,padding:"13px 24px",borderRadius:12,border:`1px solid ${C.border}`,background:"none",color:C.textDim,fontWeight:600,fontSize:15,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>
+          Commencer avec mes données →
+        </button>
+      </div>
+
+      <p style={{marginTop:28,fontSize:12,color:C.textMuted}}>L'alternative honnête à Finary — open source, sans abonnement.</p>
+    </div>
+  </div>);
 
   return(<div style={{background:C.bg,minHeight:"100vh",color:C.text,fontFamily:"'Outfit',-apple-system,sans-serif"}}>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
