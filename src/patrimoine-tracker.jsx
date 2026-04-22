@@ -992,7 +992,7 @@ export default function PatrimoineTracker(){
     {/* HEADER */}
     <div style={{padding:isMobile?"12px 14px":"16px 28px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:`linear-gradient(180deg,${C.card},${C.bg})`,flexWrap:"wrap",gap:8}}>
       <div style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer"}} onClick={()=>setActiveTab("dashboard")}>
-        <div style={{width:38,height:38,borderRadius:10,background:`linear-gradient(135deg,${C.accent},${C.purple})`,display:"flex",alignItems:"center",justifyContent:"center"}}><Layers size={18} color="#fff"/></div>
+        <img src="/patra-logo.svg" alt="PaTra" style={{width:38,height:38,borderRadius:10}}/>
         <div><h1 style={{margin:0,fontSize:22,fontWeight:900,letterSpacing:-.5}}>PaTra</h1>
           <span style={{color:C.textDim,fontSize:11}}>
             {fmtDate(new Date())}
