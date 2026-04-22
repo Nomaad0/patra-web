@@ -57,24 +57,24 @@ const defaultDivHistory=[];
 
 const DEMO_DATA={
   pea:[
-    {id:"d1",name:"Amundi MSCI World CW8",ticker:"CW8.PA",quantity:80,pru:330,currentPrice:445,divPerShare:0,divFreq:"annuel"},
-    {id:"d2",name:"Amundi PEA S&P 500 PE500",ticker:"PE500.PA",quantity:35,pru:410,currentPrice:532,divPerShare:0,divFreq:"annuel"},
-    {id:"d3",name:"TotalEnergies",ticker:"TTE.PA",quantity:45,pru:48,currentPrice:56,divPerShare:3.2,divFreq:"trim"},
-    {id:"d4",name:"Air Liquide",ticker:"AIR.PA",quantity:12,pru:148,currentPrice:178,divPerShare:3.5,divFreq:"annuel"},
-    {id:"d11",name:"Schneider Electric",ticker:"SU.PA",quantity:10,pru:175,currentPrice:230,divPerShare:3.5,divFreq:"annuel"},
-    {id:"d12",name:"LVMH",ticker:"MC.PA",quantity:4,pru:720,currentPrice:588,divPerShare:13.0,divFreq:"annuel"},
-    {id:"d13",name:"BNP Paribas",ticker:"BNP.PA",quantity:35,pru:42,currentPrice:65,divPerShare:4.6,divFreq:"annuel"},
+    {id:"d1",name:"Amundi MSCI World CW8",ticker:"CW8.PA",quantity:80,pru:370,currentPrice:445,divPerShare:0,divFreq:"annuel"},
+    {id:"d2",name:"Amundi PEA S&P 500 PE500",ticker:"PE500.PA",quantity:35,pru:450,currentPrice:532,divPerShare:0,divFreq:"annuel"},
+    {id:"d3",name:"TotalEnergies",ticker:"TTE.PA",quantity:45,pru:51,currentPrice:56,divPerShare:3.2,divFreq:"trim"},
+    {id:"d4",name:"Air Liquide",ticker:"AIR.PA",quantity:12,pru:158,currentPrice:178,divPerShare:3.5,divFreq:"annuel"},
+    {id:"d11",name:"Schneider Electric",ticker:"SU.PA",quantity:10,pru:195,currentPrice:230,divPerShare:3.5,divFreq:"annuel"},
+    {id:"d12",name:"LVMH",ticker:"MC.PA",quantity:4,pru:650,currentPrice:588,divPerShare:13.0,divFreq:"annuel"},
+    {id:"d13",name:"BNP Paribas",ticker:"BNP.PA",quantity:35,pru:56,currentPrice:65,divPerShare:4.6,divFreq:"annuel"},
   ],
   cto:[
-    {id:"d5",name:"Microsoft",ticker:"MSFT",quantity:12,pru:280,currentPrice:385,divPerShare:2.7,divFreq:"trim"},
-    {id:"d14",name:"Apple",ticker:"AAPL",quantity:20,pru:135,currentPrice:189,divPerShare:1.0,divFreq:"trim"},
-    {id:"d15",name:"Nvidia",ticker:"NVDA",quantity:40,pru:40,currentPrice:101,divPerShare:0.04,divFreq:"trim"},
-    {id:"d16",name:"Amazon",ticker:"AMZN",quantity:12,pru:112,currentPrice:172,divPerShare:0,divFreq:"annuel"},
+    {id:"d5",name:"Microsoft",ticker:"MSFT",quantity:12,pru:320,currentPrice:385,divPerShare:2.7,divFreq:"trim"},
+    {id:"d14",name:"Apple",ticker:"AAPL",quantity:20,pru:162,currentPrice:189,divPerShare:1.0,divFreq:"trim"},
+    {id:"d15",name:"Nvidia",ticker:"NVDA",quantity:40,pru:72,currentPrice:101,divPerShare:0.04,divFreq:"trim"},
+    {id:"d16",name:"Amazon",ticker:"AMZN",quantity:12,pru:145,currentPrice:172,divPerShare:0,divFreq:"annuel"},
   ],
   crypto:[
-    {id:"d6",name:"Bitcoin",symbol:"BTC",cgId:"bitcoin",quantity:0.18,avgPrice:34000,currentPrice:82000},
-    {id:"d7",name:"Ethereum",symbol:"ETH",cgId:"ethereum",quantity:3.5,avgPrice:1600,currentPrice:1750},
-    {id:"d17",name:"Solana",symbol:"SOL",cgId:"solana",quantity:20,avgPrice:60,currentPrice:125},
+    {id:"d6",name:"Bitcoin",symbol:"BTC",cgId:"bitcoin",quantity:0.18,avgPrice:58000,currentPrice:82000},
+    {id:"d7",name:"Ethereum",symbol:"ETH",cgId:"ethereum",quantity:3.5,avgPrice:2200,currentPrice:1750},
+    {id:"d17",name:"Solana",symbol:"SOL",cgId:"solana",quantity:20,avgPrice:95,currentPrice:125},
   ],
   stablecoins:[{id:"ds1",symbol:"USDT",quantity:850}],
   livrets:[
