@@ -1005,8 +1005,8 @@ export default function PatrimoineTracker(){
                 <stop offset="100%" stopColor="#A855F7" stopOpacity=".2"/>
               </linearGradient>
             </defs>
-            <path d="M0,17 L3,15 L6,18 L9,14 L12,17 L15,21 L18,24 L21,25 L23,22 L25,20 L27,22 L29,18 L32,15 L34,17 L36,13 L38,16 L40,11 L42,14 L44,10 L46,13 L48,8 L50,11 L52,7 L54,10 L56,6 L58,9 L60,5 L62,8 L64,4 L66,7 L68,3 L70,6 L72,9 L74,5 L76,8 L78,4 L80,6 L82,3 L84,5 L86,2 L88,4 L90,7 L92,3 L94,6 L96,3 L98,5 L100,2 L102,4 L104,2 L106,4 L108,1 L110,3 L112,1 L114,2 L116,1 L118,2 L120,1 L120,28 L0,28 Z" fill="url(#patraSpark)"/>
-            <path d="M0,17 L3,15 L6,18 L9,14 L12,17 L15,21 L18,24 L21,25 L23,22 L25,20 L27,22 L29,18 L32,15 L34,17 L36,13 L38,16 L40,11 L42,14 L44,10 L46,13 L48,8 L50,11 L52,7 L54,10 L56,6 L58,9 L60,5 L62,8 L64,4 L66,7 L68,3 L70,6 L72,9 L74,5 L76,8 L78,4 L80,6 L82,3 L84,5 L86,2 L88,4 L90,7 L92,3 L94,6 L96,3 L98,5 L100,2 L102,4 L104,2 L106,4 L108,1 L110,3 L112,1 L114,2 L116,1 L118,2 L120,1" fill="none" stroke="#A855F7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".6"/>
+            <path d="M0,22 L15,15 L28,12 L48,26 L58,20 L72,10 L88,5 L120,1 L120,28 L0,28 Z" fill="url(#patraSpark)"/>
+            <path d="M0,22 L15,15 L28,12 L48,26 L58,20 L72,10 L88,5 L120,1" fill="none" stroke="#A855F7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".6"/>
             <circle cx="120" cy="3" r="2" fill="#C084FC"/>
           </svg>}
           <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:600,color:C.purple}}>▲ 4.2%</span>
