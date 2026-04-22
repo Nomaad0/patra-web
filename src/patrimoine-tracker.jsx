@@ -992,37 +992,31 @@ export default function PatrimoineTracker(){
     {/* HEADER */}
     <div style={{padding:isMobile?"10px 14px":"12px 28px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:`linear-gradient(180deg,${C.card},${C.bg})`,flexWrap:"wrap",gap:8}}>
       <div style={{display:"flex",flexDirection:"column",gap:6,cursor:"pointer"}} onClick={()=>setActiveTab("dashboard")}>
-        {/* Ticker row */}
-        <div style={{background:"#141938",padding:"10px 14px",borderRadius:10,display:"grid",gridTemplateColumns:"auto 1fr auto",gap:14,alignItems:"center",minWidth:isMobile?0:340}}>
-          {/* Left: name + tag */}
+        {/* Ticker row — flat, sans fond propre */}
+        <div style={{display:"flex",alignItems:"center",gap:14}}>
           <div style={{display:"flex",alignItems:"baseline",gap:10}}>
-            <span style={{fontSize:20,fontWeight:700,letterSpacing:"-.5px",color:"#E8ECFF"}}>PaTra</span>
-            {!isMobile&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"#A855F7",border:"1px solid #A855F7",padding:"2px 5px",borderRadius:3,letterSpacing:2,whiteSpace:"nowrap"}}>PATRIMOINE</span>}
+            <span style={{fontSize:22,fontWeight:900,letterSpacing:"-.5px",color:C.text}}>PaTra</span>
+            {!isMobile&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:C.purple,border:`1px solid ${C.purple}`,padding:"2px 5px",borderRadius:3,letterSpacing:2,whiteSpace:"nowrap",opacity:.7}}>PATRIMOINE</span>}
           </div>
-          {/* Center: sparkline */}
-          <svg viewBox="0 0 120 28" preserveAspectRatio="none" style={{height:32,width:"100%",maxWidth:220,margin:"0 auto",display:"block"}}>
+          {!isMobile&&<svg viewBox="0 0 120 28" preserveAspectRatio="none" style={{height:28,width:120,flexShrink:0}}>
             <defs>
               <linearGradient id="patraSpark" x1="0" y1="1" x2="0" y2="0">
                 <stop offset="0%" stopColor="#A855F7" stopOpacity="0"/>
-                <stop offset="100%" stopColor="#A855F7" stopOpacity=".35"/>
+                <stop offset="100%" stopColor="#A855F7" stopOpacity=".2"/>
               </linearGradient>
             </defs>
             <path d="M0,22 C8,16 14,24 24,17 C34,10 42,20 54,12 C66,4 74,16 86,8 C98,0 108,10 120,3 L120,28 L0,28 Z" fill="url(#patraSpark)"/>
-            <path d="M0,22 C8,16 14,24 24,17 C34,10 42,20 54,12 C66,4 74,16 86,8 C98,0 108,10 120,3" fill="none" stroke="#A855F7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="120" cy="3" r="3.5" fill="#A855F7" opacity=".25"/>
+            <path d="M0,22 C8,16 14,24 24,17 C34,10 42,20 54,12 C66,4 74,16 86,8 C98,0 108,10 120,3" fill="none" stroke="#A855F7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".6"/>
             <circle cx="120" cy="3" r="2" fill="#C084FC"/>
-          </svg>
-          {/* Right: delta + date */}
-          <div style={{textAlign:"right"}}>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:13,fontWeight:600,color:"#A855F7",whiteSpace:"nowrap"}}>▲ 4.2%</div>
-            <div style={{fontFamily:"'JetBrains Mono',monospace",fontSize:10,color:"#8B93B8",whiteSpace:"nowrap"}}>{new Date().toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"}).toUpperCase()}</div>
-          </div>
+          </svg>}
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:600,color:C.purple}}>▲ 4.2%</span>
         </div>
         {/* Badges sync */}
         <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-          {lastPeaSync&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"3px 7px",borderRadius:4,background:"#1D234A",color:"#BFD3FF"}}>PEA {new Date(lastPeaSync).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}
-          {lastCtoSync&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"3px 7px",borderRadius:4,background:"#1D234A",color:"#89A8FF"}}>CTO {new Date(lastCtoSync).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}
-          {lastSync&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"3px 7px",borderRadius:4,background:"#1D234A",color:"#A855F7"}}>Crypto {new Date(lastSync).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}
+          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,color:C.textMuted}}>{fmtDate(new Date())}</span>
+          {lastPeaSync&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"2px 7px",borderRadius:4,background:C.accentDim,color:C.accent}}>PEA {new Date(lastPeaSync).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}
+          {lastCtoSync&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"2px 7px",borderRadius:4,background:C.accentDim,color:C.accent}}>CTO {new Date(lastCtoSync).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}
+          {lastSync&&<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:11,padding:"2px 7px",borderRadius:4,background:`${C.purple}18`,color:C.purple}}>Crypto {new Date(lastSync).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}
         </div>
       </div>
       <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
