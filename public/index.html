@@ -4,11 +4,24 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
+    <meta name="theme-color" content="#060a11" />
+    <meta name="description" content="PaTra — Suivi patrimonial gratuit pour investisseurs français. PEA, Crypto, Livrets. Tes données chez toi, zéro abonnement." />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://patra-web-phi.vercel.app/" />
+    <meta property="og:title" content="PaTra — Tracker Patrimonial Gratuit" />
+    <meta property="og:description" content="L'alternative honnête à Finary. Suis ton PEA, ta crypto et tes livrets. Gratuit, sans compte, tes données chez toi." />
+    <meta property="og:image" content="https://patra-web-phi.vercel.app/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PaTra — Tracker Patrimonial Gratuit" />
+    <meta name="twitter:description" content="L'alternative honnête à Finary. Suis ton PEA, ta crypto et tes livrets. Gratuit, sans compte, tes données chez toi." />
+    <meta name="twitter:image" content="https://patra-web-phi.vercel.app/og-image.png" />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -24,7 +37,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>PaTra</title>
+    <title>PaTra — Tracker Patrimonial Gratuit</title>
   <script>window.storage={async get(k){const v=localStorage.getItem("pt_"+k);return v?{key:k,value:v,shared:false}:null},async set(k,v){localStorage.setItem("pt_"+k,v);return{key:k,value:v,shared:false}},async delete(k){localStorage.removeItem("pt_"+k);return{key:k,deleted:true,shared:false}},async list(p){const keys=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith("pt_"+(p||"")))keys.push(k.replace("pt_",""))}return{keys,shared:false}}}</script></head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
