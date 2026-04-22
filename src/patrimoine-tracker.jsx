@@ -58,7 +58,7 @@ const defaultDivHistory=[];
 const DEMO_DATA={
   pea:[
     {id:"d1",name:"Amundi MSCI World CW8",ticker:"CW8.PA",quantity:80,pru:370,currentPrice:445,divPerShare:0,divFreq:"annuel"},
-    {id:"d2",name:"Amundi PEA S&P 500 PE500",ticker:"PE500.PA",quantity:35,pru:450,currentPrice:532,divPerShare:0,divFreq:"annuel"},
+    {id:"d2",name:"Amundi PEA S&P 500 PE500",ticker:"PE500.PA",quantity:350,pru:42,currentPrice:52,divPerShare:0,divFreq:"annuel"},
     {id:"d3",name:"TotalEnergies",ticker:"TTE.PA",quantity:45,pru:51,currentPrice:56,divPerShare:3.2,divFreq:"trim"},
     {id:"d4",name:"Air Liquide",ticker:"AIR.PA",quantity:12,pru:158,currentPrice:178,divPerShare:3.5,divFreq:"annuel"},
     {id:"d11",name:"Schneider Electric",ticker:"SU.PA",quantity:10,pru:195,currentPrice:230,divPerShare:3.5,divFreq:"annuel"},
