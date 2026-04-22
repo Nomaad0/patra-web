@@ -14,138 +14,92 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #060a11;
-      --card: #0d1321;
-      --border: #1e2a3a;
-      --accent: #4f8ff7;
-      --accent-dim: #4f8ff718;
-      --green: #00d67e;
-      --green-dim: #00d67e18;
-      --red: #ff4d6a;
-      --purple: #7c3aed;
-      --text: #e8eaf0;
-      --text-dim: #8892a4;
-      --text-muted: #3a4a5e;
+      --bg: #060a11; --card: #0d1321; --border: #1e2a3a;
+      --accent: #4f8ff7; --accent-dim: #4f8ff718;
+      --green: #00d67e; --purple: #7c3aed;
+      --text: #e8eaf0; --text-dim: #8892a4; --text-muted: #3a4a5e;
     }
     html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Outfit', -apple-system, sans-serif;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
+    body { background: var(--bg); color: var(--text); font-family: 'Outfit', -apple-system, sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; }
     a { color: inherit; text-decoration: none; }
 
-    /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 16px 32px;
-      background: rgba(6, 10, 17, 0.85);
-      backdrop-filter: blur(12px);
+      background: rgba(6,10,17,.88); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
     .logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; letter-spacing: 1.5px; color: var(--accent); }
     .logo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
-    .nav-cta {
-      padding: 9px 20px; border-radius: 8px;
-      background: var(--accent); color: #fff;
-      font-weight: 700; font-size: 14px; cursor: pointer;
-      transition: opacity .15s;
-    }
+    .nav-cta { padding: 9px 20px; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 700; font-size: 14px; transition: opacity .15s; }
     .nav-cta:hover { opacity: .85; }
 
-    /* ── SECTIONS ── */
     section { padding: 80px 24px; max-width: 900px; margin: 0 auto; }
-    .section-wide { max-width: 1100px; }
+    .bg-alt { background: #080d16; }
 
-    /* ── HERO ── */
-    .hero { text-align: center; padding-top: 100px; padding-bottom: 80px; }
-    .badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--accent-dim); border: 1px solid #4f8ff733;
-      border-radius: 20px; padding: 6px 16px;
-      font-size: 13px; color: var(--accent); font-weight: 600;
-      margin-bottom: 32px;
-    }
+    /* HERO */
+    .hero { text-align: center; padding-top: 100px; padding-bottom: 64px; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-dim); border: 1px solid #4f8ff733; border-radius: 20px; padding: 6px 16px; font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 32px; }
     .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-    h1 {
-      font-size: clamp(36px, 7vw, 64px);
-      font-weight: 900; line-height: 1.06; letter-spacing: -2px;
-      margin-bottom: 20px;
-    }
+    h1 { font-size: clamp(36px,7vw,64px); font-weight: 900; line-height: 1.06; letter-spacing: -2px; margin-bottom: 20px; }
     h1 span { color: var(--accent); }
-    .hero-sub { font-size: clamp(16px, 2.5vw, 19px); color: var(--text-dim); max-width: 540px; margin: 0 auto 40px; }
+    .hero-sub { font-size: clamp(16px,2.5vw,19px); color: var(--text-dim); max-width: 540px; margin: 0 auto 40px; }
     .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary {
-      padding: 14px 28px; border-radius: 10px; border: none;
-      background: linear-gradient(135deg, var(--accent), var(--purple));
-      color: #fff; font-weight: 700; font-size: 16px; cursor: pointer;
-      font-family: 'Outfit', sans-serif; transition: opacity .15s, transform .1s;
-    }
+    .btn-primary { padding: 14px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg,var(--accent),var(--purple)); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: opacity .15s, transform .1s; display: inline-block; }
     .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
-    .btn-secondary {
-      padding: 14px 28px; border-radius: 10px;
-      border: 1px solid var(--border); background: none;
-      color: var(--text-dim); font-weight: 600; font-size: 16px; cursor: pointer;
-      font-family: 'Outfit', sans-serif; transition: border-color .15s, color .15s;
-    }
+    .btn-secondary { padding: 14px 28px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-dim); font-weight: 600; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: border-color .15s, color .15s; display: inline-block; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .hero-note { margin-top: 16px; font-size: 12px; color: var(--text-muted); }
 
-    /* ── STATS ── */
-    .stats {
-      display: flex; gap: 0; justify-content: center; flex-wrap: wrap;
-      border: 1px solid var(--border); border-radius: 16px;
-      background: var(--card); overflow: hidden;
-      margin-top: 60px;
-    }
-    .stat-item {
-      flex: 1; min-width: 140px; padding: 24px 20px; text-align: center;
-      border-right: 1px solid var(--border);
-    }
+    .stats { display: flex; border: 1px solid var(--border); border-radius: 16px; background: var(--card); overflow: hidden; margin-top: 56px; flex-wrap: wrap; }
+    .stat-item { flex: 1; min-width: 120px; padding: 22px 20px; text-align: center; border-right: 1px solid var(--border); }
     .stat-item:last-child { border-right: none; }
-    .stat-num { font-family: 'JetBrains Mono', monospace; font-size: 24px; font-weight: 700; color: var(--text); }
-    .stat-label { font-size: 12px; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
+    .stat-num { font-family: 'JetBrains Mono',monospace; font-size: 24px; font-weight: 700; }
+    .stat-label { font-size: 11px; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
 
-    /* ── FEATURES ── */
-    .features-title { text-align: center; margin-bottom: 48px; }
-    .features-title h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -.5px; }
-    .features-title p { color: var(--text-dim); margin-top: 10px; font-size: 16px; }
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
-    .feature-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 28px 24px;
-      transition: border-color .2s;
+    /* SCREENSHOT */
+    .screenshot-wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+    .screenshot-label { text-align: center; font-size: 13px; color: var(--text-muted); margin-bottom: 20px; letter-spacing: .5px; text-transform: uppercase; }
+    .screenshot-frame {
+      border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 32px 80px rgba(0,0,0,.6), 0 0 0 1px #ffffff08;
     }
+    .screenshot-frame img { width: 100%; display: block; }
+
+    /* FOR WHO */
+    .forwho h2 { font-size: clamp(26px,4vw,36px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
+    .forwho .sub { color: var(--text-dim); margin-bottom: 36px; font-size: 15px; }
+    .forwho-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 12px; }
+    .forwho-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; display: flex; align-items: flex-start; gap: 14px; }
+    .forwho-check { width: 22px; height: 22px; border-radius: 6px; background: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; font-size: 12px; font-weight: 800; color: #060a11; }
+    .forwho-item p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+    .forwho-item p strong { color: var(--text); font-weight: 700; }
+
+    /* FEATURES */
+    .features-title { text-align: center; margin-bottom: 48px; }
+    .features-title h2 { font-size: clamp(26px,4vw,36px); font-weight: 800; letter-spacing: -.5px; }
+    .features-title p { color: var(--text-dim); margin-top: 10px; font-size: 16px; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 16px; }
+    .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; transition: border-color .2s; }
     .feature-card:hover { border-color: #4f8ff744; }
     .feature-icon { font-size: 28px; margin-bottom: 16px; }
     .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
     .feature-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
 
-    /* ── HOW IT WORKS ── */
+    /* HOW IT WORKS */
     .hiw { text-align: center; }
-    .hiw h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 48px; }
+    .hiw h2 { font-size: clamp(26px,4vw,36px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 48px; }
     .steps { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-    .step {
-      flex: 1; min-width: 200px; max-width: 260px;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 28px 20px; text-align: center;
-    }
-    .step-num {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--accent-dim); border: 1px solid #4f8ff744;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 16px; color: var(--accent);
-      margin: 0 auto 16px;
-    }
+    .step { flex: 1; min-width: 200px; max-width: 260px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 20px; }
+    .step-num { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-dim); border: 1px solid #4f8ff744; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; color: var(--accent); margin: 0 auto 16px; }
     .step h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
     .step p { font-size: 13px; color: var(--text-dim); }
 
-    /* ── COMPARISON ── */
-    .comparison h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
+    /* COMPARISON */
+    .comparison h2 { font-size: clamp(26px,4vw,36px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
     .comparison .sub { color: var(--text-dim); margin-bottom: 40px; font-size: 15px; }
     .comp-table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); }
     .comp-table th { padding: 16px 20px; text-align: left; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-dim); border-bottom: 1px solid var(--border); }
@@ -157,31 +111,20 @@
     .no { color: var(--text-muted); }
     .partial { color: #f59e0b; font-weight: 600; }
 
-    /* ── FAQ ── */
-    .faq h2 { font-size: clamp(26px, 4vw, 36px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 40px; }
+    /* FAQ */
+    .faq h2 { font-size: clamp(26px,4vw,36px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 40px; }
     .faq-item { border-bottom: 1px solid var(--border); padding: 20px 0; }
     .faq-item:last-child { border-bottom: none; }
     .faq-q { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
     .faq-a { font-size: 14px; color: var(--text-dim); line-height: 1.7; }
 
-    /* ── CTA FINAL ── */
-    .cta-final {
-      text-align: center;
-      background: linear-gradient(135deg, #0d1321, #0d1a2e);
-      border: 1px solid var(--border); border-radius: 24px;
-      padding: 64px 32px; margin: 0 24px 80px;
-    }
-    .cta-final h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 900; letter-spacing: -.5px; margin-bottom: 12px; }
+    /* CTA FINAL */
+    .cta-final { text-align: center; background: linear-gradient(135deg,#0d1321,#0d1a2e); border: 1px solid var(--border); border-radius: 24px; padding: 64px 32px; margin: 0 24px 80px; }
+    .cta-final h2 { font-size: clamp(28px,4vw,40px); font-weight: 900; letter-spacing: -.5px; margin-bottom: 12px; }
     .cta-final p { color: var(--text-dim); margin-bottom: 32px; font-size: 16px; }
 
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 24px;
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 16px;
-      max-width: 900px; margin: 0 auto;
-    }
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 32px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; max-width: 900px; margin: 0 auto; }
     .footer-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; letter-spacing: 1px; color: var(--accent); }
     .footer-links { display: flex; gap: 24px; }
     .footer-links a { font-size: 13px; color: var(--text-muted); transition: color .15s; }
@@ -196,12 +139,12 @@
       .stat-item:last-child { border-bottom: none; }
       .cta-final { margin: 0 16px 60px; padding: 48px 20px; }
       footer { flex-direction: column; align-items: flex-start; }
+      .screenshot-wrap { padding: 0 16px 60px; }
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <div class="logo"><div class="logo-dot"></div>PATRA</div>
   <a href="/" class="nav-cta">Accéder à l'app →</a>
@@ -214,35 +157,64 @@
   <p class="hero-sub">Suis ton PEA, ta crypto et tes livrets en un seul endroit. Sans abonnement, sans connexion bancaire, tes données restent chez toi.</p>
   <div class="hero-ctas">
     <a href="/" class="btn-primary">Essayer gratuitement →</a>
-    <a href="/?demo=1" class="btn-secondary">Voir la démo</a>
+    <a href="javascript:void(0)" onclick="sessionStorage.setItem('patra-demo','1');window.location='/'" class="btn-secondary">Voir la démo</a>
   </div>
   <p class="hero-note">Aucune carte bancaire · Aucun compte requis · Fonctionne dans ton navigateur</p>
-
   <div class="stats">
-    <div class="stat-item">
-      <div class="stat-num">100%</div>
-      <div class="stat-label">Gratuit</div>
+    <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Gratuit</div></div>
+    <div class="stat-item"><div class="stat-num">0</div><div class="stat-label">Compte requis</div></div>
+    <div class="stat-item"><div class="stat-num">7</div><div class="stat-label">Onglets de suivi</div></div>
+    <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Lignes illimitées</div></div>
+  </div>
+</section>
+
+<!-- SCREENSHOT -->
+<div class="screenshot-wrap">
+  <p class="screenshot-label">Le dashboard — données de démo</p>
+  <div class="screenshot-frame">
+    <img src="app-screenshot.png" alt="Dashboard PaTra — suivi patrimonial PEA crypto livrets"/>
+  </div>
+</div>
+
+<!-- FOR WHO -->
+<div class="bg-alt">
+<section class="forwho">
+  <h2>Fait pour toi si…</h2>
+  <p class="sub">PaTra est conçu pour un profil précis. Pas pour tout le monde — pour toi.</p>
+  <div class="forwho-grid">
+    <div class="forwho-item">
+      <div class="forwho-check">✓</div>
+      <p><strong>Tu investis en PEA et/ou en crypto</strong> et tu veux tout voir au même endroit sans jongler entre 3 apps.</p>
     </div>
-    <div class="stat-item">
-      <div class="stat-num">0</div>
-      <div class="stat-label">Compte requis</div>
+    <div class="forwho-item">
+      <div class="forwho-check">✓</div>
+      <p><strong>Tu traînes sur r/vosfinances ou Twitter finance FR</strong> et tu connais CW8, PE500, DCA, PRU.</p>
     </div>
-    <div class="stat-item">
-      <div class="stat-num">7</div>
-      <div class="stat-label">Onglets de suivi</div>
+    <div class="forwho-item">
+      <div class="forwho-check">✓</div>
+      <p><strong>Tu refuses de connecter ton compte bancaire</strong> à une app tierce, même "sécurisée".</p>
     </div>
-    <div class="stat-item">
-      <div class="stat-num">∞</div>
-      <div class="stat-label">Lignes illimitées</div>
+    <div class="forwho-item">
+      <div class="forwho-check">✓</div>
+      <p><strong>Tu en as marre de payer un abonnement</strong> pour suivre ton propre argent.</p>
+    </div>
+    <div class="forwho-item">
+      <div class="forwho-check">✓</div>
+      <p><strong>Tu as un objectif patrimonial</strong> (1M€, FIRE, indépendance financière) et tu veux mesurer ta progression.</p>
+    </div>
+    <div class="forwho-item">
+      <div class="forwho-check">✓</div>
+      <p><strong>Tu veux la vérité sur ta performance</strong> — benchmark vs indices, PV latente, dividendes réels.</p>
     </div>
   </div>
 </section>
+</div>
 
 <!-- FEATURES -->
 <section>
   <div class="features-title">
     <h2>Tout ce dont tu as besoin,<br/>rien de superflu.</h2>
-    <p>Conçu pour les investisseurs français qui ne veulent pas payer pour suivre leur propre argent.</p>
+    <p>Chaque feature a été choisie parce qu'un investisseur en avait besoin, pas pour grossir une liste marketing.</p>
   </div>
   <div class="features-grid">
     <div class="feature-card">
@@ -279,6 +251,7 @@
 </section>
 
 <!-- HOW IT WORKS -->
+<div class="bg-alt">
 <section class="hiw">
   <h2>Prêt en 2 minutes.</h2>
   <div class="steps">
@@ -299,6 +272,7 @@
     </div>
   </div>
 </section>
+</div>
 
 <!-- COMPARISON -->
 <section class="comparison">
@@ -306,12 +280,7 @@
   <p class="sub">La plupart des trackers patrimoniaux te demandent de connecter tes comptes bancaires ou de payer un abonnement. PaTra non.</p>
   <table class="comp-table">
     <thead>
-      <tr>
-        <th>Fonctionnalité</th>
-        <th>PaTra</th>
-        <th>Finary</th>
-        <th>Autres</th>
-      </tr>
+      <tr><th>Fonctionnalité</th><th>PaTra</th><th>Finary</th><th>Autres</th></tr>
     </thead>
     <tbody>
       <tr><td>Gratuit</td><td class="yes">✓ 100%</td><td class="partial">Limité</td><td class="partial">Limité</td></tr>
@@ -326,6 +295,7 @@
 </section>
 
 <!-- FAQ -->
+<div class="bg-alt">
 <section class="faq">
   <h2>Questions fréquentes</h2>
   <div class="faq-item">
@@ -345,12 +315,13 @@
     <div class="faq-a">Les actions (PEA/CTO) sont synchronisées via Yahoo Finance, les cryptos via CoinGecko. Tu cliques sur "Sync" et les cours se mettent à jour en quelques secondes. Aucune clé API requise.</div>
   </div>
 </section>
+</div>
 
 <!-- CTA FINAL -->
 <div class="cta-final">
   <h2>Commence à suivre<br/>ton patrimoine aujourd'hui.</h2>
   <p>Gratuit, sans compte, en 2 minutes.</p>
-  <a href="/" class="btn-primary" style="display:inline-block">Essayer PaTra gratuitement →</a>
+  <a href="/" class="btn-primary">Essayer PaTra gratuitement →</a>
 </div>
 
 <!-- FOOTER -->
@@ -359,6 +330,7 @@
   <div class="footer-links">
     <a href="/">App</a>
     <a href="https://github.com/Nomaad0/patra-web" target="_blank">GitHub</a>
+    <a href="https://ko-fi.com/nomaad0" target="_blank">Soutenir ☕</a>
   </div>
 </footer>
 
