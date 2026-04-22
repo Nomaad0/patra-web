@@ -16,7 +16,7 @@
     :root {
       --bg: #060a11; --card: #0d1321; --border: #1e2a3a;
       --accent: #4f8ff7; --accent-dim: #4f8ff718;
-      --green: #00d67e; --purple: #7c3aed;
+      --green: #00d67e; --purple: #A855F7; --purple-dim: #A855F718;
       --text: #e8eaf0; --text-dim: #8892a4; --text-muted: #3a4a5e;
     }
     html { scroll-behavior: smooth; }
@@ -30,9 +30,12 @@
       background: rgba(6,10,17,.88); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
-    .logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; letter-spacing: 1.5px; color: var(--accent); }
-    .logo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
-    .nav-cta { padding: 9px 20px; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 700; font-size: 14px; transition: opacity .15s; }
+    .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .logo-name { font-weight: 900; font-size: 18px; letter-spacing: -.5px; color: #E8ECFF; }
+    .logo-tag { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--purple); border: 1px solid var(--purple); padding: 2px 5px; border-radius: 3px; letter-spacing: 2px; opacity: .8; }
+    .logo-spark { height: 24px; width: 80px; }
+    .logo-delta { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; color: var(--purple); }
+    .nav-cta { padding: 9px 20px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--purple)); color: #fff; font-weight: 700; font-size: 14px; transition: opacity .15s; }
     .nav-cta:hover { opacity: .85; }
 
     section { padding: 80px 24px; max-width: 900px; margin: 0 auto; }
@@ -44,7 +47,7 @@
     .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
     h1 { font-size: clamp(36px,7vw,64px); font-weight: 900; line-height: 1.06; letter-spacing: -2px; margin-bottom: 20px; }
-    h1 span { color: var(--accent); }
+    h1 span { background: linear-gradient(135deg, var(--accent), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .hero-sub { font-size: clamp(16px,2.5vw,19px); color: var(--text-dim); max-width: 540px; margin: 0 auto 40px; }
     .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn-primary { padding: 14px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg,var(--accent),var(--purple)); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: opacity .15s, transform .1s; display: inline-block; }
@@ -84,7 +87,7 @@
     .features-title p { color: var(--text-dim); margin-top: 10px; font-size: 16px; }
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 16px; }
     .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; transition: border-color .2s; }
-    .feature-card:hover { border-color: #4f8ff744; }
+    .feature-card:hover { border-color: #A855F744; }
     .feature-icon { font-size: 28px; margin-bottom: 16px; }
     .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
     .feature-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
@@ -146,7 +149,22 @@
 <body>
 
 <nav>
-  <div class="logo"><div class="logo-dot"></div>PATRA</div>
+  <a href="/" class="logo">
+    <span class="logo-name">PaTra</span>
+    <span class="logo-tag">PATRIMOINE</span>
+    <svg class="logo-spark" viewBox="0 0 120 28" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="navSpark" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="#A855F7" stop-opacity="0"/>
+          <stop offset="100%" stop-color="#A855F7" stop-opacity=".2"/>
+        </linearGradient>
+      </defs>
+      <path d="M0,22 L15,15 L28,12 L48,26 L58,20 L72,10 L88,5 L120,1 L120,28 L0,28 Z" fill="url(#navSpark)"/>
+      <path d="M0,22 L15,15 L28,12 L48,26 L58,20 L72,10 L88,5 L120,1" fill="none" stroke="#A855F7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/>
+      <circle cx="120" cy="1" r="2" fill="#C084FC"/>
+    </svg>
+    <span class="logo-delta">▲ 4.2%</span>
+  </a>
   <a href="/" class="nav-cta">Accéder à l'app →</a>
 </nav>
 
