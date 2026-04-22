@@ -799,7 +799,15 @@ export default function PatrimoineTracker(){
       lines.push(`Crypto,${h.name},${h.quantity},${h.avgPrice},${h.currentPrice},${m.toFixed(2)},${pv.toFixed(2)},${pp.toFixed(2)}%`);});
     livrets.forEach(l=>lines.push(`Livret,${l.name},,,, ${l.balance.toFixed(2)},,${l.rate}%`));
     lines.push(`,,,,TOTAL,${totalPat.toFixed(2)},${totalPV.toFixed(2)},${totalPVPct.toFixed(2)}%`);
-    const blob=new Blob([lines.join("\n")],{type:"text/csv"});
+    if(transactions.length>0){
+      lines.push("","Date,Type,Compte,Nom,Quantité,Prix,Total,Impact cash");
+      transactions.forEach(tx=>{
+        const total=(tx.quantity*tx.price).toFixed(2);
+        const cash=tx.cashDelta!==undefined?tx.cashDelta.toFixed(2):(tx.stableDelta?`${tx.stableDelta.symbol} ${tx.stableDelta.delta.toFixed(2)}`:"");
+        lines.push(`${tx.date},${tx.type==="buy"?"Achat":"Vente"},${tx.account.toUpperCase()},${tx.name},${tx.quantity},${tx.price},${total},${cash}`);
+      });
+    }
+    const blob=new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
     const url=URL.createObjectURL(blob);const a=document.createElement("a");
     a.href=url;a.download=`patrimoine_${new Date().toISOString().slice(0,10)}.csv`;a.click();URL.revokeObjectURL(url);
   };
@@ -1690,7 +1698,11 @@ export default function PatrimoineTracker(){
               <span style={{color:C.text,fontWeight:600,paddingLeft:12}}>{tx.name}{tx.notes&&<span style={{display:"block",color:C.textMuted,fontSize:10,fontWeight:400}}>{tx.notes}</span>}</span>
               <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{tx.quantity}</span>
               <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{fmtEur(tx.price)}</span>
-              <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:tx.type==="buy"?C.green:C.red}}>{tx.type==="buy"?"-":"+"}{fmtEur(tx.quantity*tx.price)}</span>
+              <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:tx.type==="buy"?C.green:C.red}}>
+                {tx.type==="buy"?"-":"+"}{fmtEur(tx.quantity*tx.price)}
+                {tx.cashDelta!==undefined&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontWeight:400,marginTop:2}}>espèces : {tx.cashDelta>0?"+":""}{fmtEur(tx.cashDelta)}</span>}
+                {tx.stableDelta&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontWeight:400,marginTop:2}}>{tx.stableDelta.symbol} : {tx.stableDelta.delta>0?"+":""}{tx.stableDelta.delta.toFixed(2)}</span>}
+              </span>
               <div style={{display:"flex",justifyContent:"flex-end"}}>
                 <button onClick={()=>{const tx2=transactions[tx._origIdx];if(tx2?.cashDelta){if(tx2.account==="pea")setPeaCash(c=>c-tx2.cashDelta);else if(tx2.account==="cto")setCtoCash(c=>c-tx2.cashDelta);else setCryptoCash(c=>c-tx2.cashDelta);}if(tx2?.stableDelta){setStablecoins(p=>p.map(s=>s.symbol===tx2.stableDelta.symbol?{...s,quantity:s.quantity-tx2.stableDelta.delta}:s));}setTransactions(p=>p.filter((_,j)=>j!==tx._origIdx));}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
                   onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
