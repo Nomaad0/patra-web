@@ -487,7 +487,7 @@ export default function PatrimoineTracker(){
   const [transactions,setTransactions]=useState([]);
   const [showTxModal,setShowTxModal]=useState(false);
   const [isDemo,setIsDemo]=useState(false);
-  const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:""});
+  const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:"",payWith:"cash"});
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
@@ -884,6 +884,34 @@ export default function PatrimoineTracker(){
       @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
     `}</style>
   </div>);
+
+  // ── Transaction form live validation ──
+  const _txQty=parseFloat(txForm.quantity)||0;
+  const _txPrice=parseFloat(txForm.price)||0;
+  const _txTotal=_txQty*_txPrice;
+  const _txIsBuy=txForm.type==="buy";
+  const _txArr=txForm.account==="pea"?pea:txForm.account==="cto"?cto:crypto;
+  const _txExisting=txForm.holdingId!=="new"?_txArr.find(h=>h.id===txForm.holdingId):null;
+  const txValidationError=(()=>{
+    if(!_txQty||!_txPrice)return"";
+    if(_txIsBuy){
+      if(txForm.account==="pea"&&_txTotal>peaCash)return`Cash insuffisant sur PEA. Dispo : ${fmtEur(peaCash)}, requis : ${fmtEur(_txTotal)}. Ajoutez un dépôt.`;
+      if(txForm.account==="cto"&&_txTotal>ctoCash)return`Cash insuffisant sur CTO. Dispo : ${fmtEur(ctoCash)}, requis : ${fmtEur(_txTotal)}. Ajoutez un dépôt.`;
+      if(txForm.account==="crypto"){
+        if(txForm.payWith==="cash"&&_txTotal>cryptoCash)return`Cash insuffisant. Dispo : ${fmtEur(cryptoCash)}, requis : ${fmtEur(_txTotal)}.`;
+        if(txForm.payWith!=="cash"){
+          const _st=stablecoins.find(s=>s.symbol===txForm.payWith);
+          const _meta=STABLE_LIST.find(m=>m.symbol===txForm.payWith);
+          const _stP=_meta?(stablecoinPrices[_meta.cgId]??0):0;
+          const _needed=_stP>0?_txTotal/_stP:_txTotal;
+          if(!_st||_st.quantity<_needed)return`${txForm.payWith} insuffisant. Solde : ${(_st?.quantity??0).toFixed(2)}, requis : ${_needed.toFixed(2)}.`;
+        }
+      }
+    }else{
+      if(_txExisting&&_txQty>_txExisting.quantity)return`Quantité insuffisante. Vous détenez ${_txExisting.quantity}, vous tentez de vendre ${_txQty}.`;
+    }
+    return"";
+  })();
 
   return(<div style={{background:C.bg,minHeight:"100vh",color:C.text,fontFamily:"'Outfit',-apple-system,sans-serif"}}>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
@@ -1600,7 +1628,7 @@ export default function PatrimoineTracker(){
               <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{fmtEur(tx.price)}</span>
               <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:tx.type==="buy"?C.green:C.red}}>{tx.type==="buy"?"-":"+"}{fmtEur(tx.quantity*tx.price)}</span>
               <div style={{display:"flex",justifyContent:"flex-end"}}>
-                <button onClick={()=>setTransactions(p=>p.filter((_,j)=>j!==tx._origIdx))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
+                <button onClick={()=>{const tx2=transactions[tx._origIdx];if(tx2?.cashDelta){if(tx2.account==="pea")setPeaCash(c=>c-tx2.cashDelta);else if(tx2.account==="cto")setCtoCash(c=>c-tx2.cashDelta);else setCryptoCash(c=>c-tx2.cashDelta);}if(tx2?.stableDelta){setStablecoins(p=>p.map(s=>s.symbol===tx2.stableDelta.symbol?{...s,quantity:s.quantity-tx2.stableDelta.delta}:s));}setTransactions(p=>p.filter((_,j)=>j!==tx._origIdx));}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
                   onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
               </div>
             </div>
@@ -1776,6 +1804,8 @@ export default function PatrimoineTracker(){
         <SelectField label={t.type} value={txForm.type} onChange={v=>setTxForm(p=>({...p,type:v}))} options={[{value:"buy",label:t.buy},{value:"sell",label:t.sell}]}/>
       </div>
       <SelectField label={t.account} value={txForm.account} onChange={v=>setTxForm(p=>({...p,account:v,holdingId:"new",name:""}))} options={[{value:"pea",label:"PEA"},{value:"cto",label:"CTO"},{value:"crypto",label:"Crypto"}]}/>
+      {txForm.type==="buy"&&txForm.account==="pea"&&<div style={{fontSize:12,color:C.textDim,marginTop:-6,marginBottom:4,paddingLeft:2}}>Espèces PEA disponibles : <span style={{color:peaCash>0?C.cyan:C.red,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{fmtEur(peaCash)}</span>{peaCash===0&&<span style={{marginLeft:6,color:C.red}}>— Alimentez le cash PEA dans l'onglet PEA avant d'acheter.</span>}</div>}
+      {txForm.type==="buy"&&txForm.account==="cto"&&<div style={{fontSize:12,color:C.textDim,marginTop:-6,marginBottom:4,paddingLeft:2}}>Espèces CTO disponibles : <span style={{color:ctoCash>0?C.cyan:C.red,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{fmtEur(ctoCash)}</span>{ctoCash===0&&<span style={{marginLeft:6,color:C.red}}>— Alimentez le cash CTO dans l'onglet CTO avant d'acheter.</span>}</div>}
       <SelectField label={t.name} value={txForm.holdingId} onChange={v=>setTxForm(p=>({...p,holdingId:v,name:""}))} options={[{value:"new",label:"— Nouvelle ligne —"},...(txForm.account==="pea"?pea:txForm.account==="cto"?cto:crypto).map(h=>({value:h.id,label:h.name}))]}/>
       {txForm.holdingId==="new"&&<InputField label={t.name} value={txForm.name} onChange={v=>setTxForm(p=>({...p,name:v}))} placeholder={txForm.account==="crypto"?"Bitcoin":"TOTALENERGIES"}/>}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
@@ -1783,22 +1813,47 @@ export default function PatrimoineTracker(){
         <InputField label={`${t.price} (€)`} value={txForm.price} onChange={v=>setTxForm(p=>({...p,price:v}))} type="number"/>
       </div>
       <InputField label={t.notes} value={txForm.notes} onChange={v=>setTxForm(p=>({...p,notes:v}))} placeholder="Optionnel"/>
+      {txForm.account==="crypto"&&txForm.type==="buy"&&<SelectField label="Payé avec" value={txForm.payWith} onChange={v=>setTxForm(p=>({...p,payWith:v}))} options={[{value:"cash",label:`Espèces € — ${fmtEur(cryptoCash)} dispo`},...stablecoins.map(st=>({value:st.symbol,label:`${st.symbol} — ${st.quantity.toFixed(2)} dispo`}))]}/>}
       {txForm.quantity&&txForm.price&&<div style={{padding:"10px 14px",background:C.bg,borderRadius:8,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <span style={{fontSize:12,color:C.textDim}}>{t.total}</span>
-        <span style={{fontSize:16,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:txForm.type==="buy"?C.green:C.red}}>{fmtEur(parseFloat(txForm.quantity)*parseFloat(txForm.price))}</span>
+        <div style={{textAlign:"right"}}>
+          <span style={{display:"block",fontSize:16,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:txForm.type==="buy"?C.green:C.red}}>{fmtEur(parseFloat(txForm.quantity)*parseFloat(txForm.price))}</span>
+          {txForm.account==="pea"&&txForm.type==="buy"&&<span style={{display:"block",fontSize:11,color:C.textDim,marginTop:2}}>Cash PEA dispo : {fmtEur(peaCash)}</span>}
+          {txForm.account==="cto"&&txForm.type==="buy"&&<span style={{display:"block",fontSize:11,color:C.textDim,marginTop:2}}>Cash CTO dispo : {fmtEur(ctoCash)}</span>}
+        </div>
       </div>}
-      <button onClick={()=>{
+      {txValidationError&&<div style={{padding:"8px 12px",background:C.redDim,border:`1px solid ${C.red}44`,borderRadius:8,marginBottom:10,fontSize:12,color:C.red}}>{txValidationError}</div>}
+      <button disabled={!!txValidationError} onClick={()=>{
         const qty=parseFloat(txForm.quantity)||0;
         const price=parseFloat(txForm.price)||0;
         if(!qty||!price)return;
-        const {holdingId,account,type:txType,date,notes}=txForm;
+        const {holdingId,account,type:txType,date,notes,payWith}=txForm;
         const isBuy=txType==="buy";
         const arr=account==="pea"?pea:account==="cto"?cto:crypto;
         const existing=holdingId!=="new"?arr.find(h=>h.id===holdingId):null;
         const txName=existing?existing.name:(txForm.name||"");
         if(holdingId==="new"&&!txName)return;
-        // Validation vente
-        if(!isBuy&&existing&&qty>existing.quantity){alert(`Vente impossible : tu n'as que ${existing.quantity} ${existing.name}.`);return;}
+        const total=qty*price;
+        // Cash delta
+        let cashDelta=0;let stableDelta=null;
+        if(isBuy){
+          if(account==="pea"){setPeaCash(c=>c-total);cashDelta=-total;}
+          else if(account==="cto"){setCtoCash(c=>c-total);cashDelta=-total;}
+          else if(account==="crypto"){
+            if(payWith==="cash"){setCryptoCash(c=>c-total);cashDelta=-total;}
+            else{
+              const _meta=STABLE_LIST.find(m=>m.symbol===payWith);
+              const _stP=_meta?(stablecoinPrices[_meta.cgId]??0):0;
+              const needed=_stP>0?total/_stP:total;
+              setStablecoins(p=>p.map(s=>s.symbol===payWith?{...s,quantity:s.quantity-needed}:s));
+              stableDelta={symbol:payWith,delta:-needed};
+            }
+          }
+        }else{
+          if(account==="pea"){setPeaCash(c=>c+total);cashDelta=total;}
+          else if(account==="cto"){setCtoCash(c=>c+total);cashDelta=total;}
+          else if(account==="crypto"){setCryptoCash(c=>c+total);cashDelta=total;}
+        }
         // Update portfolio
         if(existing){
           const updater=h=>{
@@ -1821,10 +1876,13 @@ export default function PatrimoineTracker(){
           else setCrypto(p=>[...p,{id,name:txName,symbol:"",cgId:"",quantity:qty,avgPrice:price,currentPrice:price}]);
         }
         const fullDate=date===new Date().toISOString().slice(0,10)?new Date().toISOString():date+"T"+new Date().toISOString().slice(11);
-        setTransactions(p=>[...p,{date:fullDate,type:txType,account,name:txName,quantity:qty,price,notes:notes||""}]);
+        const txEntry={date:fullDate,type:txType,account,name:txName,quantity:qty,price,notes:notes||""};
+        if(cashDelta!==0)txEntry.cashDelta=cashDelta;
+        if(stableDelta)txEntry.stableDelta=stableDelta;
+        setTransactions(p=>[...p,txEntry]);
         setShowTxModal(false);
-        setTxForm({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:""});
-      }} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginTop:6}}>
+        setTxForm({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:"",payWith:"cash"});
+      }} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:txValidationError?C.border:`linear-gradient(135deg,${C.accent},${C.purple})`,color:txValidationError?C.textMuted:"#fff",fontWeight:700,fontSize:13,cursor:txValidationError?"not-allowed":"pointer",marginTop:6,opacity:txValidationError?0.6:1,transition:"all .15s"}}>
         <Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>{t.logTx}
       </button>
     </Modal>
