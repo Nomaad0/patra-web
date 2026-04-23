@@ -976,7 +976,7 @@ export default function PatrimoineTracker(){
         <button onClick={loadDemo} style={{width:"100%",maxWidth:360,padding:"14px 24px",borderRadius:12,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:16,cursor:"pointer",fontFamily:"'Outfit',sans-serif",letterSpacing:.3}}>
           Explorer la démo →
         </button>
-        <button onClick={()=>setShowLanding(false)} style={{width:"100%",maxWidth:360,padding:"13px 24px",borderRadius:12,border:`1px solid ${C.border}`,background:"none",color:C.textDim,fontWeight:600,fontSize:15,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>
+        <button onClick={()=>{setShowLanding(false);setShowOnboarding(true);}} style={{width:"100%",maxWidth:360,padding:"13px 24px",borderRadius:12,border:`1px solid ${C.border}`,background:"none",color:C.textDim,fontWeight:600,fontSize:15,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>
           Commencer avec mes données →
         </button>
       </div>
@@ -2081,11 +2081,14 @@ export default function PatrimoineTracker(){
             Commencer
           </button>
         </>}
-        {onboardingStep>0&&<button onClick={()=>setOnboardingStep(p=>p-1)} style={{background:"none",border:"none",color:C.textDim,cursor:"pointer",fontSize:12,marginTop:12,padding:4}}>
-          ← Retour
-        </button>}
-        <div style={{display:"flex",justifyContent:"center",gap:6,marginTop:16}}>
-          {[0,1,2,3,4].map(i=>(<div key={i} style={{width:8,height:8,borderRadius:4,background:i===onboardingStep?C.accent:C.border,transition:"background .3s"}}/>))}
+        <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:16}}>
+          {onboardingStep>0
+            ?<button onClick={()=>setOnboardingStep(p=>p-1)} style={{background:"none",border:"none",color:C.textDim,cursor:"pointer",fontSize:12,padding:4}}>← Retour</button>
+            :<span/>}
+          <div style={{display:"flex",gap:6}}>
+            {[0,1,2,3,4].map(i=>(<div key={i} style={{width:8,height:8,borderRadius:4,background:i===onboardingStep?C.accent:C.border,transition:"background .3s"}}/>))}
+          </div>
+          <button onClick={()=>{setShowOnboarding(false);setOnboardingStep(0);}} style={{background:"none",border:"none",color:C.textDim,cursor:"pointer",fontSize:12,padding:4}}>Passer</button>
         </div>
       </div>
     </div>}
