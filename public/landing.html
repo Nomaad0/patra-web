@@ -175,7 +175,7 @@
   <p class="hero-sub">Suis ton PEA, ta crypto et tes livrets en un seul endroit. Sans abonnement, sans connexion bancaire, tes données restent chez toi.</p>
   <div class="hero-ctas">
     <a href="/" class="btn-primary">Essayer gratuitement →</a>
-    <a href="javascript:void(0)" onclick="sessionStorage.setItem('patra-demo','1');window.location='/'" class="btn-secondary">Voir la démo</a>
+    <a href="/?demo=1" onclick="event.preventDefault();sessionStorage.setItem('patra-demo','1');window.location='/'" class="btn-secondary">Voir la démo</a>
   </div>
   <p class="hero-note">Aucune carte bancaire · Aucun compte requis · Fonctionne dans ton navigateur</p>
   <div class="stats">
