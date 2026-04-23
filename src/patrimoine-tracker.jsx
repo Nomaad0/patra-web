@@ -308,7 +308,7 @@ function HoldingRow({item,onEdit,onDelete,type,totalValue,isMobile}){
 function Modal({show,onClose,title,children}){
   if(!show)return null;
   return(<div style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,.7)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-    <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:18,padding:"28px 32px",minWidth:400,maxWidth:520,maxHeight:"90vh",overflowY:"auto",boxShadow:"0 25px 60px rgba(0,0,0,.5)"}} onClick={e=>e.stopPropagation()}>
+    <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:18,padding:"28px 32px",width:"min(520px,calc(100vw - 32px))",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 25px 60px rgba(0,0,0,.5)"}} onClick={e=>e.stopPropagation()}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <h3 style={{color:C.text,fontSize:17,fontWeight:700,margin:0}}>{title}</h3>
         <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4}}><X size={18}/></button>
@@ -1623,6 +1623,7 @@ export default function PatrimoineTracker(){
         </SectionCard>
 
         <SectionCard scrollable title="Détail par ligne">
+          <div style={{minWidth:640}}>
           <div style={{display:"grid",gridTemplateColumns:"2fr 0.8fr 0.8fr 0.8fr 0.8fr 1fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
             <span style={{...thStyle,textAlign:"left"}}>VALEUR</span><span style={thStyle}>DIV/ACTION</span><span style={thStyle}>TOTAL/AN</span><span style={thStyle}>YIELD</span><span style={thStyle}>YIELD/PRU</span><span style={thStyle}>FRÉQUENCE</span><span style={thStyle}></span>
           </div>
@@ -1639,6 +1640,7 @@ export default function PatrimoineTracker(){
           <div style={{padding:"14px 16px",display:"flex",justifyContent:"flex-end",gap:24,background:C.bg}}>
             <span style={{fontSize:12,fontWeight:700,color:C.textDim}}>TOTAL ANNUEL</span>
             <span style={{fontSize:14,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:C.green}}>{fmtEur(totalDivAnnual)}</span>
+          </div>
           </div>
         </SectionCard>
 
@@ -1686,6 +1688,7 @@ export default function PatrimoineTracker(){
           <div style={{color:C.textMuted,fontSize:12,marginTop:6}}>Enregistre tes achats et ventes pour garder un historique.</div>
         </div>}
         {transactions.length>0&&<SectionCard scrollable>
+          <div style={{minWidth:680}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
             <TxSortHeader label={t.date} sortKey="date" style={{textAlign:"left"}}/>
             <TxSortHeader label={t.type} sortKey="type"/>
@@ -1726,6 +1729,7 @@ export default function PatrimoineTracker(){
               </div>
             </div>
           ))}
+          </div>
         </SectionCard>}
       </>}
 
