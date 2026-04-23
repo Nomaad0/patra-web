@@ -1991,6 +1991,7 @@ export default function PatrimoineTracker(){
           ✅ <strong style={{color:C.green}}>Vos exports JSON ne sont pas affectés.</strong> Si vous avez fait un Backup, vous pourrez restaurer vos données via "Restore JSON" après la réinitialisation.</div>
         <div style={{fontSize:13,color:C.textDim,marginBottom:8}}>Pour confirmer, tapez exactement <strong style={{color:C.text,fontFamily:"'JetBrains Mono',monospace"}}>Supprimer</strong> :</div>
         <input type="text" value={resetInput} onChange={e=>setResetInput(e.target.value)} placeholder="Supprimer"
+          onKeyDown={e=>{if(e.key==="Enter"&&resetInput==="Supprimer"){localStorage.removeItem("patrimoine-v6");localStorage.removeItem("patra-tab");localStorage.removeItem("patra-goal");window.location.reload();}if(e.key==="Escape"){setShowResetModal(false);setResetInput("");}}}
           style={{width:"100%",background:C.bg,border:`1px solid ${resetInput==="Supprimer"?C.red:C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box",marginBottom:16}}/>
         <div style={{display:"flex",gap:10}}>
           <button onClick={()=>{setShowResetModal(false);setResetInput("");}} style={{flex:1,padding:11,borderRadius:8,border:`1px solid ${C.border}`,background:"none",color:C.textDim,cursor:"pointer",fontSize:13,fontWeight:600}}>Annuler</button>

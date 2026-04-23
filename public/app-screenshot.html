@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=1280"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{width:1280px;height:800px;overflow:hidden;background:#060a11;font-family:'Outfit',sans-serif;color:#e8eaf0;font-size:13px}
+    .mono{font-family:'JetBrains Mono',monospace}
+
+    /* HEADER */
+    .header{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid #1e2a3a;background:linear-gradient(180deg,#0d1321,#060a11)}
+    .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;letter-spacing:1.5px;color:#4f8ff7}
+    .logo-dot{width:8px;height:8px;border-radius:50%;background:#4f8ff7}
+    .tabs{display:flex;gap:4px}
+    .tab{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;color:#8892a4;cursor:pointer}
+    .tab.active{background:#4f8ff718;color:#4f8ff7;border:1px solid #4f8ff733}
+    .tab:not(.active){border:1px solid transparent}
+    .sync-btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;background:#0d1321;border:1px solid #1e2a3a;color:#8892a4;display:flex;align-items:center;gap:6px}
+
+    /* MAIN */
+    .main{padding:24px 28px;display:flex;flex-direction:column;gap:16px}
+
+    /* STATS ROW */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .stat-card{background:#0d1321;border:1px solid #1e2a3a;border-radius:14px;padding:18px 20px}
+    .stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#8892a4;margin-bottom:8px}
+    .stat-val{font-size:28px;font-weight:800;letter-spacing:-1px;color:#e8eaf0}
+    .stat-val.green{color:#00d67e}
+    .stat-val.accent{color:#4f8ff7}
+    .stat-sub{font-size:11px;color:#8892a4;margin-top:4px}
+    .stat-sub .green{color:#00d67e}
+    .stat-sub .red{color:#ff4d6a}
+
+    /* BOTTOM ROW */
+    .bottom{display:grid;grid-template-columns:340px 1fr;gap:14px}
+
+    /* ALLOCATION */
+    .alloc-card{background:#0d1321;border:1px solid #1e2a3a;border-radius:14px;padding:18px 20px}
+    .alloc-title{font-size:12px;font-weight:700;color:#e8eaf0;margin-bottom:16px}
+    .alloc-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .alloc-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+    .alloc-name{font-size:12px;color:#8892a4;flex:1}
+    .alloc-bar-wrap{flex:2;height:6px;background:#1e2a3a;border-radius:3px;overflow:hidden}
+    .alloc-bar{height:100%;border-radius:3px}
+    .alloc-pct{font-size:11px;font-weight:700;color:#e8eaf0;width:36px;text-align:right;font-family:'JetBrains Mono',monospace}
+    .alloc-val{font-size:11px;color:#8892a4;width:72px;text-align:right;font-family:'JetBrains Mono',monospace}
+
+    /* TABLE */
+    .table-card{background:#0d1321;border:1px solid #1e2a3a;border-radius:14px;overflow:hidden}
+    .table-head{display:grid;grid-template-columns:1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 1fr;padding:10px 16px;border-bottom:1px solid #1e2a3a}
+    .th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#3a4a5e;text-align:right}
+    .th:first-child{text-align:left}
+    .table-row{display:grid;grid-template-columns:1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 1fr;padding:12px 16px;border-bottom:1px solid #0d1321;align-items:center}
+    .table-row:hover{background:#ffffff04}
+    .cell{text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8892a4}
+    .cell.name{text-align:left;font-family:'Outfit',sans-serif;font-weight:600;color:#e8eaf0;font-size:13px}
+    .cell.name span{display:block;font-size:10px;color:#3a4a5e;font-weight:400;font-family:'Outfit',sans-serif}
+    .cell.green{color:#00d67e}
+    .cell.red{color:#ff4d6a}
+    .cell.white{color:#e8eaf0;font-weight:600}
+    .pv-chip{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+    .pv-chip.green{background:#00d67e18;color:#00d67e}
+    .pv-chip.red{background:#ff4d6a18;color:#ff4d6a}
+
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div style="display:flex;align-items:center;gap:20px">
+    <div class="logo"><div class="logo-dot"></div>PaTra</div>
+    <div class="tabs">
+      <div class="tab active">Dashboard</div>
+      <div class="tab">PEA</div>
+      <div class="tab">CTO</div>
+      <div class="tab">Crypto</div>
+      <div class="tab">Livrets</div>
+      <div class="tab">Dividendes</div>
+      <div class="tab">Objectif</div>
+      <div class="tab">Transactions</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="sync-btn">⟳ Sync actions</div>
+    <div class="sync-btn">⟳ Sync crypto</div>
+    <div style="padding:7px 10px;border-radius:8px;background:#0d1321;border:1px solid #1e2a3a;color:#8892a4">⚙</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Patrimoine total</div>
+      <div class="stat-val mono">127 789 €</div>
+      <div class="stat-sub">dont <span class="green">68 021 €</span> en PEA · <span style="color:#8892a4">93 110 €</span> investis</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Plus-value latente</div>
+      <div class="stat-val green mono">+19 521 €</div>
+      <div class="stat-sub"><span class="green">+18,4 %</span> · PEA +9 752 € · Crypto +3 345 €</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Dividendes / an</div>
+      <div class="stat-val accent mono">2 240 €</div>
+      <div class="stat-sub"><span style="color:#4f8ff7">186 €/mois</span> · TTE, AL, BNP, MSFT…</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM -->
+  <div class="bottom">
+
+    <!-- ALLOCATION -->
+    <div class="alloc-card">
+      <div class="alloc-title">Répartition</div>
+      <!-- PEA -->
+      <div class="alloc-row">
+        <div class="alloc-dot" style="background:#4f8ff7"></div>
+        <div class="alloc-name">PEA</div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:53%;background:#4f8ff7"></div></div>
+        <div class="alloc-pct">53%</div>
+        <div class="alloc-val">68 021 €</div>
+      </div>
+      <!-- Livrets -->
+      <div class="alloc-row">
+        <div class="alloc-dot" style="background:#00d67e"></div>
+        <div class="alloc-name">Livrets</div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:16%;background:#00d67e"></div></div>
+        <div class="alloc-pct">16%</div>
+        <div class="alloc-val">20 400 €</div>
+      </div>
+      <!-- Crypto -->
+      <div class="alloc-row">
+        <div class="alloc-dot" style="background:#f59e0b"></div>
+        <div class="alloc-name">Crypto</div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:19%;background:#f59e0b"></div></div>
+        <div class="alloc-pct">19%</div>
+        <div class="alloc-val">24 635 €</div>
+      </div>
+      <!-- CTO -->
+      <div class="alloc-row">
+        <div class="alloc-dot" style="background:#7c3aed"></div>
+        <div class="alloc-name">CTO</div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:11%;background:#7c3aed"></div></div>
+        <div class="alloc-pct">11%</div>
+        <div class="alloc-val">14 824 €</div>
+      </div>
+      <!-- Cash -->
+      <div class="alloc-row" style="margin-top:8px;padding-top:8px;border-top:1px solid #1e2a3a">
+        <div class="alloc-dot" style="background:#06b6d4"></div>
+        <div class="alloc-name">Espèces</div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:2%;background:#06b6d4"></div></div>
+        <div class="alloc-pct">2%</div>
+        <div class="alloc-val">2 770 €</div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="th">Titre</div>
+        <div class="th">Quantité</div>
+        <div class="th">PRU</div>
+        <div class="th">Cours</div>
+        <div class="th">Valeur</div>
+        <div class="th">+/- Value</div>
+      </div>
+      <!-- CW8 -->
+      <div class="table-row">
+        <div class="cell name">Amundi MSCI World CW8<span>PEA · CW8.PA</span></div>
+        <div class="cell">80</div>
+        <div class="cell">370,00 €</div>
+        <div class="cell white">445,00 €</div>
+        <div class="cell white">35 600 €</div>
+        <div class="cell"><span class="pv-chip green">+20,3%</span><span style="display:block;font-size:10px;color:#00d67e;margin-top:3px">+6 000 €</span></div>
+      </div>
+      <!-- PE500 -->
+      <div class="table-row">
+        <div class="cell name">Amundi PEA S&P 500 PE500<span>PEA · PE500.PA</span></div>
+        <div class="cell">35</div>
+        <div class="cell">450,00 €</div>
+        <div class="cell white">532,00 €</div>
+        <div class="cell white">18 620 €</div>
+        <div class="cell"><span class="pv-chip green">+18,2%</span><span style="display:block;font-size:10px;color:#00d67e;margin-top:3px">+2 870 €</span></div>
+      </div>
+      <!-- NVDA -->
+      <div class="table-row">
+        <div class="cell name">Nvidia<span>CTO · NVDA</span></div>
+        <div class="cell">40</div>
+        <div class="cell">72,00 €</div>
+        <div class="cell white">101,00 €</div>
+        <div class="cell white">4 040 €</div>
+        <div class="cell"><span class="pv-chip green">+40,3%</span><span style="display:block;font-size:10px;color:#00d67e;margin-top:3px">+1 160 €</span></div>
+      </div>
+      <!-- BTC -->
+      <div class="table-row">
+        <div class="cell name">Bitcoin<span>Crypto · BTC</span></div>
+        <div class="cell">0.18</div>
+        <div class="cell">58 000 €</div>
+        <div class="cell white">82 000 €</div>
+        <div class="cell white">14 760 €</div>
+        <div class="cell"><span class="pv-chip green">+41,4%</span><span style="display:block;font-size:10px;color:#00d67e;margin-top:3px">+4 320 €</span></div>
+      </div>
+      <!-- ETH -->
+      <div class="table-row">
+        <div class="cell name">Ethereum<span>Crypto · ETH</span></div>
+        <div class="cell">3.5</div>
+        <div class="cell">2 200 €</div>
+        <div class="cell white">1 750 €</div>
+        <div class="cell white">6 125 €</div>
+        <div class="cell"><span class="pv-chip red">-20,5%</span><span style="display:block;font-size:10px;color:#ff4d6a;margin-top:3px">-1 575 €</span></div>
+      </div>
+      <!-- LVMH -->
+      <div class="table-row">
+        <div class="cell name">LVMH<span>PEA · MC.PA</span></div>
+        <div class="cell">4</div>
+        <div class="cell">650,00 €</div>
+        <div class="cell white">588,00 €</div>
+        <div class="cell white">2 352 €</div>
+        <div class="cell"><span class="pv-chip red">-9,5%</span><span style="display:block;font-size:10px;color:#ff4d6a;margin-top:3px">-248 €</span></div>
+      </div>
+      <!-- Air Liquide -->
+      <div class="table-row">
+        <div class="cell name">Air Liquide<span>PEA · AI.PA</span></div>
+        <div class="cell">12</div>
+        <div class="cell">148,00 €</div>
+        <div class="cell white">174,00 €</div>
+        <div class="cell white">2 088 €</div>
+        <div class="cell"><span class="pv-chip green">+17,6%</span><span style="display:block;font-size:10px;color:#00d67e;margin-top:3px">+312 €</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
