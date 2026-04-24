@@ -1037,7 +1037,7 @@ export default function PatrimoineTracker(){
             onMouseEnter={e=>{e.currentTarget.style.borderColor=C.accent;e.currentTarget.style.color=C.accent;}} onMouseLeave={e=>{if(!showSettings){e.currentTarget.style.borderColor=C.border;e.currentTarget.style.color=C.textDim;}}}>
             <Settings size={15}/>
           </button>
-          {showSettings&&<div style={{position:"absolute",right:0,top:"calc(100% + 6px)",background:C.card,border:`1px solid ${C.border}`,borderRadius:12,width:210,zIndex:500,boxShadow:`0 8px 32px rgba(0,0,0,.4)`,padding:"6px 0",animation:"fadeIn .12s ease"}}>
+          {showSettings&&<div style={{position:isMobile?"fixed":"absolute",right:isMobile?14:0,top:isMobile?62:"calc(100% + 6px)",background:C.card,border:`1px solid ${C.border}`,borderRadius:12,width:210,zIndex:500,boxShadow:`0 8px 32px rgba(0,0,0,.4)`,padding:"6px 0",animation:"fadeIn .12s ease"}}>
             <style>{`@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}`}</style>
             {[
               {icon:<Download size={14}/>,label:"Export CSV",action:()=>{exportCSV();setShowSettings(false);}},
