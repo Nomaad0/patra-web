@@ -985,7 +985,7 @@ export default function PatrimoineTracker(){
     </div>
   </div>);
 
-  return(<div style={{background:C.bg,minHeight:"100vh",color:C.text,fontFamily:"'Outfit',-apple-system,sans-serif"}}>
+  return(<div style={{background:C.bg,minHeight:"100vh",color:C.text,fontFamily:"'Outfit',-apple-system,sans-serif",overflowX:"hidden"}}>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}} ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:${C.bg}} ::-webkit-scrollbar-thumb{background:${C.border};border-radius:3px}`}</style>
 
@@ -1736,7 +1736,7 @@ export default function PatrimoineTracker(){
       {/* ═══ OBJECTIF 1M ═══ */}
       {activeTab==="objectif"&&<>
         <MillionGoal current={totalPat} monthly={mensuel} projData={projData} goal={goalAmount} onGoalChange={setGoalAmount} isMobile={isMobile}/>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:20}}>
+        <div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr 1fr",gap:14,marginBottom:20}}>
           <MetricCard label="PROJECTION 5 ANS" value={fmtEur(projData[5]?.capital||0)} sub={`+${fmtEur((projData[5]?.capital||0)-totalPat)}`} icon={Target} trend="up" color={C.accent}/>
           <MetricCard label="PROJECTION 10 ANS" value={fmtEur(projData[10]?.capital||0)} sub={`+${fmtEur((projData[10]?.capital||0)-totalPat)}`} icon={Target} trend="up" color={C.green}/>
           <MetricCard label="PROJECTION 20 ANS" value={fmtEur(projData[20]?.capital||0)} sub={`+${fmtEur((projData[20]?.capital||0)-totalPat)}`} icon={Target} trend="up" color={C.gold}/>
