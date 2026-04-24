@@ -1510,9 +1510,9 @@ export default function PatrimoineTracker(){
               style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 10px",color:C.text,fontSize:12,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}>
               {STABLE_LIST.map(s=><option key={s.symbol} value={s.symbol}>{s.symbol} — {s.name}</option>)}
             </select>
-            <input type="number" value={stableForm.quantity} onChange={e=>setStableForm(p=>({...p,quantity:e.target.value}))} placeholder="Quantité"
+            <input type="number" value={stableForm.quantity} onChange={e=>setStableForm(p=>({...p,quantity:e.target.value}))} placeholder="Qté"
               onKeyDown={e=>e.key==="Enter"&&addStable()}
-              style={{width:110,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 10px",color:C.text,fontSize:12,fontFamily:"'JetBrains Mono',monospace",outline:"none",textAlign:"right"}}/>
+              style={{width:isMobile?80:110,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 10px",color:C.text,fontSize:12,fontFamily:"'JetBrains Mono',monospace",outline:"none",textAlign:"right"}}/>
             <button onClick={addStable} style={{background:C.goldDim,border:`1px solid ${C.gold}`,borderRadius:8,padding:"8px 12px",color:C.gold,cursor:"pointer",fontSize:12,fontWeight:700,flexShrink:0}}><Plus size={13}/></button>
           </div>
           {stablecoins.length>0&&<div style={{borderTop:`1px solid ${C.border}`,paddingTop:10,display:"flex",flexDirection:"column",gap:6}}>
