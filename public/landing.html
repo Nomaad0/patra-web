@@ -133,8 +133,12 @@
     .footer-links a { font-size: 13px; color: var(--text-muted); transition: color .15s; }
     .footer-links a:hover { color: var(--text-dim); }
 
+    .comp-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 16px; }
+    .comp-table-wrap .comp-table { border-radius: 0; }
+
     @media (max-width: 600px) {
       nav { padding: 14px 16px; }
+      .logo-spark, .logo-delta, .logo-tag { display: none; }
       section { padding: 60px 16px; }
       .hero { padding-top: 64px; }
       .stats { flex-direction: column; }
@@ -143,6 +147,7 @@
       .cta-final { margin: 0 16px 60px; padding: 48px 20px; }
       footer { flex-direction: column; align-items: flex-start; }
       .screenshot-wrap { padding: 0 16px 60px; }
+      .comp-table th, .comp-table td { padding: 12px 14px; font-size: 13px; }
     }
   </style>
 </head>
@@ -296,6 +301,7 @@
 <section class="comparison">
   <h2>Pourquoi PaTra ?</h2>
   <p class="sub">La plupart des trackers patrimoniaux te demandent de connecter tes comptes bancaires ou de payer un abonnement. PaTra non.</p>
+  <div class="comp-table-wrap">
   <table class="comp-table">
     <thead>
       <tr><th>Fonctionnalité</th><th>PaTra</th><th>Finary</th><th>Autres</th></tr>
@@ -310,6 +316,7 @@
       <tr><td>Open source</td><td class="yes">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
     </tbody>
   </table>
+  </div>
 </section>
 
 <!-- FAQ -->
