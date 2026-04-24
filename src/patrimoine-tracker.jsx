@@ -369,7 +369,7 @@ const DivBarTooltip=({active,payload,label})=>{
   </div>);
 };
 
-function MillionGoal({current,monthly,projData,goal,onGoalChange}){
+function MillionGoal({current,monthly,projData,goal,onGoalChange,isMobile}){
   const [editingGoal,setEditingGoal]=useState(false);
   const [goalInput,setGoalInput]=useState("");
   const pct=Math.min((current/goal)*100,100);
@@ -386,7 +386,7 @@ function MillionGoal({current,monthly,projData,goal,onGoalChange}){
   const confirmGoal=()=>{const v=parseInt(goalInput.replace(/\s/g,""));if(v>0)onGoalChange(v);setEditingGoal(false);};
   return(<div style={{background:`linear-gradient(135deg,${C.card} 0%,#0f1a30 100%)`,border:`1px solid ${C.border}`,borderRadius:16,padding:28,marginBottom:20,position:"relative",overflow:"hidden"}}>
     <div style={{position:"absolute",top:0,right:0,width:300,height:300,background:`radial-gradient(circle,${C.accentDim}22 0%,transparent 70%)`,pointerEvents:"none"}}/>
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:24,position:"relative"}}>
+    <div style={{display:"flex",flexDirection:isMobile?"column":"row",justifyContent:"space-between",alignItems:isMobile?"flex-start":"flex-start",marginBottom:24,position:"relative",gap:isMobile?12:0}}>
       <div>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
           <Flag size={18} color={C.gold}/>
@@ -408,7 +408,7 @@ function MillionGoal({current,monthly,projData,goal,onGoalChange}){
         </div>
         <span style={{color:C.textDim,fontSize:13}}>{yearToGoal?`Estimé en ${yearToGoal.year} à ${fmtEur(monthly)}/mois`:"Continue d'investir !"}</span>
       </div>
-      <div style={{textAlign:"right"}}><div style={{fontSize:32,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:C.gold}}>{pct.toFixed(1)}%</div><div style={{fontSize:12,color:C.textDim}}>{fmtEur(current)} / {fmtEur(goal)}</div></div>
+      <div style={{textAlign:isMobile?"left":"right"}}><div style={{fontSize:isMobile?24:32,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:C.gold}}>{pct.toFixed(1)}%</div><div style={{fontSize:12,color:C.textDim}}>{fmtEur(current)} / {fmtEur(goal)}</div></div>
     </div>
     <div style={{position:"relative",marginBottom:32}}>
       <div style={{height:28,background:C.bg,borderRadius:14,overflow:"hidden",border:`1px solid ${C.border}`,position:"relative"}}>
@@ -1735,7 +1735,7 @@ export default function PatrimoineTracker(){
 
       {/* ═══ OBJECTIF 1M ═══ */}
       {activeTab==="objectif"&&<>
-        <MillionGoal current={totalPat} monthly={mensuel} projData={projData} goal={goalAmount} onGoalChange={setGoalAmount}/>
+        <MillionGoal current={totalPat} monthly={mensuel} projData={projData} goal={goalAmount} onGoalChange={setGoalAmount} isMobile={isMobile}/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14,marginBottom:20}}>
           <MetricCard label="PROJECTION 5 ANS" value={fmtEur(projData[5]?.capital||0)} sub={`+${fmtEur((projData[5]?.capital||0)-totalPat)}`} icon={Target} trend="up" color={C.accent}/>
           <MetricCard label="PROJECTION 10 ANS" value={fmtEur(projData[10]?.capital||0)} sub={`+${fmtEur((projData[10]?.capital||0)-totalPat)}`} icon={Target} trend="up" color={C.green}/>
