@@ -52,10 +52,19 @@
     .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn-primary { padding: 14px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg,var(--accent),var(--purple)); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: opacity .15s, transform .1s; display: inline-block; }
     .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
-    .btn-spotlight { position: relative; background: rgba(10,15,30,.9); border: 1px solid rgba(255,255,255,.15); border-radius: 50px; padding: 14px 32px; color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; display: inline-block; overflow: visible; transition: border-color .3s; }
-    .btn-spotlight:hover { border-color: rgba(255,255,255,.3); }
+    @property --glow-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+    @keyframes glow-spin { to { --glow-angle: 360deg; } }
+    .btn-spotlight {
+      position: relative; border-radius: 50px; border: 1px solid transparent;
+      background: linear-gradient(#080c18,#080c18), conic-gradient(from var(--glow-angle), transparent 50%, rgba(255,255,255,.9) 65%, rgba(170,205,255,.7) 75%, transparent 88%);
+      background-clip: padding-box, border-box;
+      animation: glow-spin 3s linear infinite;
+      padding: 14px 32px; color: #fff; font-weight: 700; font-size: 16px;
+      cursor: pointer; font-family: 'Outfit',sans-serif; display: inline-block;
+      transition: opacity .15s;
+    }
+    .btn-spotlight:hover { opacity: .85; }
     .btn-spotlight:active { transform: scale(.98); }
-    .glow-canvas { position: absolute; inset: -14px; pointer-events: none; z-index: 10; }
     .btn-secondary { padding: 14px 28px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-dim); font-weight: 600; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: border-color .15s, color .15s; display: inline-block; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .hero-note { margin-top: 16px; font-size: 12px; color: var(--text-muted); }
@@ -365,90 +374,5 @@
   <span style="font-size:12px;color:var(--text-muted)">© 2026 PaTra — MIT License</span>
 </footer>
 
-<script>
-(function(){
-  const btn = document.querySelector('.btn-spotlight');
-  if(!btn) return;
-
-  const PAD = 14;
-  const TRAIL = 70;
-  const canvas = document.createElement('canvas');
-  canvas.className = 'glow-canvas';
-  btn.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-
-  let t = 0;
-  const history = [];
-
-  function resize(){
-    canvas.width  = (btn.offsetWidth  + PAD*2) * devicePixelRatio;
-    canvas.height = (btn.offsetHeight + PAD*2) * devicePixelRatio;
-    canvas.style.width  = (btn.offsetWidth  + PAD*2) + 'px';
-    canvas.style.height = (btn.offsetHeight + PAD*2) + 'px';
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }
-  resize();
-
-  function getPos(t, w, h){
-    const r = Math.min(50, w/2, h/2);
-    const sw = Math.max(0, w-2*r), sh = Math.max(0, h-2*r);
-    const qa = (Math.PI/2)*r;
-    const total = 2*sw + 2*sh + 4*qa;
-    let d = (((t%1)+1)%1)*total;
-    if(d<sw) return {x:r+d, y:0};                                                                    d-=sw;
-    if(d<qa){const a=-Math.PI/2+(d/qa)*Math.PI/2; return {x:w-r+r*Math.cos(a), y:r+r*Math.sin(a)};} d-=qa;
-    if(d<sh) return {x:w, y:r+d};                                                                    d-=sh;
-    if(d<qa){const a=(d/qa)*Math.PI/2;             return {x:w-r+r*Math.cos(a), y:h-r+r*Math.sin(a)};} d-=qa;
-    if(d<sw) return {x:w-r-d, y:h};                                                                  d-=sw;
-    if(d<qa){const a=Math.PI/2+(d/qa)*Math.PI/2;   return {x:r+r*Math.cos(a), y:h-r+r*Math.sin(a)};} d-=qa;
-    if(d<sh) return {x:0, y:h-r-d};                                                                  d-=sh;
-    const a=Math.PI+(d/qa)*Math.PI/2; return {x:r+r*Math.cos(a), y:r+r*Math.sin(a)};
-  }
-
-  function step(){
-    const w = btn.offsetWidth, h = btn.offsetHeight;
-    const pos = getPos(t, w, h);
-    const gy = pos.y/h;
-    t = (t + 0.0008 + gy*0.0024) % 1;
-
-    history.unshift({x: pos.x+PAD, y: pos.y+PAD});
-    if(history.length > TRAIL+1) history.pop();
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Traînée
-    for(let i=history.length-1; i>0; i--){
-      const p = history[i];
-      const f = 1 - i/(TRAIL+1);
-      if(f<=0) continue;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, Math.max(0.3, f*1.4), 0, Math.PI*2);
-      ctx.fillStyle = `rgba(175,205,255,${f*0.75})`;
-      ctx.fill();
-    }
-
-    // Tête — glow radial
-    if(history.length>0){
-      const p = history[0];
-      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 5);
-      g.addColorStop(0,   'rgba(255,255,255,0.85)');
-      g.addColorStop(0.4, 'rgba(180,210,255,0.35)');
-      g.addColorStop(1,   'rgba(130,160,255,0)');
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 5, 0, Math.PI*2);
-      ctx.fillStyle = g;
-      ctx.fill();
-      // Point central
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 0.35, 0, Math.PI*2);
-      ctx.fillStyle = '#fff';
-      ctx.fill();
-    }
-
-    requestAnimationFrame(step);
-  }
-  step();
-})();
-</script>
 </body>
 </html>
