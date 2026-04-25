@@ -503,7 +503,7 @@ export default function PatrimoineTracker(){
     if(showSettings)document.addEventListener("mousedown",handler);
     return()=>document.removeEventListener("mousedown",handler);
   },[showSettings]);
-  const [darkMode,setDarkMode]=useState(false);
+  const [darkMode,setDarkMode]=useState(true);
   const [isMobile,setIsMobile]=useState(()=>window.innerWidth<768);
   const [showOnboarding,setShowOnboarding]=useState(false);
   const [onboardingStep,setOnboardingStep]=useState(0);
