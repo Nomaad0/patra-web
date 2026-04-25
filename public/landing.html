@@ -52,40 +52,47 @@
     .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
     .btn-primary { padding: 14px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg,var(--accent),var(--purple)); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: opacity .15s, transform .1s; display: inline-block; }
     .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
-    @property --glow-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-    @keyframes glow-spin {
-      0%   { --glow-angle: 0deg; }
-      7%   { --glow-angle: 31deg; }
-      13%  { --glow-angle: 51deg; }
-      69%  { --glow-angle: 151deg; }
-      76%  { --glow-angle: 171deg; }
-      83%  { --glow-angle: 206deg; }
-      87%  { --glow-angle: 236deg; }
-      95%  { --glow-angle: 326deg; }
-      99%  { --glow-angle: 356deg; }
-      100% { --glow-angle: 360deg; }
+    @property --r2 { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+    @property --x  { syntax: "<length>"; inherits: false; initial-value: 0px; }
+    @keyframes demo-r {
+      0%       { --r2: 0deg; }
+      32.82%   { --r2: 0deg; }
+      50%      { --r2: 180deg; }
+      82.82%   { --r2: 180deg; }
+      to       { --r2: 360deg; }
+    }
+    @keyframes demo-x {
+      0%       { --x: 16px; }
+      32.82%   { --x: 172px; }
+      50%      { --x: 172px; }
+      82.82%   { --x: 16px; }
+      to       { --x: 16px; }
     }
     .btn-spotlight {
-      position: relative; border-radius: 50px; border: 2px solid transparent;
-      background:
-        linear-gradient(#080c18, #080c18) padding-box,
-        conic-gradient(from var(--glow-angle),
-          #1b2640 0%,
-          #1b2640 39%,
-          rgba(80,150,255,.12) 41%,
-          rgba(150,205,255,.5) 44%,
-          rgba(225,242,255,.88) 46%,
-          rgba(255,255,255,1) 47%,
-          #1b2640 47%,
-          #1b2640 100%
-        ) border-box;
-      animation: glow-spin 3.5s linear infinite;
-      padding: 14px 32px; color: #fff; font-weight: 700; font-size: 16px;
-      cursor: pointer; font-family: 'Outfit',sans-serif; display: inline-block;
-      transition: opacity .15s;
+      display: inline-flex;
+      padding: 1px;
+      background: conic-gradient(from calc(var(--r2) - 80deg) at var(--x) 15px, transparent 0, #c084fc 20%, transparent 25%), #1a0635;
+      border-radius: 43px;
+      box-shadow: 0 0 20px 0 rgba(168,85,247,.12);
+      transition: box-shadow .2s ease, background-color .2s ease;
+      animation: demo-r -0.64s linear 2.5s infinite, demo-x -0.64s linear 2.5s infinite;
+      cursor: pointer;
     }
-    .btn-spotlight:hover { opacity: .85; }
-    .btn-spotlight:active { transform: scale(.98); }
+    .btn-spotlight:hover {
+      background-color: #3b1260;
+      box-shadow: 0 0 20px 4px rgba(168,85,247,.28);
+    }
+    .btn-spotlight-inner {
+      display: flex; align-items: center; gap: 10px;
+      height: 38px; padding: 4px 18px;
+      font-size: 15px; font-weight: 600; letter-spacing: .1px;
+      background: #08060f;
+      border-radius: 1000px;
+      color: #e8eaf0; white-space: nowrap;
+      font-family: 'Outfit', sans-serif;
+    }
+    .btn-spotlight-sep { color: #3a3050; }
+    .btn-spotlight-cta { color: #a78bca; font-size: 14px; font-weight: 500; }
     .btn-secondary { padding: 14px 28px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-dim); font-weight: 600; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: border-color .15s, color .15s; display: inline-block; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .hero-note { margin-top: 16px; font-size: 12px; color: var(--text-muted); }
@@ -214,7 +221,13 @@
   <h1>Ton patrimoine,<br/><span>enfin lisible.</span></h1>
   <p class="hero-sub">Suis ton PEA, ta crypto et tes livrets en un seul endroit. Sans abonnement, sans connexion bancaire, tes données restent chez toi.</p>
   <div class="hero-ctas">
-    <a href="/app?demo=1" class="btn-spotlight">Voir la démo →</a>
+    <a href="/app?demo=1" class="btn-spotlight">
+      <span class="btn-spotlight-inner">
+        Voir la démo
+        <span class="btn-spotlight-sep">|</span>
+        <span class="btn-spotlight-cta">Essayer →</span>
+      </span>
+    </a>
     <a href="/app" class="btn-secondary">Commencer →</a>
   </div>
   <p class="hero-note">Aucune carte bancaire · Aucun compte requis · Fonctionne dans ton navigateur</p>
