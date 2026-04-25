@@ -55,8 +55,7 @@
     .btn-spotlight { position: relative; background: rgba(10,15,30,.9); border: 1px solid rgba(255,255,255,.15); border-radius: 50px; padding: 14px 32px; color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; display: inline-block; overflow: visible; transition: border-color .3s; }
     .btn-spotlight:hover { border-color: rgba(255,255,255,.3); }
     .btn-spotlight:active { transform: scale(.98); }
-    .glow-dot { position: absolute; width: 1.5px; height: 1.5px; border-radius: 50%; background: #fff; box-shadow: 0 0 3px 1.5px rgba(255,255,255,.95), 0 0 8px 3px rgba(160,190,255,.6); pointer-events: none; transform: translate(-50%,-50%); z-index: 10; }
-    .glow-trail { position: absolute; border-radius: 50%; background: rgba(160,190,255,.9); pointer-events: none; transform: translate(-50%,-50%); z-index: 9; }
+    .glow-canvas { position: absolute; inset: -14px; pointer-events: none; z-index: 10; }
     .btn-secondary { padding: 14px 28px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-dim); font-weight: 600; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: border-color .15s, color .15s; display: inline-block; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .hero-note { margin-top: 16px; font-size: 12px; color: var(--text-muted); }
@@ -371,20 +370,24 @@
   const btn = document.querySelector('.btn-spotlight');
   if(!btn) return;
 
+  const PAD = 14;
   const TRAIL = 70;
-  const dot = document.createElement('span');
-  dot.className = 'glow-dot';
-  btn.appendChild(dot);
-
-  const trails = Array.from({length:TRAIL}, ()=>{
-    const el = document.createElement('span');
-    el.className = 'glow-trail';
-    btn.appendChild(el);
-    return el;
-  });
+  const canvas = document.createElement('canvas');
+  canvas.className = 'glow-canvas';
+  btn.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
 
   let t = 0;
   const history = [];
+
+  function resize(){
+    canvas.width  = (btn.offsetWidth  + PAD*2) * devicePixelRatio;
+    canvas.height = (btn.offsetHeight + PAD*2) * devicePixelRatio;
+    canvas.style.width  = (btn.offsetWidth  + PAD*2) + 'px';
+    canvas.style.height = (btn.offsetHeight + PAD*2) + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+  resize();
 
   function getPos(t, w, h){
     const r = Math.min(50, w/2, h/2);
@@ -392,13 +395,13 @@
     const qa = (Math.PI/2)*r;
     const total = 2*sw + 2*sh + 4*qa;
     let d = (((t%1)+1)%1)*total;
-    if(d<sw) return {x:r+d, y:0};                                                         d-=sw;
+    if(d<sw) return {x:r+d, y:0};                                                                    d-=sw;
     if(d<qa){const a=-Math.PI/2+(d/qa)*Math.PI/2; return {x:w-r+r*Math.cos(a), y:r+r*Math.sin(a)};} d-=qa;
-    if(d<sh) return {x:w, y:r+d};                                                         d-=sh;
-    if(d<qa){const a=(d/qa)*Math.PI/2; return {x:w-r+r*Math.cos(a), y:h-r+r*Math.sin(a)};} d-=qa;
-    if(d<sw) return {x:w-r-d, y:h};                                                       d-=sw;
-    if(d<qa){const a=Math.PI/2+(d/qa)*Math.PI/2; return {x:r+r*Math.cos(a), y:h-r+r*Math.sin(a)};} d-=qa;
-    if(d<sh) return {x:0, y:h-r-d};                                                       d-=sh;
+    if(d<sh) return {x:w, y:r+d};                                                                    d-=sh;
+    if(d<qa){const a=(d/qa)*Math.PI/2;             return {x:w-r+r*Math.cos(a), y:h-r+r*Math.sin(a)};} d-=qa;
+    if(d<sw) return {x:w-r-d, y:h};                                                                  d-=sw;
+    if(d<qa){const a=Math.PI/2+(d/qa)*Math.PI/2;   return {x:r+r*Math.cos(a), y:h-r+r*Math.sin(a)};} d-=qa;
+    if(d<sh) return {x:0, y:h-r-d};                                                                  d-=sh;
     const a=Math.PI+(d/qa)*Math.PI/2; return {x:r+r*Math.cos(a), y:r+r*Math.sin(a)};
   }
 
@@ -408,25 +411,39 @@
     const gy = pos.y/h;
     t = (t + 0.0008 + gy*0.0024) % 1;
 
-    history.unshift({x:pos.x, y:pos.y});
+    history.unshift({x: pos.x+PAD, y: pos.y+PAD});
     if(history.length > TRAIL+1) history.pop();
 
-    dot.style.left = pos.x+'px';
-    dot.style.top  = pos.y+'px';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    trails.forEach((el,i)=>{
-      const p = history[i+1];
-      if(p){
-        const f = 1-(i+1)/(TRAIL+1);
-        el.style.left    = p.x+'px';
-        el.style.top     = p.y+'px';
-        el.style.width   = Math.max(1,f*4)+'px';
-        el.style.height  = Math.max(1,f*4)+'px';
-        el.style.opacity = f*0.6;
-      } else {
-        el.style.opacity = 0;
-      }
-    });
+    // Traînée
+    for(let i=history.length-1; i>0; i--){
+      const p = history[i];
+      const f = 1 - i/(TRAIL+1);
+      if(f<=0) continue;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.3, f*1.4), 0, Math.PI*2);
+      ctx.fillStyle = `rgba(175,205,255,${f*0.75})`;
+      ctx.fill();
+    }
+
+    // Tête — glow radial
+    if(history.length>0){
+      const p = history[0];
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 9);
+      g.addColorStop(0,   'rgba(255,255,255,0.9)');
+      g.addColorStop(0.3, 'rgba(180,210,255,0.5)');
+      g.addColorStop(1,   'rgba(130,160,255,0)');
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 9, 0, Math.PI*2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      // Point central
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 0.8, 0, Math.PI*2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+    }
 
     requestAnimationFrame(step);
   }
