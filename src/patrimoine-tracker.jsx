@@ -15,7 +15,7 @@ import {
 const DARK = {
   bg:"#060a11",card:"#0d1321",cardHover:"#111b2e",
   border:"#1a2744",borderLight:"#243352",
-  accent:"#F0A020",accentDim:"#271900",
+  accent:"#4f8ff7",accentDim:"#1a3366",
   green:"#00d67e",greenDim:"#0c2d1f",
   red:"#ff4757",redDim:"#3d0a13",
   gold:"#f0b90b",goldDim:"#3d2f00",
@@ -24,13 +24,13 @@ const DARK = {
   cyan:"#06b6d4",orange:"#f97316",
 };
 const LIGHT = {
-  bg:"#f4f6f9",card:"#ffffff",cardHover:"#f0f2f5",
-  border:"#e2e6ed",borderLight:"#d0d5de",
-  accent:"#2563eb",accentDim:"#dbeafe",
+  bg:"#FAFAF8",card:"#FFFFFF",cardHover:"#F5F0E8",
+  border:"#E8DFD0",borderLight:"#F0E8D8",
+  accent:"#C47D0E",accentDim:"#FEF0CD",
   green:"#059669",greenDim:"#d1fae5",
   red:"#dc2626",redDim:"#fee2e2",
   gold:"#d97706",goldDim:"#fef3c7",
-  text:"#1a1a2e",textDim:"#6b7280",textMuted:"#9ca3af",
+  text:"#1C1511",textDim:"#78716C",textMuted:"#A8A29E",
   purple:"#7c3aed",purpleDim:"#ede9fe",
   cyan:"#0891b2",orange:"#ea580c",
 };
@@ -503,7 +503,7 @@ export default function PatrimoineTracker(){
     if(showSettings)document.addEventListener("mousedown",handler);
     return()=>document.removeEventListener("mousedown",handler);
   },[showSettings]);
-  const [darkMode,setDarkMode]=useState(true);
+  const [darkMode,setDarkMode]=useState(false);
   const [isMobile,setIsMobile]=useState(()=>window.innerWidth<768);
   const [showOnboarding,setShowOnboarding]=useState(false);
   const [onboardingStep,setOnboardingStep]=useState(0);
