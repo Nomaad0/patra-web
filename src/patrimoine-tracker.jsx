@@ -24,8 +24,8 @@ const DARK = {
   cyan:"#06b6d4",orange:"#f97316",
 };
 const LIGHT = {
-  bg:"#F7F6F3",card:"#FFFFFF",cardHover:"#F2EFE8",
-  border:"#E9E5DE",borderLight:"#F0EDE6",
+  bg:"#F5F5F5",card:"#FFFFFF",cardHover:"#F0F0F0",
+  border:"#E5E5E5",borderLight:"#EBEBEB",
   accent:"#1A5C38",accentDim:"#E8F5EE",
   green:"#16A34A",greenDim:"#DCFCE7",
   red:"#dc2626",redDim:"#fee2e2",
