@@ -24,13 +24,13 @@ const DARK = {
   cyan:"#06b6d4",orange:"#f97316",
 };
 const LIGHT = {
-  bg:"#FAFAF8",card:"#FFFFFF",cardHover:"#F5F0E8",
-  border:"#E8DFD0",borderLight:"#F0E8D8",
-  accent:"#C47D0E",accentDim:"#FEF0CD",
-  green:"#059669",greenDim:"#d1fae5",
+  bg:"#F7F6F3",card:"#FFFFFF",cardHover:"#F2EFE8",
+  border:"#E9E5DE",borderLight:"#F0EDE6",
+  accent:"#1A5C38",accentDim:"#E8F5EE",
+  green:"#16A34A",greenDim:"#DCFCE7",
   red:"#dc2626",redDim:"#fee2e2",
   gold:"#d97706",goldDim:"#fef3c7",
-  text:"#1C1511",textDim:"#78716C",textMuted:"#A8A29E",
+  text:"#1C1917",textDim:"#78716C",textMuted:"#A8A29E",
   purple:"#7c3aed",purpleDim:"#ede9fe",
   cyan:"#0891b2",orange:"#ea580c",
 };
