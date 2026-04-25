@@ -53,21 +53,26 @@
     .btn-primary { padding: 14px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg,var(--accent),var(--purple)); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: opacity .15s, transform .1s; display: inline-block; }
     .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
     @property --glow-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
-    @keyframes glow-spin { to { --glow-angle: 360deg; } }
+    @keyframes glow-spin {
+      0%   { --glow-angle: 0deg; }
+      32%  { --glow-angle: 180deg; }
+      100% { --glow-angle: 360deg; }
+    }
     .btn-spotlight {
       position: relative; border-radius: 50px; border: 2px solid transparent;
       background:
         linear-gradient(#080c18, #080c18) padding-box,
         conic-gradient(from var(--glow-angle),
           #1b2640 0%,
-          #1b2640 38%,
-          rgba(100,160,255,.2) 41%,
-          rgba(180,215,255,.65) 44%,
+          #1b2640 39%,
+          rgba(80,150,255,.12) 41%,
+          rgba(150,205,255,.5) 44%,
+          rgba(225,242,255,.88) 46%,
           rgba(255,255,255,1) 47%,
           #1b2640 47%,
           #1b2640 100%
         ) border-box;
-      animation: glow-spin 3s linear infinite;
+      animation: glow-spin 3.2s ease-in-out infinite;
       padding: 14px 32px; color: #fff; font-weight: 700; font-size: 16px;
       cursor: pointer; font-family: 'Outfit',sans-serif; display: inline-block;
       transition: opacity .15s;
