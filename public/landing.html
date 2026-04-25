@@ -152,7 +152,7 @@
   </style>
 </head>
 <body>
-<script>if (localStorage.getItem('patrimoine-v6')) window.location.replace('/app');</script>
+<script>try{const d=JSON.parse(localStorage.getItem('patrimoine-v6')||'{}');if(d.pea?.length||d.crypto?.length||d.cto?.length||d.livrets?.length)window.location.replace('/app');}catch(e){}</script>
 
 <nav>
   <a href="/app" class="logo">
