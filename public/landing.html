@@ -55,7 +55,7 @@
     .btn-spotlight { position: relative; background: rgba(10,15,30,.9); border: 1px solid rgba(255,255,255,.15); border-radius: 50px; padding: 14px 32px; color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; display: inline-block; overflow: visible; transition: border-color .3s; }
     .btn-spotlight:hover { border-color: rgba(255,255,255,.3); }
     .btn-spotlight:active { transform: scale(.98); }
-    .glow-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px 4px rgba(255,255,255,.7), 0 0 20px 10px rgba(100,150,255,.45), 0 0 40px 16px rgba(168,85,247,.25); pointer-events: none; transform: translate(-50%,-50%); z-index: 10; }
+    .glow-dot { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #fff; box-shadow: 0 0 5px 2px rgba(255,255,255,1), 0 0 14px 7px rgba(140,175,255,.7), 0 0 30px 12px rgba(110,145,255,.45), 0 0 55px 20px rgba(168,85,247,.2); pointer-events: none; transform: translate(-50%,-50%); z-index: 10; }
     .btn-secondary { padding: 14px 28px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-dim); font-weight: 600; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: border-color .15s, color .15s; display: inline-block; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .hero-note { margin-top: 16px; font-size: 12px; color: var(--text-muted); }
@@ -373,22 +373,48 @@
   dot.className = 'glow-dot';
   btn.appendChild(dot);
   let t = 0;
+
+  function getPos(t, w, h) {
+    const r = Math.min(50, w/2, h/2);
+    const sw = Math.max(0, w - 2*r);
+    const sh = Math.max(0, h - 2*r);
+    const qa = (Math.PI/2) * r;
+    const total = 2*sw + 2*sh + 4*qa;
+    let d = (((t % 1) + 1) % 1) * total;
+    // top →
+    if(d < sw) return { x: r+d, y: 0 };
+    d -= sw;
+    // top-right arc
+    if(d < qa) { const a=-Math.PI/2+(d/qa)*Math.PI/2; return { x: w-r+r*Math.cos(a), y: r+r*Math.sin(a) }; }
+    d -= qa;
+    // right ↓
+    if(d < sh) return { x: w, y: r+d };
+    d -= sh;
+    // bottom-right arc
+    if(d < qa) { const a=(d/qa)*Math.PI/2; return { x: w-r+r*Math.cos(a), y: h-r+r*Math.sin(a) }; }
+    d -= qa;
+    // bottom ←
+    if(d < sw) return { x: w-r-d, y: h };
+    d -= sw;
+    // bottom-left arc
+    if(d < qa) { const a=Math.PI/2+(d/qa)*Math.PI/2; return { x: r+r*Math.cos(a), y: h-r+r*Math.sin(a) }; }
+    d -= qa;
+    // left ↑
+    if(d < sh) return { x: 0, y: h-r-d };
+    d -= sh;
+    // top-left arc
+    const a = Math.PI+(d/qa)*Math.PI/2;
+    return { x: r+r*Math.cos(a), y: r+r*Math.sin(a) };
+  }
+
   function step(){
     const w = btn.offsetWidth;
     const h = btn.offsetHeight;
-    const perim = 2*(w+h);
-    const d = t * perim;
-    let x, y;
-    if(d < w)          { x = d;          y = 0;       } // top →
-    else if(d < w+h)   { x = w;          y = d-w;     } // right ↓
-    else if(d < 2*w+h) { x = w-(d-w-h); y = h;       } // bottom ←
-    else               { x = 0;          y = h-(d-2*w-h); } // left ↑
-    // Gravité : rapide en bas (y/h ≈ 1), lent en haut (y/h ≈ 0)
-    const gy = y / h;
-    const speed = 0.0010 + gy * 0.0030;
-    t = (t + speed) % 1;
-    dot.style.left = x + 'px';
-    dot.style.top  = y + 'px';
+    const pos = getPos(t, w, h);
+    const gy = pos.y / h; // 0=haut, 1=bas
+    t = (t + 0.0008 + gy*0.0025) % 1;
+    dot.style.left = pos.x + 'px';
+    dot.style.top  = pos.y + 'px';
     requestAnimationFrame(step);
   }
   step();
