@@ -1982,6 +1982,9 @@ export default function PatrimoineTracker(){
           <button onClick={()=>setOnboardingStep(1)} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
             C'est parti <ChevronRight size={18}/>
           </button>
+          <button onClick={()=>{setShowOnboarding(false);loadDemo();}} style={{marginTop:12,background:"none",border:"none",color:C.textMuted,fontSize:13,cursor:"pointer",fontFamily:"'Outfit',sans-serif"}}>
+            Voir la démo d'abord →
+          </button>
         </>}
         {onboardingStep===1&&<>
           <div style={{fontSize:48,marginBottom:16}}>📈</div>
