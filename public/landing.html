@@ -55,8 +55,8 @@
     .btn-spotlight { position: relative; background: rgba(10,15,30,.9); border: 1px solid rgba(255,255,255,.15); border-radius: 50px; padding: 14px 32px; color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; display: inline-block; overflow: visible; transition: border-color .3s; }
     .btn-spotlight:hover { border-color: rgba(255,255,255,.3); }
     .btn-spotlight:active { transform: scale(.98); }
-    .glow-dot { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 6px 3px rgba(255,255,255,.95), 0 0 16px 7px rgba(160,190,255,.65), 0 0 32px 12px rgba(130,155,255,.4); pointer-events: none; transform: translate(-50%,-50%); z-index: 10; }
-    .glow-trail { position: absolute; border-radius: 50%; background: rgba(160,190,255,.85); pointer-events: none; transform: translate(-50%,-50%); z-index: 9; }
+    .glow-dot { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff; box-shadow: 0 0 4px 2px rgba(255,255,255,.95), 0 0 10px 4px rgba(160,190,255,.6); pointer-events: none; transform: translate(-50%,-50%); z-index: 10; }
+    .glow-trail { position: absolute; border-radius: 50%; background: rgba(160,190,255,.9); pointer-events: none; transform: translate(-50%,-50%); z-index: 9; }
     .btn-secondary { padding: 14px 28px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-dim); font-weight: 600; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: border-color .15s, color .15s; display: inline-block; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .hero-note { margin-top: 16px; font-size: 12px; color: var(--text-muted); }
@@ -371,7 +371,7 @@
   const btn = document.querySelector('.btn-spotlight');
   if(!btn) return;
 
-  const TRAIL = 14;
+  const TRAIL = 40;
   const dot = document.createElement('span');
   dot.className = 'glow-dot';
   btn.appendChild(dot);
