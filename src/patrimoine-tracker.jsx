@@ -15,7 +15,7 @@ import {
 const DARK = {
   bg:"#060a11",card:"#0d1321",cardHover:"#111b2e",
   border:"#1a2744",borderLight:"#243352",
-  accent:"#4f8ff7",accentDim:"#1a3366",
+  accent:"#F0A020",accentDim:"#271900",
   green:"#00d67e",greenDim:"#0c2d1f",
   red:"#ff4757",redDim:"#3d0a13",
   gold:"#f0b90b",goldDim:"#3d2f00",
