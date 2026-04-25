@@ -50,8 +50,9 @@
     h1 span { background: linear-gradient(135deg, var(--accent), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .hero-sub { font-size: clamp(16px,2.5vw,19px); color: var(--text-dim); max-width: 540px; margin: 0 auto 40px; }
     .hero-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary { padding: 14px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg,var(--accent),var(--purple)); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: opacity .15s, transform .1s; display: inline-block; }
-    .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-primary { padding: 14px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 50%, var(--accent) 100%); background-size: 200% auto; color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: transform .2s ease, box-shadow .25s ease, background-position .5s ease; display: inline-block; }
+    .btn-primary:hover { transform: translateY(-2px); background-position: right center; box-shadow: 0 8px 30px rgba(79,143,247,.45), 0 4px 12px rgba(168,85,247,.25); }
+    .btn-primary:active { transform: translateY(0); }
     .btn-secondary { padding: 14px 28px; border-radius: 10px; border: 1px solid var(--border); background: none; color: var(--text-dim); font-weight: 600; font-size: 16px; cursor: pointer; font-family: 'Outfit',sans-serif; transition: border-color .15s, color .15s; display: inline-block; }
     .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
     .hero-note { margin-top: 16px; font-size: 12px; color: var(--text-muted); }
