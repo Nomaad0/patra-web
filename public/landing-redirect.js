@@ -1,0 +1,1 @@
+try{var d=JSON.parse(localStorage.getItem('patrimoine-v6')||'{}');if(d.pea&&d.pea.length||d.crypto&&d.crypto.length||d.cto&&d.cto.length||d.livrets&&d.livrets.length)window.location.replace('/app');}catch(e){}
