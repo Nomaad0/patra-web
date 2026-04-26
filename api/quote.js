@@ -1,11 +1,16 @@
 export default async function handler(req, res) {
+  const referer = req.headers["referer"] || req.headers["origin"] || "";
+  if (process.env.NODE_ENV === "production" && !referer.includes("patra-web-phi.vercel.app")) {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
   const { ticker, range, interval, period1, period2 } = req.query;
   if (!ticker) return res.status(400).json({ error: "ticker required" });
 
   const base = "https://query1.finance.yahoo.com/v8/finance/chart";
   const url = period1 && period2
-    ? `${base}/${encodeURIComponent(ticker)}?period1=${period1}&period2=${period2}&interval=${interval || "1wk"}`
-    : `${base}/${encodeURIComponent(ticker)}?range=${range || "1d"}&interval=${interval || "1d"}`;
+    ? `${base}/${encodeURIComponent(ticker)}?period1=${encodeURIComponent(period1)}&period2=${encodeURIComponent(period2)}&interval=${encodeURIComponent(interval || "1wk")}`
+    : `${base}/${encodeURIComponent(ticker)}?range=${encodeURIComponent(range || "1d")}&interval=${encodeURIComponent(interval || "1d")}`;
 
   try {
     const response = await fetch(url, {

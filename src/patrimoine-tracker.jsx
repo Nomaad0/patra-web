@@ -786,24 +786,25 @@ export default function PatrimoineTracker(){
   };
 
   // Export CSV
+  const csvField=v=>{const s=String(v??"");const safe=/^[=+\-@|%]/.test(s)?"'"+s:s;return(safe.includes(",")||safe.includes('"')||safe.includes("\n"))?'"'+safe.replace(/"/g,'""')+'"':safe;};
   const exportCSV=()=>{
     const lines=["Type,Nom,Quantité,PRU,Cours,Montant,+/- Value,+/- %"];
     pea.forEach(h=>{const m=h.quantity*h.currentPrice;const pv=(h.currentPrice-h.pru)*h.quantity;const pp=((h.currentPrice-h.pru)/h.pru)*100;
-      lines.push(`PEA,${h.name},${h.quantity},${h.pru},${h.currentPrice},${m.toFixed(2)},${pv.toFixed(2)},${pp.toFixed(2)}%`);});
+      lines.push(`PEA,${csvField(h.name)},${h.quantity},${h.pru},${h.currentPrice},${m.toFixed(2)},${pv.toFixed(2)},${pp.toFixed(2)}%`);});
     if(peaCash>0)lines.push(`PEA,Espèces,,,,,${peaCash.toFixed(2)},`);
     cto.forEach(h=>{const m=h.quantity*h.currentPrice;const pv=(h.currentPrice-h.pru)*h.quantity;const pp=((h.currentPrice-h.pru)/h.pru)*100;
-      lines.push(`CTO,${h.name},${h.quantity},${h.pru},${h.currentPrice},${m.toFixed(2)},${pv.toFixed(2)},${pp.toFixed(2)}%`);});
+      lines.push(`CTO,${csvField(h.name)},${h.quantity},${h.pru},${h.currentPrice},${m.toFixed(2)},${pv.toFixed(2)},${pp.toFixed(2)}%`);});
     if(ctoCash>0)lines.push(`CTO,Espèces,,,,,${ctoCash.toFixed(2)},`);
     crypto.forEach(h=>{const m=h.quantity*h.currentPrice;const pv=(h.currentPrice-h.avgPrice)*h.quantity;const pp=((h.currentPrice-h.avgPrice)/h.avgPrice)*100;
-      lines.push(`Crypto,${h.name},${h.quantity},${h.avgPrice},${h.currentPrice},${m.toFixed(2)},${pv.toFixed(2)},${pp.toFixed(2)}%`);});
-    livrets.forEach(l=>lines.push(`Livret,${l.name},,,, ${l.balance.toFixed(2)},,${l.rate}%`));
+      lines.push(`Crypto,${csvField(h.name)},${h.quantity},${h.avgPrice},${h.currentPrice},${m.toFixed(2)},${pv.toFixed(2)},${pp.toFixed(2)}%`);});
+    livrets.forEach(l=>lines.push(`Livret,${csvField(l.name)},,,, ${l.balance.toFixed(2)},,${l.rate}%`));
     lines.push(`,,,,TOTAL,${totalPat.toFixed(2)},${totalPV.toFixed(2)},${totalPVPct.toFixed(2)}%`);
     if(transactions.length>0){
       lines.push("","Date,Type,Compte,Nom,Quantité,Prix,Total,Impact cash");
       transactions.forEach(tx=>{
         const total=(tx.quantity*tx.price).toFixed(2);
         const cash=tx.cashDelta!==undefined?tx.cashDelta.toFixed(2):(tx.stableDelta?`${tx.stableDelta.symbol} ${tx.stableDelta.delta.toFixed(2)}`:"");
-        lines.push(`${tx.date},${tx.type==="buy"?"Achat":"Vente"},${tx.account.toUpperCase()},${tx.name},${tx.quantity},${tx.price},${total},${cash}`);
+        lines.push(`${tx.date},${tx.type==="buy"?"Achat":"Vente"},${tx.account.toUpperCase()},${csvField(tx.name)},${tx.quantity},${tx.price},${total},${csvField(cash)}`);
       });
     }
     const blob=new Blob(["\uFEFF"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
