@@ -518,7 +518,7 @@ export default function PatrimoineTracker(){
   // Persistent storage
   useEffect(()=>{try{const isDemo=sessionStorage.getItem('patra-demo')||new URLSearchParams(window.location.search).get('demo')==='1';if(isDemo){sessionStorage.removeItem('patra-demo');window.history.replaceState(null,'','/app');const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setCryptoCash(d.cryptoCash||0);setStablecoins(d.stablecoins||[]);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);if(d.targetAlloc)setTargetAlloc(d.targetAlloc);setTransactions(d.transactions);setIsDemo(true);}else{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.cryptoCash!==undefined)setCryptoCash(p.cryptoCash);if(p.stablecoins)setStablecoins(p.stablecoins);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);}else{setShowOnboarding(true);setOnboardingStep(0);}}}catch(e){}setLoaded(true);},[]);
 
-  const persist=useCallback(()=>{if(isDemo)return;try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions}))}catch(e){}},[pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,isDemo]);
+  const persist=useCallback(()=>{if(isDemo)return;try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions}))}catch(e){alert("⚠️ Impossible de sauvegarder : stockage local plein.\nFaites un Backup JSON immédiatement depuis les paramètres pour ne pas perdre vos données.");}},[pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,isDemo]);
   useEffect(()=>{if(loaded)persist()},[loaded,persist]);
 
   // Set active theme
@@ -535,15 +535,18 @@ export default function PatrimoineTracker(){
   };
   const importBackup=(e)=>{
     const file=e.target.files?.[0];if(!file)return;
+    if(!window.confirm("⚠️ Vous importez des données d'une source externe.\n\nAssurez-vous que ce fichier vient bien de vous — un fichier malveillant peut afficher de fausses données financières.\n\nContinuer ?")){e.target.value="";return;}
     const reader=new FileReader();
     reader.onload=(ev)=>{
       try{
+        if(ev.target.result.length>5*1024*1024){alert("Fichier trop volumineux (max 5 Mo).");return;}
         const d=JSON.parse(ev.target.result);
+        if(d.snapshots?.length>500){alert("Fichier invalide : trop de snapshots (max 500).");return;}
+        if(d.transactions?.length>10000){alert("Fichier invalide : trop de transactions (max 10 000).");return;}
         if(d.pea)setPea(d.pea);if(d.crypto)setCrypto(d.crypto);if(d.cto)setCto(d.cto);
         if(d.livrets)setLivrets(d.livrets);if(d.peaCash!==undefined)setPeaCash(d.peaCash);
         if(d.ctoCash!==undefined)setCtoCash(d.ctoCash);if(d.cryptoCash!==undefined)setCryptoCash(d.cryptoCash);if(d.stablecoins)setStablecoins(d.stablecoins);if(d.versements)setVersements(d.versements);
         if(d.snapshots)setSnapshots(d.snapshots);if(d.divHistory)setDivHistory(d.divHistory);
-        
         if(d.monthlyIncome)setMonthlyIncome(d.monthlyIncome);if(d.targetAlloc)setTargetAlloc(d.targetAlloc);
         if(d.darkMode!==undefined)setDarkMode(d.darkMode);
         if(d.transactions)setTransactions(d.transactions);
@@ -626,7 +629,7 @@ export default function PatrimoineTracker(){
     try{
       const cryptoIds=crypto.map(c=>c.cgId).filter(Boolean);
       const stableIds=STABLE_LIST.map(s=>s.cgId);
-      const allIds=[...new Set([...cryptoIds,...stableIds])].join(",");
+      const allIds=[...new Set([...cryptoIds,...stableIds])].map(id=>encodeURIComponent(id)).join(",");
       const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${allIds}&vs_currencies=eur`);
       const d=await r.json();
       if(cryptoIds.length)setCrypto(prev=>prev.map(c=>{
