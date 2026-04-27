@@ -5,7 +5,7 @@ import {
   ReferenceLine, Legend
 } from "recharts";
 import {
-  TrendingUp, Wallet, Plus, Edit3, RefreshCw, Settings,
+  TrendingUp, Wallet, Plus, Edit3, RefreshCw, Settings, Calendar,
   Trash2, Save, X, DollarSign, BarChart3,
   Target, Layers, ArrowUpRight,
   ArrowDownRight, Check, AlertCircle, Camera, Award,
@@ -132,6 +132,7 @@ const fmtEur=v=>new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",m
 const fmtPct=v=>(v>=0?"+":"")+v.toFixed(2)+"%";
 const fmtDate=d=>new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"short",year:"numeric"});
 const fmtK=v=>v>=1000000?`${(v/1000000).toFixed(1)}M€`:v>=1000?`${(v/1000).toFixed(0)}k€`:`${v}€`;
+const fmtDuration=totalMonths=>{const y=Math.floor(totalMonths/12),m=totalMonths%12;if(y===0)return`${m} mois`;if(m===0)return`${y} an${y>1?"s":""}`;return`${y} an${y>1?"s":""} ${m} mois`;};
 
 /* ═══════════ COMPONENTS ═══════════ */
 
@@ -511,14 +512,15 @@ export default function PatrimoineTracker(){
   const [showTxModal,setShowTxModal]=useState(false);
   const [isDemo,setIsDemo]=useState(false);
   const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:"",payWith:"cash"});
+  const [peaOpenDate,setPeaOpenDate]=useState(null);
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
 
   // Persistent storage
-  useEffect(()=>{try{const isDemo=sessionStorage.getItem('patra-demo')||new URLSearchParams(window.location.search).get('demo')==='1';if(isDemo){sessionStorage.removeItem('patra-demo');window.history.replaceState(null,'','/app');const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setCryptoCash(d.cryptoCash||0);setStablecoins(d.stablecoins||[]);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);if(d.targetAlloc)setTargetAlloc(d.targetAlloc);setTransactions(d.transactions);setIsDemo(true);}else{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.cryptoCash!==undefined)setCryptoCash(p.cryptoCash);if(p.stablecoins)setStablecoins(p.stablecoins);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);}else{setShowOnboarding(true);setOnboardingStep(0);}}}catch(e){}setLoaded(true);},[]);
+  useEffect(()=>{try{const isDemo=sessionStorage.getItem('patra-demo')||new URLSearchParams(window.location.search).get('demo')==='1';if(isDemo){sessionStorage.removeItem('patra-demo');window.history.replaceState(null,'','/app');const d=DEMO_DATA;setPea(d.pea);setCrypto(d.crypto);setCto(d.cto);setLivrets(d.livrets);setPeaCash(d.peaCash);setCtoCash(d.ctoCash);setCryptoCash(d.cryptoCash||0);setStablecoins(d.stablecoins||[]);setVersements(d.versements);setSnapshots(d.snapshots);setDivHistory(d.divHistory);setMonthlyIncome(d.monthlyIncome);if(d.targetAlloc)setTargetAlloc(d.targetAlloc);setTransactions(d.transactions);setIsDemo(true);}else{const raw=localStorage.getItem("patrimoine-v6");if(raw){const p=JSON.parse(raw);if(p.pea)setPea(p.pea);if(p.crypto)setCrypto(p.crypto);if(p.cto)setCto(p.cto);if(p.livrets)setLivrets(p.livrets);if(p.peaCash!==undefined)setPeaCash(p.peaCash);if(p.ctoCash!==undefined)setCtoCash(p.ctoCash);if(p.cryptoCash!==undefined)setCryptoCash(p.cryptoCash);if(p.stablecoins)setStablecoins(p.stablecoins);if(p.versements)setVersements(p.versements);if(p.snapshots)setSnapshots(p.snapshots);if(p.lastSync)setLastSync(p.lastSync);if(p.lastPeaSync)setLastPeaSync(p.lastPeaSync);if(p.lastCtoSync)setLastCtoSync(p.lastCtoSync);if(p.divHistory)setDivHistory(p.divHistory);if(p.monthlyIncome)setMonthlyIncome(p.monthlyIncome);if(p.targetAlloc)setTargetAlloc(p.targetAlloc);if(p.darkMode!==undefined)setDarkMode(p.darkMode);if(p.transactions)setTransactions(p.transactions);if(p.peaOpenDate!==undefined)setPeaOpenDate(p.peaOpenDate);}else{setShowOnboarding(true);setOnboardingStep(0);}}}catch(e){}setLoaded(true);},[]);
 
-  const persist=useCallback(()=>{if(isDemo)return;try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions}))}catch(e){alert("⚠️ Impossible de sauvegarder : stockage local plein.\nFaites un Backup JSON immédiatement depuis les paramètres pour ne pas perdre vos données.");}},[pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,isDemo]);
+  const persist=useCallback(()=>{if(isDemo)return;try{localStorage.setItem("patrimoine-v6",JSON.stringify({pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,peaOpenDate}))}catch(e){alert("⚠️ Impossible de sauvegarder : stockage local plein.\nFaites un Backup JSON immédiatement depuis les paramètres pour ne pas perdre vos données.");}},[pea,crypto,cto,livrets,peaCash,ctoCash,cryptoCash,stablecoins,versements,snapshots,lastSync,lastPeaSync,lastCtoSync,divHistory,monthlyIncome,targetAlloc,darkMode,transactions,peaOpenDate,isDemo]);
   useEffect(()=>{if(loaded)persist()},[loaded,persist]);
 
   // Set active theme
@@ -827,6 +829,16 @@ export default function PatrimoineTracker(){
     return{month:label,total:Math.round(total*100)/100};
   });
   const currentMonthDiv=monthlyDivData[new Date().getMonth()]?.total||0;
+
+  const peaMaturity=(()=>{
+    if(!peaOpenDate)return null;
+    const open=new Date(peaOpenDate),now=new Date();
+    const matDate=new Date(open);matDate.setFullYear(matDate.getFullYear()+5);
+    const elapsed=(now.getFullYear()-open.getFullYear())*12+(now.getMonth()-open.getMonth());
+    if(now>=matDate)return{mature:true};
+    const remaining=(matDate.getFullYear()-now.getFullYear())*12+(matDate.getMonth()-now.getMonth());
+    return{mature:false,elapsed,remaining,matDate};
+  })();
 
   const thStyle={color:C.textMuted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,padding:"10px 16px",textAlign:"right"};
   const addBtn=(type)=>(<button onClick={()=>{setShowModal(type);setForm({})}} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Plus size={13}/>Ajouter</button>);
@@ -1330,6 +1342,33 @@ export default function PatrimoineTracker(){
 
       {/* ═══ PEA ═══ */}
       {activeTab==="pea"&&<>
+        {/* Maturité fiscale */}
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:"14px 20px",marginBottom:20}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <Calendar size={14} color={C.textDim}/>
+              <span style={{fontSize:12,fontWeight:600,color:C.textDim,letterSpacing:.3}}>Date d'ouverture du PEA</span>
+            </div>
+            <input type="date" value={peaOpenDate||""} onChange={e=>setPeaOpenDate(e.target.value||null)}
+              style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"6px 10px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",colorScheme:darkMode?"dark":"light"}}
+              onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+          </div>
+          {peaMaturity&&<div style={{marginTop:10,paddingTop:10,borderTop:`1px solid ${C.border}`}}>
+            {peaMaturity.mature
+              ?<span style={{fontSize:13,color:C.green,fontWeight:600}}>PEA mature · plus-values exonérées d'IR{" "}<span style={{color:C.textDim,fontWeight:400}}>(PS 18.6% dus)</span></span>
+              :<span style={{fontSize:13,color:C.textDim}}>
+                PEA ouvert depuis{" "}
+                <span style={{color:C.text,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{fmtDuration(peaMaturity.elapsed)}</span>
+                {" · "}maturité fiscale dans{" "}
+                <span style={{color:C.accent,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{fmtDuration(peaMaturity.remaining)}</span>
+                {" "}
+                <span style={{color:C.textMuted}}>({peaMaturity.matDate.toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"})})</span>
+                <span style={{display:"block",marginTop:4,fontSize:11,color:C.textMuted}}>Tout retrait avant 5 ans entraîne la clôture du plan (PFU 31.4%)</span>
+              </span>
+            }
+          </div>}
+        </div>
+
         {/* Allocation pie */}
         <AllocationPie pea={pea} peaTotal={peaTotal} peaCash={peaCash} isMobile={isMobile}/>
 
