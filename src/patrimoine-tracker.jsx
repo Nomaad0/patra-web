@@ -50,19 +50,19 @@ const STABLE_LIST=[
 
 const QUICK_INSTRUMENTS=[
   // ── ETFs PEA-éligibles ──
-  {ticker:"CW8.PA",  name:"Amundi MSCI World",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
-  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
-  {ticker:"PAEEM.PA",name:"Amundi MSCI Emerging Mkts",  issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
-  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",      issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
-  {ticker:"MWRD.PA", name:"Amundi MSCI World II",       issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
-  {ticker:"DCAM.PA", name:"Amundi Core MSCI World",     issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
+  {ticker:"CW8.PA",  name:"Amundi MSCI World",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
+  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
+  {ticker:"PAEEM.PA",name:"Amundi MSCI Emerging Mkts",  issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
+  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",      issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
+  {ticker:"MWRD.PA", name:"Amundi MSCI World II",       issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
+  {ticker:"DCAM.PA", name:"Amundi Core MSCI World",     issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
   {ticker:"IMDA.AS", name:"iShares Core MSCI World",    issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
   {ticker:"CSPX.AS", name:"iShares Core S&P 500",       issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
   {ticker:"EIMI.AS", name:"iShares Core MSCI EM IMI",   issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
   {ticker:"VWCE.DE", name:"Vanguard FTSE All-World",    issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
   {ticker:"VUSA.AS", name:"Vanguard S&P 500 UCITS",     issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
   {ticker:"ESE.PA",  name:"BNP Easy S&P 500",           issuer:"BNP",      bg:"#1a3a1f",letter:"BN",logo:"BNP"},
-  {ticker:"EWLD.PA", name:"Lyxor MSCI World",           issuer:"Lyxor",    bg:"#2d1b69",letter:"Ly",logo:"AMUN"},
+  {ticker:"EWLD.PA", name:"Lyxor MSCI World",           issuer:"Lyxor",    bg:"#2d1b69",letter:"Ly",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
   // ── Actions françaises ──
   {ticker:"TTE.PA",  name:"TotalEnergies",              issuer:"TotalEnergies", bg:"#7f1d1d",letter:"TT"},
   {ticker:"AIR.PA",  name:"Air Liquide",                issuer:"Air Liquide",   bg:"#1e3a5f",letter:"AL"},
@@ -343,8 +343,9 @@ function HoldingRow({item,onEdit,onDelete,type,totalValue,isMobile}){
 
 function LogoImg({symbol,bg,letter,size=34}){
   const [err,setErr]=useState(false);
+  const src=symbol?.startsWith("https://")?symbol:`https://assets.parqet.com/logos/symbol/${symbol}`;
   if(!symbol||err)return<div style={{width:size,height:size,borderRadius:8,background:bg||"#1a2744",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5,flexShrink:0}}>{letter||(symbol||"??").slice(0,2).toUpperCase()}</div>;
-  return<img src={`https://assets.parqet.com/logos/symbol/${symbol}`} alt=""
+  return<img src={src} alt=""
     style={{width:size,height:size,borderRadius:8,objectFit:"contain",flexShrink:0,background:"#fff",padding:2}}
     onError={()=>setErr(true)}
     onLoad={e=>{if(e.target.naturalWidth<10)setErr(true);}}/>;
@@ -354,7 +355,7 @@ function InstrCard({ticker,name,issuer,bg,letter,logo,onSelect,selected}){
   return<button onClick={onSelect}
     style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}
     onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
-    <LogoImg symbol={logo||ticker.split(".")[0]} bg={bg} letter={letter}/>
+    <LogoImg symbol={logo||ticker.split(".")[0]} bg={bg} letter={letter} size={40}/>
     <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{ticker.split(".")[0]}</div>
     <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{issuer}</div>
   </button>;
@@ -363,7 +364,7 @@ function InstrCard({ticker,name,issuer,bg,letter,logo,onSelect,selected}){
 function Modal({show,onClose,title,children}){
   if(!show)return null;
   return(<div style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,.7)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-    <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:18,padding:"28px 32px",width:"min(520px,calc(100vw - 32px))",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 25px 60px rgba(0,0,0,.5)"}} onClick={e=>e.stopPropagation()}>
+    <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:18,padding:"28px 32px",width:"min(640px,calc(100vw - 32px))",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 25px 60px rgba(0,0,0,.5)"}} onClick={e=>e.stopPropagation()}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <h3 style={{color:C.text,fontSize:17,fontWeight:700,margin:0}}>{title}</h3>
         <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4}}><X size={18}/></button>
