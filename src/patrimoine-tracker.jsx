@@ -549,6 +549,9 @@ export default function PatrimoineTracker(){
   const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:"",payWith:"cash"});
   const [peaOpenDate,setPeaOpenDate]=useState(null);
   const [quickSearch,setQuickSearch]=useState("");
+  const [searchResults,setSearchResults]=useState([]);
+  const [searchLoading,setSearchLoading]=useState(false);
+  const searchTimer=useRef(null);
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
@@ -683,6 +686,21 @@ export default function PatrimoineTracker(){
 
   useEffect(()=>{if(loaded){syncCrypto();syncPEA();syncCTO();}},[loaded]);
   useEffect(()=>{const h=()=>setIsMobile(window.innerWidth<768);window.addEventListener("resize",h);return()=>window.removeEventListener("resize",h);},[]);
+
+  useEffect(()=>{
+    if(!quickSearch||(showModal!=="pea"&&showModal!=="cto")){setSearchResults([]);setSearchLoading(false);return;}
+    setSearchLoading(true);
+    clearTimeout(searchTimer.current);
+    searchTimer.current=setTimeout(async()=>{
+      try{
+        const r=await fetch(`/api/search?q=${encodeURIComponent(quickSearch)}`);
+        const d=await r.json();
+        setSearchResults(d.quotes||[]);
+      }catch(e){setSearchResults([]);}
+      setSearchLoading(false);
+    },350);
+    return()=>clearTimeout(searchTimer.current);
+  },[quickSearch,showModal]);
 
   // Auto-sync quand on change d'onglet (cooldown 5 min)
   useEffect(()=>{
@@ -1857,27 +1875,40 @@ export default function PatrimoineTracker(){
             onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
         </div>
         {(()=>{
-          const q=quickSearch.toLowerCase();
-          const filtered=QUICK_INSTRUMENTS.filter(i=>!q||i.name.toLowerCase().includes(q)||i.ticker.toLowerCase().includes(q)||i.issuer.toLowerCase().includes(q));
-          if(!filtered.length)return<div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0",marginBottom:10}}>Aucun résultat</div>;
-          return<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
-            {filtered.map(instr=>{
-              const selected=form.ticker===instr.ticker;
-              return<button key={instr.ticker} onClick={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}
-                style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}>
-                <div style={{width:34,height:34,borderRadius:8,flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                  <img src={`https://assets.parqet.com/logos/symbol/${instr.ticker.split(".")[0]}`} alt=""
-                    style={{width:34,height:34,borderRadius:8,objectFit:"contain"}}
-                    onError={e=>{e.target.style.display="none";e.target.nextElementSibling.style.display="flex";}}/>
-                  <div style={{display:"none",position:"absolute",inset:0,borderRadius:8,background:instr.bg,alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5}}>
-                    {instr.letter}
-                  </div>
+          const InstrCard=({ticker,name,issuer,bg,letter,onSelect,selected})=>(
+            <button onClick={onSelect}
+              style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}
+              onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
+              <div style={{width:34,height:34,borderRadius:8,flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                <img src={`https://assets.parqet.com/logos/symbol/${ticker.split(".")[0]}`} alt=""
+                  style={{width:34,height:34,borderRadius:8,objectFit:"contain"}}
+                  onError={e=>{e.target.style.display="none";e.target.nextElementSibling.style.display="flex";}}/>
+                <div style={{display:"none",position:"absolute",inset:0,borderRadius:8,background:bg||C.accentDim,alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5}}>
+                  {letter||ticker.slice(0,2)}
                 </div>
-                <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{instr.ticker.split(".")[0]}</div>
-                <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{instr.issuer}</div>
-              </button>;
-            })}
-          </div>;
+              </div>
+              <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{ticker.split(".")[0]}</div>
+              <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{issuer}</div>
+            </button>
+          );
+
+          if(searchLoading)return<div style={{fontSize:12,color:C.textDim,textAlign:"center",padding:"16px 0",marginBottom:10}}>Recherche...</div>;
+
+          if(quickSearch&&searchResults.length>0)return(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+              {searchResults.map(r=><InstrCard key={r.symbol} ticker={r.symbol} name={r.shortname||r.longname||r.symbol} issuer={r.exchange||r.typeDisp||""} selected={form.ticker===r.symbol}
+                onSelect={()=>setForm(p=>({...p,name:r.shortname||r.longname||r.symbol,ticker:r.symbol}))}/>)}
+            </div>
+          );
+
+          if(quickSearch&&!searchLoading)return<div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0",marginBottom:10}}>Aucun résultat</div>;
+
+          return(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+              {QUICK_INSTRUMENTS.map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} selected={form.ticker===instr.ticker}
+                onSelect={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}/>)}
+            </div>
+          );
         })()}
         <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
       </>}
