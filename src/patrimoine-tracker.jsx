@@ -1342,33 +1342,6 @@ export default function PatrimoineTracker(){
 
       {/* ═══ PEA ═══ */}
       {activeTab==="pea"&&<>
-        {/* Maturité fiscale */}
-        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:"14px 20px",marginBottom:20}}>
-          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <Calendar size={14} color={C.textDim}/>
-              <span style={{fontSize:12,fontWeight:600,color:C.textDim,letterSpacing:.3}}>Date d'ouverture du PEA</span>
-            </div>
-            <input type="date" value={peaOpenDate||""} onChange={e=>setPeaOpenDate(e.target.value||null)}
-              style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"6px 10px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",colorScheme:darkMode?"dark":"light"}}
-              onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
-          </div>
-          {peaMaturity&&<div style={{marginTop:10,paddingTop:10,borderTop:`1px solid ${C.border}`}}>
-            {peaMaturity.mature
-              ?<span style={{fontSize:13,color:C.green,fontWeight:600}}>PEA mature · plus-values exonérées d'IR{" "}<span style={{color:C.textDim,fontWeight:400}}>(PS 18.6% dus)</span></span>
-              :<span style={{fontSize:13,color:C.textDim}}>
-                PEA ouvert depuis{" "}
-                <span style={{color:C.text,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{fmtDuration(peaMaturity.elapsed)}</span>
-                {" · "}maturité fiscale dans{" "}
-                <span style={{color:C.accent,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{fmtDuration(peaMaturity.remaining)}</span>
-                {" "}
-                <span style={{color:C.textMuted}}>({peaMaturity.matDate.toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"})})</span>
-                <span style={{display:"block",marginTop:4,fontSize:11,color:C.textMuted}}>Tout retrait avant 5 ans entraîne la clôture du plan (PFU 31.4%)</span>
-              </span>
-            }
-          </div>}
-        </div>
-
         {/* Allocation pie */}
         <AllocationPie pea={pea} peaTotal={peaTotal} peaCash={peaCash} isMobile={isMobile}/>
 
@@ -1419,6 +1392,33 @@ export default function PatrimoineTracker(){
               </div>
           }
           {peaSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.accent,background:C.bg}}>{peaSyncStatus}</div>}
+        </div>
+
+        {/* Maturité fiscale */}
+        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:"14px 20px",marginBottom:20}}>
+          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <Calendar size={14} color={C.textDim}/>
+              <span style={{fontSize:12,fontWeight:600,color:C.textDim,letterSpacing:.3}}>Date d'ouverture du PEA</span>
+            </div>
+            <input type="date" value={peaOpenDate||""} onChange={e=>setPeaOpenDate(e.target.value||null)}
+              style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"6px 10px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",colorScheme:darkMode?"dark":"light"}}
+              onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+          </div>
+          {peaMaturity&&<div style={{marginTop:10,paddingTop:10,borderTop:`1px solid ${C.border}`}}>
+            {peaMaturity.mature
+              ?<span style={{fontSize:13,color:C.green,fontWeight:600}}>PEA mature · plus-values exonérées d'IR{" "}<span style={{color:C.textDim,fontWeight:400}}>(PS 18.6% dus)</span></span>
+              :<span style={{fontSize:13,color:C.textDim}}>
+                PEA ouvert depuis{" "}
+                <span style={{color:C.text,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{fmtDuration(peaMaturity.elapsed)}</span>
+                {" · "}maturité fiscale dans{" "}
+                <span style={{color:C.accent,fontWeight:600,fontFamily:"'JetBrains Mono',monospace"}}>{fmtDuration(peaMaturity.remaining)}</span>
+                {" "}
+                <span style={{color:C.textMuted}}>({peaMaturity.matDate.toLocaleDateString("fr-FR",{day:"2-digit",month:"long",year:"numeric"})})</span>
+                <span style={{display:"block",marginTop:4,fontSize:11,color:C.textMuted}}>Tout retrait avant 5 ans entraîne la clôture du plan (PFU 31.4%)</span>
+              </span>
+            }
+          </div>}
         </div>
       </>}
 
