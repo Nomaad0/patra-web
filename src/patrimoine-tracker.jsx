@@ -48,39 +48,41 @@ const STABLE_LIST=[
   {symbol:"EURS",name:"EURS (Stasis)",cgId:"stasis-eurs"},
 ];
 
-const QUICK_INSTRUMENTS=[
-  // ── ETFs PEA-éligibles ──
-  {ticker:"CW8.PA",  name:"Amundi MSCI World",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
-  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
-  {ticker:"PAEEM.PA",name:"Amundi MSCI Emerging Mkts",  issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
-  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",      issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
-  {ticker:"MWRD.PA", name:"Amundi MSCI World II",       issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
-  {ticker:"DCAM.PA", name:"Amundi Core MSCI World",     issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
-  {ticker:"IMDA.AS", name:"iShares Core MSCI World",    issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
-  {ticker:"CSPX.AS", name:"iShares Core S&P 500",       issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
-  {ticker:"EIMI.AS", name:"iShares Core MSCI EM IMI",   issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
-  {ticker:"VWCE.DE", name:"Vanguard FTSE All-World",    issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
-  {ticker:"VUSA.AS", name:"Vanguard S&P 500 UCITS",     issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
-  {ticker:"ESE.PA",  name:"BNP Easy S&P 500",           issuer:"BNP",      bg:"#1a3a1f",letter:"BN",logo:"BNP"},
-  {ticker:"EWLD.PA", name:"Lyxor MSCI World",           issuer:"Lyxor",    bg:"#2d1b69",letter:"Ly",logo:"https://www.google.com/s2/favicons?domain=amundi.com&sz=128"},
-  // ── Actions françaises ──
-  {ticker:"TTE.PA",  name:"TotalEnergies",              issuer:"TotalEnergies", bg:"#7f1d1d",letter:"TT"},
-  {ticker:"AIR.PA",  name:"Air Liquide",                issuer:"Air Liquide",   bg:"#1e3a5f",letter:"AL"},
-  {ticker:"BNP.PA",  name:"BNP Paribas",                issuer:"BNP",           bg:"#1a3a1f",letter:"BN"},
-  {ticker:"SU.PA",   name:"Schneider Electric",         issuer:"Schneider",     bg:"#14532d",letter:"SE"},
-  {ticker:"MC.PA",   name:"LVMH",                       issuer:"LVMH",          bg:"#3b0764",letter:"LV"},
-  {ticker:"OR.PA",   name:"L'Oréal",                   issuer:"L'Oréal",       bg:"#78350f",letter:"LO"},
-  {ticker:"SAN.PA",  name:"Sanofi",                     issuer:"Sanofi",        bg:"#4a044e",letter:"SA"},
-  {ticker:"SAF.PA",  name:"Safran",                     issuer:"Safran",        bg:"#1e3a5f",letter:"SF"},
-  // ── Actions américaines (CTO) ──
-  {ticker:"AAPL",    name:"Apple",     issuer:"Apple",     bg:"#1c1917",letter:"Ap"},
-  {ticker:"MSFT",    name:"Microsoft", issuer:"Microsoft", bg:"#1e3a5f",letter:"Ms"},
-  {ticker:"NVDA",    name:"NVIDIA",    issuer:"NVIDIA",    bg:"#14532d",letter:"Nv"},
-  {ticker:"AMZN",    name:"Amazon",    issuer:"Amazon",    bg:"#78350f",letter:"Az"},
-  {ticker:"GOOGL",   name:"Alphabet",  issuer:"Alphabet",  bg:"#1e3a5f",letter:"Go"},
-  {ticker:"META",    name:"Meta",      issuer:"Meta",      bg:"#1e3a5f",letter:"Me"},
-  {ticker:"TSLA",    name:"Tesla",     issuer:"Tesla",     bg:"#7f1d1d",letter:"Ts"},
-  {ticker:"JPM",     name:"JPMorgan",  issuer:"JPMorgan",  bg:"#1e3a5f",letter:"JP"},
+const _AMUNDI="https://www.google.com/s2/favicons?domain=amundi.com&sz=128";
+// PEA : interleaved ETFs + actions FR/EU
+const QUICK_PEA=[
+  {ticker:"CW8.PA",  name:"Amundi MSCI World",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_AMUNDI},
+  {ticker:"TTE.PA",  name:"TotalEnergies",           issuer:"FR",        bg:"#7f1d1d",letter:"TT"},
+  {ticker:"MC.PA",   name:"LVMH",                    issuer:"FR",        bg:"#3b0764",letter:"LV"},
+  {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
+  {ticker:"AIR.PA",  name:"Air Liquide",             issuer:"FR",        bg:"#1e3a5f",letter:"AL"},
+  {ticker:"SU.PA",   name:"Schneider Electric",      issuer:"FR",        bg:"#14532d",letter:"SE"},
+  {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V"},
+  {ticker:"BNP.PA",  name:"BNP Paribas",             issuer:"FR",        bg:"#1a3a1f",letter:"BN"},
+  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_AMUNDI},
+  {ticker:"SAN.PA",  name:"Sanofi",                  issuer:"FR",        bg:"#4a044e",letter:"SA"},
+  {ticker:"ASML.AS", name:"ASML",                    issuer:"NL",        bg:"#1e3a5f",letter:"AS"},
+  {ticker:"IMDA.AS", name:"iShares Core MSCI World", issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
+  {ticker:"OR.PA",   name:"L'Oréal",                issuer:"FR",        bg:"#78350f",letter:"LO"},
+  {ticker:"SAF.PA",  name:"Safran",                  issuer:"FR",        bg:"#1e3a5f",letter:"SF"},
+  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",   issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_AMUNDI},
+  {ticker:"SAP.DE",  name:"SAP",                     issuer:"DE",        bg:"#1e3a5f",letter:"SP"},
+];
+// CTO : big caps US en tête, puis ETFs
+const QUICK_CTO=[
+  {ticker:"AAPL",    name:"Apple",                   issuer:"US",        bg:"#1c1917",letter:"Ap",logo:"AAPL"},
+  {ticker:"MSFT",    name:"Microsoft",               issuer:"US",        bg:"#1e3a5f",letter:"Ms",logo:"MSFT"},
+  {ticker:"NVDA",    name:"NVIDIA",                  issuer:"US",        bg:"#14532d",letter:"Nv",logo:"NVDA"},
+  {ticker:"AMZN",    name:"Amazon",                  issuer:"US",        bg:"#78350f",letter:"Az",logo:"AMZN"},
+  {ticker:"GOOGL",   name:"Alphabet",                issuer:"US",        bg:"#1e3a5f",letter:"Go",logo:"GOOGL"},
+  {ticker:"META",    name:"Meta",                    issuer:"US",        bg:"#1e3a5f",letter:"Me",logo:"META"},
+  {ticker:"TSLA",    name:"Tesla",                   issuer:"US",        bg:"#7f1d1d",letter:"Ts",logo:"TSLA"},
+  {ticker:"JPM",     name:"JPMorgan",                issuer:"US",        bg:"#1e3a5f",letter:"JP",logo:"JPM"},
+  {ticker:"BRK-B",   name:"Berkshire Hathaway",      issuer:"US",        bg:"#292524",letter:"Bk"},
+  {ticker:"V",       name:"Visa",                    issuer:"US",        bg:"#1e3a5f",letter:"Vi",logo:"V"},
+  {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
+  {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V"},
+  {ticker:"IMDA.AS", name:"iShares Core MSCI World", issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
 ];
 
 const defaultPEA=[];
@@ -1908,7 +1910,7 @@ export default function PatrimoineTracker(){
 
           return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
-              {QUICK_INSTRUMENTS.map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} logo={instr.logo} selected={form.ticker===instr.ticker}
+              {(showModal==="pea"?QUICK_PEA:QUICK_CTO).map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} logo={instr.logo} selected={form.ticker===instr.ticker}
                 onSelect={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}/>)}
             </div>
           );
