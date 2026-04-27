@@ -48,6 +48,41 @@ const STABLE_LIST=[
   {symbol:"EURS",name:"EURS (Stasis)",cgId:"stasis-eurs"},
 ];
 
+const QUICK_INSTRUMENTS=[
+  // ── ETFs PEA-éligibles ──
+  {ticker:"CW8.PA",  name:"Amundi MSCI World",         issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
+  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",         issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
+  {ticker:"PAEEM.PA",name:"Amundi MSCI Emerging Mkts",  issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
+  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",      issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
+  {ticker:"MWRD.PA", name:"Amundi MSCI World II",       issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
+  {ticker:"DCAM.PA", name:"Amundi Core MSCI World",     issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
+  {ticker:"IMDA.AS", name:"iShares Core MSCI World",    issuer:"iShares",  bg:"#1a4731",letter:"iS"},
+  {ticker:"CSPX.AS", name:"iShares Core S&P 500",       issuer:"iShares",  bg:"#1a4731",letter:"iS"},
+  {ticker:"EIMI.AS", name:"iShares Core MSCI EM IMI",   issuer:"iShares",  bg:"#1a4731",letter:"iS"},
+  {ticker:"VWCE.DE", name:"Vanguard FTSE All-World",    issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
+  {ticker:"VUSA.AS", name:"Vanguard S&P 500 UCITS",     issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
+  {ticker:"ESE.PA",  name:"BNP Easy S&P 500",           issuer:"BNP",      bg:"#1a3a1f",letter:"BN"},
+  {ticker:"EWLD.PA", name:"Lyxor MSCI World",           issuer:"Lyxor",    bg:"#2d1b69",letter:"Ly"},
+  // ── Actions françaises ──
+  {ticker:"TTE.PA",  name:"TotalEnergies",              issuer:"TotalEnergies",     bg:"#7f1d1d",letter:"TT"},
+  {ticker:"AIR.PA",  name:"Air Liquide",                issuer:"Air Liquide",       bg:"#1e3a5f",letter:"AL"},
+  {ticker:"BNP.PA",  name:"BNP Paribas",                issuer:"BNP",               bg:"#1a3a1f",letter:"BN"},
+  {ticker:"SU.PA",   name:"Schneider Electric",         issuer:"Schneider",         bg:"#14532d",letter:"SE"},
+  {ticker:"MC.PA",   name:"LVMH",                       issuer:"LVMH",              bg:"#3b0764",letter:"LV"},
+  {ticker:"OR.PA",   name:"L'Oréal",                   issuer:"L'Oréal",           bg:"#78350f",letter:"LO"},
+  {ticker:"SAN.PA",  name:"Sanofi",                     issuer:"Sanofi",            bg:"#4a044e",letter:"SA"},
+  {ticker:"SAF.PA",  name:"Safran",                     issuer:"Safran",            bg:"#1e3a5f",letter:"SF"},
+  // ── Actions américaines (CTO) ──
+  {ticker:"AAPL",    name:"Apple",                      issuer:"Apple",             bg:"#1c1917",letter:"Ap"},
+  {ticker:"MSFT",    name:"Microsoft",                  issuer:"Microsoft",         bg:"#1e3a5f",letter:"Ms"},
+  {ticker:"NVDA",    name:"NVIDIA",                     issuer:"NVIDIA",            bg:"#14532d",letter:"Nv"},
+  {ticker:"AMZN",    name:"Amazon",                     issuer:"Amazon",            bg:"#78350f",letter:"Az"},
+  {ticker:"GOOGL",   name:"Alphabet",                   issuer:"Alphabet",          bg:"#1e3a5f",letter:"Go"},
+  {ticker:"META",    name:"Meta",                       issuer:"Meta",              bg:"#1e3a5f",letter:"Me"},
+  {ticker:"TSLA",    name:"Tesla",                      issuer:"Tesla",             bg:"#7f1d1d",letter:"Ts"},
+  {ticker:"JPM",     name:"JPMorgan",                   issuer:"JPMorgan",          bg:"#1e3a5f",letter:"JP"},
+];
+
 const defaultPEA=[];
 const defaultCrypto=[];
 const defaultCTO=[];
@@ -513,6 +548,7 @@ export default function PatrimoineTracker(){
   const [isDemo,setIsDemo]=useState(false);
   const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:"",payWith:"cash"});
   const [peaOpenDate,setPeaOpenDate]=useState(null);
+  const [quickSearch,setQuickSearch]=useState("");
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
@@ -841,7 +877,7 @@ export default function PatrimoineTracker(){
   })();
 
   const thStyle={color:C.textMuted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,padding:"10px 16px",textAlign:"right"};
-  const addBtn=(type)=>(<button onClick={()=>{setShowModal(type);setForm({})}} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Plus size={13}/>Ajouter</button>);
+  const addBtn=(type)=>(<button onClick={()=>{setShowModal(type);setForm({});setQuickSearch("");}}style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Plus size={13}/>Ajouter</button>);
 
   // Sortable header
   const SortHeader=({label,sortKey,style:s})=>{
@@ -1811,7 +1847,35 @@ export default function PatrimoineTracker(){
     </div>
 
     {/* ═══ MODALS ═══ */}
-    <Modal show={!!showModal} onClose={()=>{setShowModal(null);setForm({})}} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
+    <Modal show={!!showModal} onClose={()=>{setShowModal(null);setForm({});setQuickSearch("");}} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
+      {(showModal==="pea"||showModal==="cto")&&<>
+        {/* Sélection rapide */}
+        <div style={{marginBottom:10}}>
+          <input autoFocus value={quickSearch} onChange={e=>setQuickSearch(e.target.value)}
+            placeholder="Rechercher un instrument (nom, ticker...)"
+            style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box"}}
+            onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+        </div>
+        {(()=>{
+          const q=quickSearch.toLowerCase();
+          const filtered=QUICK_INSTRUMENTS.filter(i=>!q||i.name.toLowerCase().includes(q)||i.ticker.toLowerCase().includes(q)||i.issuer.toLowerCase().includes(q));
+          if(!filtered.length)return<div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0",marginBottom:10}}>Aucun résultat</div>;
+          return<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+            {filtered.map(instr=>{
+              const selected=form.ticker===instr.ticker;
+              return<button key={instr.ticker} onClick={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}
+                style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}>
+                <div style={{width:34,height:34,borderRadius:8,background:instr.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",flexShrink:0,letterSpacing:.5}}>
+                  {instr.letter}
+                </div>
+                <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{instr.ticker.split(".")[0]}</div>
+                <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{instr.issuer}</div>
+              </button>;
+            })}
+          </div>;
+        })()}
+        <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
+      </>}
       {(showModal==="pea"||showModal==="cto")&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="TOTALENERGIES"/>
         <div style={{marginBottom:14}}>
           <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>Ticker Yahoo</label>
