@@ -50,19 +50,19 @@ const STABLE_LIST=[
 
 const QUICK_INSTRUMENTS=[
   // ── ETFs PEA-éligibles ──
-  {ticker:"CW8.PA",  name:"Amundi MSCI World",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logoUrl:"https://logo.clearbit.com/amundi.com"},
-  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logoUrl:"https://logo.clearbit.com/amundi.com"},
-  {ticker:"PAEEM.PA",name:"Amundi MSCI Emerging Mkts",  issuer:"Amundi",   bg:"#0f3460",letter:"Am",logoUrl:"https://logo.clearbit.com/amundi.com"},
-  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",      issuer:"Amundi",   bg:"#0f3460",letter:"Am",logoUrl:"https://logo.clearbit.com/amundi.com"},
-  {ticker:"MWRD.PA", name:"Amundi MSCI World II",       issuer:"Amundi",   bg:"#0f3460",letter:"Am",logoUrl:"https://logo.clearbit.com/amundi.com"},
-  {ticker:"DCAM.PA", name:"Amundi Core MSCI World",     issuer:"Amundi",   bg:"#0f3460",letter:"Am",logoUrl:"https://logo.clearbit.com/amundi.com"},
-  {ticker:"IMDA.AS", name:"iShares Core MSCI World",    issuer:"iShares",  bg:"#1a4731",letter:"iS",logoUrl:"https://logo.clearbit.com/ishares.com"},
-  {ticker:"CSPX.AS", name:"iShares Core S&P 500",       issuer:"iShares",  bg:"#1a4731",letter:"iS",logoUrl:"https://logo.clearbit.com/ishares.com"},
-  {ticker:"EIMI.AS", name:"iShares Core MSCI EM IMI",   issuer:"iShares",  bg:"#1a4731",letter:"iS",logoUrl:"https://logo.clearbit.com/ishares.com"},
-  {ticker:"VWCE.DE", name:"Vanguard FTSE All-World",    issuer:"Vanguard", bg:"#7f1d1d",letter:"V", logoUrl:"https://logo.clearbit.com/vanguard.com"},
-  {ticker:"VUSA.AS", name:"Vanguard S&P 500 UCITS",     issuer:"Vanguard", bg:"#7f1d1d",letter:"V", logoUrl:"https://logo.clearbit.com/vanguard.com"},
-  {ticker:"ESE.PA",  name:"BNP Easy S&P 500",           issuer:"BNP",      bg:"#1a3a1f",letter:"BN",logoUrl:"https://logo.clearbit.com/bnpparibas-am.com"},
-  {ticker:"EWLD.PA", name:"Lyxor MSCI World",           issuer:"Lyxor",    bg:"#2d1b69",letter:"Ly",logoUrl:"https://logo.clearbit.com/amundi.com"},
+  {ticker:"CW8.PA",  name:"Amundi MSCI World",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
+  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
+  {ticker:"PAEEM.PA",name:"Amundi MSCI Emerging Mkts",  issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
+  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",      issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
+  {ticker:"MWRD.PA", name:"Amundi MSCI World II",       issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
+  {ticker:"DCAM.PA", name:"Amundi Core MSCI World",     issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUN"},
+  {ticker:"IMDA.AS", name:"iShares Core MSCI World",    issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
+  {ticker:"CSPX.AS", name:"iShares Core S&P 500",       issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
+  {ticker:"EIMI.AS", name:"iShares Core MSCI EM IMI",   issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"BLK"},
+  {ticker:"VWCE.DE", name:"Vanguard FTSE All-World",    issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
+  {ticker:"VUSA.AS", name:"Vanguard S&P 500 UCITS",     issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
+  {ticker:"ESE.PA",  name:"BNP Easy S&P 500",           issuer:"BNP",      bg:"#1a3a1f",letter:"BN",logo:"BNP"},
+  {ticker:"EWLD.PA", name:"Lyxor MSCI World",           issuer:"Lyxor",    bg:"#2d1b69",letter:"Ly",logo:"AMUN"},
   // ── Actions françaises ──
   {ticker:"TTE.PA",  name:"TotalEnergies",              issuer:"TotalEnergies", bg:"#7f1d1d",letter:"TT"},
   {ticker:"AIR.PA",  name:"Air Liquide",                issuer:"Air Liquide",   bg:"#1e3a5f",letter:"AL"},
@@ -341,21 +341,20 @@ function HoldingRow({item,onEdit,onDelete,type,totalValue,isMobile}){
   </div>);
 }
 
-function LogoImg({src,symbol,bg,letter,size=34}){
+function LogoImg({symbol,bg,letter,size=34}){
   const [err,setErr]=useState(false);
-  const imgSrc=src||`https://assets.parqet.com/logos/symbol/${symbol}`;
-  if(err)return<div style={{width:size,height:size,borderRadius:8,background:bg||"#1a2744",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5,flexShrink:0}}>{letter||(symbol||"").slice(0,2).toUpperCase()}</div>;
-  return<img src={imgSrc} alt=""
-    style={{width:size,height:size,borderRadius:8,objectFit:"contain",flexShrink:0}}
+  if(!symbol||err)return<div style={{width:size,height:size,borderRadius:8,background:bg||"#1a2744",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5,flexShrink:0}}>{letter||(symbol||"??").slice(0,2).toUpperCase()}</div>;
+  return<img src={`https://assets.parqet.com/logos/symbol/${symbol}`} alt=""
+    style={{width:size,height:size,borderRadius:8,objectFit:"contain",flexShrink:0,background:"#fff",padding:2}}
     onError={()=>setErr(true)}
     onLoad={e=>{if(e.target.naturalWidth<10)setErr(true);}}/>;
 }
 
-function InstrCard({ticker,name,issuer,bg,letter,logoUrl,onSelect,selected}){
+function InstrCard({ticker,name,issuer,bg,letter,logo,onSelect,selected}){
   return<button onClick={onSelect}
     style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}
     onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
-    <LogoImg src={logoUrl} symbol={ticker.split(".")[0]} bg={bg} letter={letter}/>
+    <LogoImg symbol={logo||ticker.split(".")[0]} bg={bg} letter={letter}/>
     <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{ticker.split(".")[0]}</div>
     <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{issuer}</div>
   </button>;
@@ -1908,7 +1907,7 @@ export default function PatrimoineTracker(){
 
           return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
-              {QUICK_INSTRUMENTS.map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} logoUrl={instr.logoUrl} selected={form.ticker===instr.ticker}
+              {QUICK_INSTRUMENTS.map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} logo={instr.logo} selected={form.ticker===instr.ticker}
                 onSelect={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}/>)}
             </div>
           );
