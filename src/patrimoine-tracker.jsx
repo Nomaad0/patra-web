@@ -341,6 +341,15 @@ function HoldingRow({item,onEdit,onDelete,type,totalValue,isMobile}){
   </div>);
 }
 
+function LogoImg({symbol,bg,letter,size=34}){
+  const [err,setErr]=useState(false);
+  if(err)return<div style={{width:size,height:size,borderRadius:8,background:bg||"#1a2744",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5,flexShrink:0}}>{letter||symbol.slice(0,2).toUpperCase()}</div>;
+  return<img src={`https://assets.parqet.com/logos/symbol/${symbol}`} alt=""
+    style={{width:size,height:size,borderRadius:8,objectFit:"contain",flexShrink:0}}
+    onError={()=>setErr(true)}
+    onLoad={e=>{if(e.target.naturalWidth<10)setErr(true);}}/>;
+}
+
 function Modal({show,onClose,title,children}){
   if(!show)return null;
   return(<div style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,.7)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
@@ -1879,14 +1888,7 @@ export default function PatrimoineTracker(){
             <button onClick={onSelect}
               style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}
               onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
-              <div style={{width:34,height:34,borderRadius:8,flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <img src={`https://assets.parqet.com/logos/symbol/${logo||ticker.split(".")[0]}`} alt=""
-                  style={{width:34,height:34,borderRadius:8,objectFit:"contain"}}
-                  onError={e=>{e.target.style.display="none";e.target.nextElementSibling.style.display="flex";}}/>
-                <div style={{display:"none",position:"absolute",inset:0,borderRadius:8,background:bg||C.accentDim,alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5}}>
-                  {letter||ticker.slice(0,2)}
-                </div>
-              </div>
+              <LogoImg symbol={logo||ticker.split(".")[0]} bg={bg} letter={letter}/>
               <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{ticker.split(".")[0]}</div>
               <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{issuer}</div>
             </button>
