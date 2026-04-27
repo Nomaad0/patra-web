@@ -351,6 +351,16 @@ function LogoImg({src,symbol,bg,letter,size=34}){
     onLoad={e=>{if(e.target.naturalWidth<10)setErr(true);}}/>;
 }
 
+function InstrCard({ticker,name,issuer,bg,letter,logoUrl,onSelect,selected}){
+  return<button onClick={onSelect}
+    style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}
+    onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
+    <LogoImg src={logoUrl} symbol={ticker.split(".")[0]} bg={bg} letter={letter}/>
+    <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{ticker.split(".")[0]}</div>
+    <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{issuer}</div>
+  </button>;
+}
+
 function Modal({show,onClose,title,children}){
   if(!show)return null;
   return(<div style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,.7)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
@@ -1885,16 +1895,6 @@ export default function PatrimoineTracker(){
             onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
         </div>
         {(()=>{
-          const InstrCard=({ticker,name,issuer,bg,letter,logoUrl,onSelect,selected})=>(
-            <button onClick={onSelect}
-              style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}
-              onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
-              <LogoImg src={logoUrl} symbol={ticker.split(".")[0]} bg={bg} letter={letter}/>
-              <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{ticker.split(".")[0]}</div>
-              <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{issuer}</div>
-            </button>
-          );
-
           if(searchLoading)return<div style={{fontSize:12,color:C.textDim,textAlign:"center",padding:"16px 0",marginBottom:10}}>Recherche...</div>;
 
           if(quickSearch&&searchResults.length>0)return(
