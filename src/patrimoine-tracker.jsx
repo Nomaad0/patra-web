@@ -50,37 +50,37 @@ const STABLE_LIST=[
 
 const QUICK_INSTRUMENTS=[
   // ── ETFs PEA-éligibles ──
-  {ticker:"CW8.PA",  name:"Amundi MSCI World",         issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
-  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",         issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
-  {ticker:"PAEEM.PA",name:"Amundi MSCI Emerging Mkts",  issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
-  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",      issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
-  {ticker:"MWRD.PA", name:"Amundi MSCI World II",       issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
-  {ticker:"DCAM.PA", name:"Amundi Core MSCI World",     issuer:"Amundi",   bg:"#0f3460",letter:"Am"},
-  {ticker:"IMDA.AS", name:"iShares Core MSCI World",    issuer:"iShares",  bg:"#1a4731",letter:"iS"},
-  {ticker:"CSPX.AS", name:"iShares Core S&P 500",       issuer:"iShares",  bg:"#1a4731",letter:"iS"},
-  {ticker:"EIMI.AS", name:"iShares Core MSCI EM IMI",   issuer:"iShares",  bg:"#1a4731",letter:"iS"},
-  {ticker:"VWCE.DE", name:"Vanguard FTSE All-World",    issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
-  {ticker:"VUSA.AS", name:"Vanguard S&P 500 UCITS",     issuer:"Vanguard", bg:"#7f1d1d",letter:"V"},
-  {ticker:"ESE.PA",  name:"BNP Easy S&P 500",           issuer:"BNP",      bg:"#1a3a1f",letter:"BN"},
-  {ticker:"EWLD.PA", name:"Lyxor MSCI World",           issuer:"Lyxor",    bg:"#2d1b69",letter:"Ly"},
+  {ticker:"CW8.PA",  name:"Amundi MSCI World",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUNDI"},
+  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",         issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUNDI"},
+  {ticker:"PAEEM.PA",name:"Amundi MSCI Emerging Mkts",  issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUNDI"},
+  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",      issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUNDI"},
+  {ticker:"MWRD.PA", name:"Amundi MSCI World II",       issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUNDI"},
+  {ticker:"DCAM.PA", name:"Amundi Core MSCI World",     issuer:"Amundi",   bg:"#0f3460",letter:"Am",logo:"AMUNDI"},
+  {ticker:"IMDA.AS", name:"iShares Core MSCI World",    issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"ISHARES"},
+  {ticker:"CSPX.AS", name:"iShares Core S&P 500",       issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"ISHARES"},
+  {ticker:"EIMI.AS", name:"iShares Core MSCI EM IMI",   issuer:"iShares",  bg:"#1a4731",letter:"iS",logo:"ISHARES"},
+  {ticker:"VWCE.DE", name:"Vanguard FTSE All-World",    issuer:"Vanguard", bg:"#7f1d1d",letter:"V", logo:"VANGUARD"},
+  {ticker:"VUSA.AS", name:"Vanguard S&P 500 UCITS",     issuer:"Vanguard", bg:"#7f1d1d",letter:"V", logo:"VANGUARD"},
+  {ticker:"ESE.PA",  name:"BNP Easy S&P 500",           issuer:"BNP",      bg:"#1a3a1f",letter:"BN",logo:"BNP"},
+  {ticker:"EWLD.PA", name:"Lyxor MSCI World",           issuer:"Lyxor",    bg:"#2d1b69",letter:"Ly",logo:"LYXOR"},
   // ── Actions françaises ──
-  {ticker:"TTE.PA",  name:"TotalEnergies",              issuer:"TotalEnergies",     bg:"#7f1d1d",letter:"TT"},
-  {ticker:"AIR.PA",  name:"Air Liquide",                issuer:"Air Liquide",       bg:"#1e3a5f",letter:"AL"},
-  {ticker:"BNP.PA",  name:"BNP Paribas",                issuer:"BNP",               bg:"#1a3a1f",letter:"BN"},
-  {ticker:"SU.PA",   name:"Schneider Electric",         issuer:"Schneider",         bg:"#14532d",letter:"SE"},
-  {ticker:"MC.PA",   name:"LVMH",                       issuer:"LVMH",              bg:"#3b0764",letter:"LV"},
-  {ticker:"OR.PA",   name:"L'Oréal",                   issuer:"L'Oréal",           bg:"#78350f",letter:"LO"},
-  {ticker:"SAN.PA",  name:"Sanofi",                     issuer:"Sanofi",            bg:"#4a044e",letter:"SA"},
-  {ticker:"SAF.PA",  name:"Safran",                     issuer:"Safran",            bg:"#1e3a5f",letter:"SF"},
+  {ticker:"TTE.PA",  name:"TotalEnergies",              issuer:"TotalEnergies", bg:"#7f1d1d",letter:"TT"},
+  {ticker:"AIR.PA",  name:"Air Liquide",                issuer:"Air Liquide",   bg:"#1e3a5f",letter:"AL"},
+  {ticker:"BNP.PA",  name:"BNP Paribas",                issuer:"BNP",           bg:"#1a3a1f",letter:"BN"},
+  {ticker:"SU.PA",   name:"Schneider Electric",         issuer:"Schneider",     bg:"#14532d",letter:"SE"},
+  {ticker:"MC.PA",   name:"LVMH",                       issuer:"LVMH",          bg:"#3b0764",letter:"LV"},
+  {ticker:"OR.PA",   name:"L'Oréal",                   issuer:"L'Oréal",       bg:"#78350f",letter:"LO"},
+  {ticker:"SAN.PA",  name:"Sanofi",                     issuer:"Sanofi",        bg:"#4a044e",letter:"SA"},
+  {ticker:"SAF.PA",  name:"Safran",                     issuer:"Safran",        bg:"#1e3a5f",letter:"SF"},
   // ── Actions américaines (CTO) ──
-  {ticker:"AAPL",    name:"Apple",                      issuer:"Apple",             bg:"#1c1917",letter:"Ap"},
-  {ticker:"MSFT",    name:"Microsoft",                  issuer:"Microsoft",         bg:"#1e3a5f",letter:"Ms"},
-  {ticker:"NVDA",    name:"NVIDIA",                     issuer:"NVIDIA",            bg:"#14532d",letter:"Nv"},
-  {ticker:"AMZN",    name:"Amazon",                     issuer:"Amazon",            bg:"#78350f",letter:"Az"},
-  {ticker:"GOOGL",   name:"Alphabet",                   issuer:"Alphabet",          bg:"#1e3a5f",letter:"Go"},
-  {ticker:"META",    name:"Meta",                       issuer:"Meta",              bg:"#1e3a5f",letter:"Me"},
-  {ticker:"TSLA",    name:"Tesla",                      issuer:"Tesla",             bg:"#7f1d1d",letter:"Ts"},
-  {ticker:"JPM",     name:"JPMorgan",                   issuer:"JPMorgan",          bg:"#1e3a5f",letter:"JP"},
+  {ticker:"AAPL",    name:"Apple",     issuer:"Apple",     bg:"#1c1917",letter:"Ap"},
+  {ticker:"MSFT",    name:"Microsoft", issuer:"Microsoft", bg:"#1e3a5f",letter:"Ms"},
+  {ticker:"NVDA",    name:"NVIDIA",    issuer:"NVIDIA",    bg:"#14532d",letter:"Nv"},
+  {ticker:"AMZN",    name:"Amazon",    issuer:"Amazon",    bg:"#78350f",letter:"Az"},
+  {ticker:"GOOGL",   name:"Alphabet",  issuer:"Alphabet",  bg:"#1e3a5f",letter:"Go"},
+  {ticker:"META",    name:"Meta",      issuer:"Meta",      bg:"#1e3a5f",letter:"Me"},
+  {ticker:"TSLA",    name:"Tesla",     issuer:"Tesla",     bg:"#7f1d1d",letter:"Ts"},
+  {ticker:"JPM",     name:"JPMorgan",  issuer:"JPMorgan",  bg:"#1e3a5f",letter:"JP"},
 ];
 
 const defaultPEA=[];
@@ -1875,12 +1875,12 @@ export default function PatrimoineTracker(){
             onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
         </div>
         {(()=>{
-          const InstrCard=({ticker,name,issuer,bg,letter,onSelect,selected})=>(
+          const InstrCard=({ticker,name,issuer,bg,letter,logo,onSelect,selected})=>(
             <button onClick={onSelect}
               style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}
               onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
               <div style={{width:34,height:34,borderRadius:8,flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                <img src={`https://assets.parqet.com/logos/symbol/${ticker.split(".")[0]}`} alt=""
+                <img src={`https://assets.parqet.com/logos/symbol/${logo||ticker.split(".")[0]}`} alt=""
                   style={{width:34,height:34,borderRadius:8,objectFit:"contain"}}
                   onError={e=>{e.target.style.display="none";e.target.nextElementSibling.style.display="flex";}}/>
                 <div style={{display:"none",position:"absolute",inset:0,borderRadius:8,background:bg||C.accentDim,alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5}}>
@@ -1905,7 +1905,7 @@ export default function PatrimoineTracker(){
 
           return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
-              {QUICK_INSTRUMENTS.map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} selected={form.ticker===instr.ticker}
+              {QUICK_INSTRUMENTS.map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} logo={instr.logo} selected={form.ticker===instr.ticker}
                 onSelect={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}/>)}
             </div>
           );
