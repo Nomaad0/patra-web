@@ -1865,8 +1865,13 @@ export default function PatrimoineTracker(){
               const selected=form.ticker===instr.ticker;
               return<button key={instr.ticker} onClick={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}
                 style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}>
-                <div style={{width:34,height:34,borderRadius:8,background:instr.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",flexShrink:0,letterSpacing:.5}}>
-                  {instr.letter}
+                <div style={{width:34,height:34,borderRadius:8,flexShrink:0,position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                  <img src={`https://assets.parqet.com/logos/symbol/${instr.ticker.split(".")[0]}`} alt=""
+                    style={{width:34,height:34,borderRadius:8,objectFit:"contain"}}
+                    onError={e=>{e.target.style.display="none";e.target.nextElementSibling.style.display="flex";}}/>
+                  <div style={{display:"none",position:"absolute",inset:0,borderRadius:8,background:instr.bg,alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5}}>
+                    {instr.letter}
+                  </div>
                 </div>
                 <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{instr.ticker.split(".")[0]}</div>
                 <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{instr.issuer}</div>
