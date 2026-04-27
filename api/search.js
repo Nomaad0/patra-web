@@ -9,10 +9,28 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: "Forbidden" });
   }
 
-  const { q } = req.query;
+  const { q, account } = req.query;
   if (!q || q.trim().length < 1) return res.status(400).json({ error: "q required" });
 
-  const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=12&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
+  // Suffixes de bourses UE/EEE — titres éligibles au PEA
+  const PEA_SUFFIXES = [
+    ".PA",".AS",".BR",".LS",  // Euronext (Paris, Amsterdam, Bruxelles, Lisbonne)
+    ".DE",".F",".MU",".BE",   // Allemagne (Xetra, Frankfurt, Munich, Berlin)
+    ".MI",".TI",              // Italie (Milan)
+    ".MC",                    // Espagne (Madrid)
+    ".VI",                    // Autriche (Vienne)
+    ".HE",                    // Finlande (Helsinki)
+    ".CO",                    // Danemark (Copenhague)
+    ".ST",                    // Suède (Stockholm)
+    ".OL",                    // Norvège (Oslo — EEE)
+    ".IC",                    // Islande (EEE)
+    ".IR",                    // Irlande (Euronext Dublin)
+    ".WA",                    // Pologne (Varsovie)
+    ".AT",                    // Grèce (Athènes)
+    ".PR",                    // République tchèque (Prague)
+  ];
+
+  const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=16&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
 
   try {
     const response = await fetch(url, {
@@ -23,7 +41,10 @@ export default async function handler(req, res) {
       },
     });
     const data = await response.json();
-    const quotes = (data.quotes || []).filter(q => q.isYahooFinance && ["EQUITY","ETF","MUTUALFUND"].includes(q.quoteType));
+    let quotes = (data.quotes || []).filter(q => q.isYahooFinance && ["EQUITY","ETF","MUTUALFUND"].includes(q.quoteType));
+    if (account === "pea") {
+      quotes = quotes.filter(q => PEA_SUFFIXES.some(s => q.symbol.endsWith(s)));
+    }
     res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=30");
     return res.status(200).json({ quotes });
   } catch (err) {

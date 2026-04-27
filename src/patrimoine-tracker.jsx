@@ -693,7 +693,7 @@ export default function PatrimoineTracker(){
     clearTimeout(searchTimer.current);
     searchTimer.current=setTimeout(async()=>{
       try{
-        const r=await fetch(`/api/search?q=${encodeURIComponent(quickSearch)}`);
+        const r=await fetch(`/api/search?q=${encodeURIComponent(quickSearch)}&account=${showModal}`);
         const d=await r.json();
         setSearchResults(d.quotes||[]);
       }catch(e){setSearchResults([]);}
