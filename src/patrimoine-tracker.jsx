@@ -85,6 +85,17 @@ const QUICK_CTO=[
   {ticker:"IMDA.AS", name:"iShares Core MSCI World", issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:_p("IE00B4L5Y983")},
 ];
 
+// Livrets réglementés FR
+const QUICK_LIVRETS=[
+  {ticker:"LA",   name:"Livret A",     issuer:"État",   plafond:22950, defaultRate:2.4,  bg:"#1e3a5f",letter:"LA"},
+  {ticker:"LDDS", name:"LDDS",         issuer:"État",   plafond:12000, defaultRate:2.4,  bg:"#1a4731",letter:"LD"},
+  {ticker:"LEP",  name:"LEP",          issuer:"État",   plafond:10000, defaultRate:3.5,  bg:"#4a044e",letter:"LP"},
+  {ticker:"LJ",   name:"Livret Jeune", issuer:"État",   plafond:1600,  defaultRate:2.4,  bg:"#7c2d12",letter:"LJ"},
+  {ticker:"PEL",  name:"PEL",          issuer:"État",   plafond:61200, defaultRate:2.25, bg:"#166534",letter:"PL"},
+  {ticker:"CEL",  name:"CEL",          issuer:"État",   plafond:15300, defaultRate:1.6,  bg:"#14532d",letter:"CL"},
+  {ticker:"SL",   name:"Super Livret", issuer:"Banque", plafond:null,  defaultRate:3,    bg:"#1c1917",letter:"SL"},
+];
+
 const defaultPEA=[];
 const defaultCrypto=[];
 const defaultCTO=[];
@@ -1950,11 +1961,18 @@ export default function PatrimoineTracker(){
           <InputField label="Prix moy (€)" value={form.avgPrice||""} onChange={v=>setForm(p=>({...p,avgPrice:v}))} type="number"/>
           <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number"/>
         </div></>}
-      {showModal==="livret"&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Livret A"/>
+      {showModal==="livret"&&<>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,marginBottom:10}}>
+          {QUICK_LIVRETS.map(l=><InstrCard key={l.ticker} ticker={l.ticker} name={l.name} issuer={l.issuer} bg={l.bg} letter={l.letter} selected={form.name===l.name}
+            onSelect={()=>setForm(p=>({...p,name:l.name,rate:l.defaultRate.toString()}))}/>)}
+        </div>
+        <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
+        <InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Livret A"/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Solde (€)" value={form.balance||""} onChange={v=>setForm(p=>({...p,balance:v}))} type="number"/>
           <InputField label="Taux (%)" value={form.rate||""} onChange={v=>setForm(p=>({...p,rate:v}))} type="number"/>
-        </div></>}
+        </div>
+      </>}
       <button onClick={handleAdd} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginTop:6}}><Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>Ajouter</button>
     </Modal>
 
