@@ -94,6 +94,7 @@ const QUICK_LIVRETS=[
   {ticker:"PEL",  name:"PEL",          issuer:"État",   plafond:61200, defaultRate:2.25, bg:"#166534",letter:"PL"},
   {ticker:"CEL",  name:"CEL",          issuer:"État",   plafond:15300, defaultRate:1.6,  bg:"#14532d",letter:"CL"},
   {ticker:"SL",   name:"Super Livret", issuer:"Banque", plafond:null,  defaultRate:3,    bg:"#1c1917",letter:"SL"},
+  {ticker:"OT",   name:"Autre",        issuer:"Banque", plafond:null,  defaultRate:0,    bg:"#374151",letter:"?"},
 ];
 
 const defaultPEA=[];
@@ -371,6 +372,16 @@ function InstrCard({ticker,name,issuer,bg,letter,logo,onSelect,selected}){
     <LogoImg symbol={logo||ticker.split(".")[0]} bg={bg} letter={letter} size={40}/>
     <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{ticker.split(".")[0]}</div>
     <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{issuer}</div>
+  </button>;
+}
+
+function LivretCard({name,bg,letter,defaultRate,selected,onSelect}){
+  return<button onClick={onSelect}
+    style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"10px 8px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"border-color .15s",textAlign:"center",minWidth:0}}
+    onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
+    <div style={{width:36,height:36,borderRadius:8,background:bg||C.card,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:"#fff",fontFamily:"'JetBrains Mono',monospace",flexShrink:0}}>{letter}</div>
+    <div style={{fontSize:11,fontWeight:700,color:selected?C.accent:C.text,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{name}</div>
+    {defaultRate>0&&<div style={{fontSize:9,color:C.textDim,lineHeight:1.2,fontFamily:"'JetBrains Mono',monospace"}}>{defaultRate}%</div>}
   </button>;
 }
 
@@ -1963,8 +1974,8 @@ export default function PatrimoineTracker(){
         </div></>}
       {showModal==="livret"&&<>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,marginBottom:10}}>
-          {QUICK_LIVRETS.map(l=><InstrCard key={l.ticker} ticker={l.ticker} name={l.name} issuer={l.issuer} bg={l.bg} letter={l.letter} selected={form.name===l.name}
-            onSelect={()=>setForm(p=>({...p,name:l.name,rate:l.defaultRate.toString()}))}/>)}
+          {QUICK_LIVRETS.map(l=><LivretCard key={l.ticker} name={l.name} bg={l.bg} letter={l.letter} defaultRate={l.defaultRate} selected={form.name===l.name}
+            onSelect={()=>setForm(p=>({...p,name:l.name,rate:l.defaultRate>0?l.defaultRate.toString():""}))}/>)}
         </div>
         <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
         <InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Livret A"/>
