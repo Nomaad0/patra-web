@@ -87,13 +87,13 @@ const QUICK_CTO=[
 
 // Livrets réglementés FR
 const QUICK_LIVRETS=[
-  {ticker:"LA",   name:"Livret A",     issuer:"État",   plafond:22950, defaultRate:2.4,  bg:"#1e3a5f",letter:"LA"},
-  {ticker:"LDDS", name:"LDDS",         issuer:"État",   plafond:12000, defaultRate:2.4,  bg:"#1a4731",letter:"LD"},
-  {ticker:"LEP",  name:"LEP",          issuer:"État",   plafond:10000, defaultRate:3.5,  bg:"#4a044e",letter:"LP"},
-  {ticker:"LJ",   name:"Livret Jeune", issuer:"État",   plafond:1600,  defaultRate:2.4,  bg:"#7c2d12",letter:"LJ"},
-  {ticker:"PEL",  name:"PEL",          issuer:"État",   plafond:61200, defaultRate:2.25, bg:"#166534",letter:"PL"},
-  {ticker:"CEL",  name:"CEL",          issuer:"État",   plafond:15300, defaultRate:1.6,  bg:"#14532d",letter:"CL"},
-  {ticker:"SL",   name:"Super Livret", issuer:"Banque", plafond:null,  defaultRate:3,    bg:"#1c1917",letter:"SL"},
+  {ticker:"LA",   name:"Livret A",     issuer:"État",   plafond:22950, defaultRate:1.5,  bg:"#1e3a5f",letter:"LA"},
+  {ticker:"LDDS", name:"LDDS",         issuer:"État",   plafond:12000, defaultRate:1.5,  bg:"#1a4731",letter:"LD"},
+  {ticker:"LEP",  name:"LEP",          issuer:"État",   plafond:10000, defaultRate:2.5,  bg:"#4a044e",letter:"LP"},
+  {ticker:"LJ",   name:"Livret Jeune", issuer:"État",   plafond:1600,  defaultRate:1.5,  bg:"#7c2d12",letter:"LJ"},
+  {ticker:"PEL",  name:"PEL",          issuer:"État",   plafond:61200, defaultRate:2,    bg:"#166534",letter:"PL"},
+  {ticker:"CEL",  name:"CEL",          issuer:"État",   plafond:15300, defaultRate:1,    bg:"#14532d",letter:"CL"},
+  {ticker:"SL",   name:"Super Livret", issuer:"Banque", plafond:null,  defaultRate:0,    bg:"#1c1917",letter:"SL"},
   {ticker:"OT",   name:"Autre",        issuer:"Banque", plafond:null,  defaultRate:0,    bg:"#374151",letter:"?"},
 ];
 
