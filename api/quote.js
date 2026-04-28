@@ -3,8 +3,9 @@ export default async function handler(req, res) {
   const referer = req.headers["referer"] || origin;
   const allowedOrigins = ["https://patra.fr", "https://www.patra.fr", "https://patra-web-phi.vercel.app"];
   const matchedOrigin = allowedOrigins.find(o => referer.includes(o.replace("https://", "")));
+  const isVercelPreview = referer.includes("patra-web") && referer.includes(".vercel.app");
   if (matchedOrigin) res.setHeader("Access-Control-Allow-Origin", matchedOrigin);
-  if (process.env.NODE_ENV === "production" && !matchedOrigin) {
+  if (process.env.NODE_ENV === "production" && !matchedOrigin && !isVercelPreview) {
     return res.status(403).json({ error: "Forbidden" });
   }
 
