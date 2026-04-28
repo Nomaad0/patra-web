@@ -620,6 +620,8 @@ export default function PatrimoineTracker(){
   const [searchResults,setSearchResults]=useState([]);
   const [searchLoading,setSearchLoading]=useState(false);
   const [fxLoading,setFxLoading]=useState(false);
+  const [avgPriceCur,setAvgPriceCur]=useState("eur");
+  const [fxRate,setFxRate]=useState(null);
   const [cryptoResults,setCryptoResults]=useState([]);
   const [cgSearchLoading,setCgSearchLoading]=useState(false);
   const searchTimer=useRef(null);
@@ -875,9 +877,9 @@ export default function PatrimoineTracker(){
   const handleAdd=()=>{const t=showModal;
     if(t==="pea")setPea(p=>[...p,{id:Date.now().toString(),name:form.name||"",ticker:form.ticker||"",quantity:parseFloat(form.quantity)||0,pru:parseFloat(form.pru)||0,currentPrice:parseFloat(form.currentPrice)||0,divPerShare:parseFloat(form.divPerShare)||0,divFreq:form.divFreq||"annuel"}]);
     else if(t==="cto")setCto(p=>[...p,{id:Date.now().toString(),name:form.name||"",ticker:form.ticker||"",quantity:parseFloat(form.quantity)||0,pru:parseFloat(form.pru)||0,currentPrice:parseFloat(form.currentPrice)||0,divPerShare:parseFloat(form.divPerShare)||0,divFreq:form.divFreq||"annuel"}]);
-    else if(t==="crypto")setCrypto(p=>[...p,{id:Date.now().toString(),name:form.name||"",symbol:form.symbol||"",cgId:form.cgId||"",quantity:parseFloat(form.quantity)||0,avgPrice:parseFloat(form.avgPrice)||0,currentPrice:parseFloat(form.currentPrice)||0}]);
+    else if(t==="crypto"){const avgEur=(avgPriceCur==="usd"&&fxRate)?Math.round(parseFloat(form.avgPrice)/fxRate*100)/100:parseFloat(form.avgPrice)||0;setCrypto(p=>[...p,{id:Date.now().toString(),name:form.name||"",symbol:form.symbol||"",cgId:form.cgId||"",quantity:parseFloat(form.quantity)||0,avgPrice:avgEur,currentPrice:parseFloat(form.currentPrice)||0}]);}
     else setLivrets(p=>[...p,{id:Date.now().toString(),name:form.name||"",balance:parseFloat(form.balance)||0,rate:parseFloat(form.rate)||0}]);
-    setShowModal(null);setForm({});};
+    setShowModal(null);setForm({});setAvgPriceCur("eur");};
 
   const handleEdit=()=>{const t=editItem._type;
     if(t==="pea")setPea(p=>p.map(h=>h.id===editItem.id?{...h,name:form.name??h.name,ticker:form.ticker??h.ticker,quantity:parseFloat(form.quantity)||h.quantity,pru:parseFloat(form.pru)||h.pru,currentPrice:parseFloat(form.currentPrice)||h.currentPrice,divPerShare:parseFloat(form.divPerShare)>=0?parseFloat(form.divPerShare):h.divPerShare,divFreq:form.divFreq||h.divFreq}:h));
@@ -931,18 +933,14 @@ export default function PatrimoineTracker(){
     setTimeout(()=>setDivFetchStatus(""),5000);
   };
 
-  const convertFx=async(dir)=>{
-    if(!form.avgPrice)return;
+  const fetchFxRate=async()=>{
+    if(fxRate)return;
     setFxLoading(true);
     try{
       const r=await fetch(`/api/quote?ticker=${encodeURIComponent("EURUSD=X")}&range=1d&interval=1d`);
       const d=await r.json();
       const rate=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
-      if(rate){
-        const v=parseFloat(form.avgPrice);
-        const converted=dir==="usd2eur"?v/rate:v*rate;
-        setForm(p=>({...p,avgPrice:String(Math.round(converted*100)/100)}));
-      }
+      if(rate)setFxRate(rate);
     }catch(e){}
     setFxLoading(false);
   };
@@ -1968,7 +1966,7 @@ export default function PatrimoineTracker(){
     </div>
 
     {/* ═══ MODALS ═══ */}
-    <Modal show={!!showModal} onClose={()=>{setShowModal(null);setForm({});setQuickSearch("");}} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
+    <Modal show={!!showModal} onClose={()=>{setShowModal(null);setForm({});setQuickSearch("");setAvgPriceCur("eur");}} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
       {(showModal==="pea"||showModal==="cto")&&<>
         {/* Sélection rapide */}
         <div style={{marginBottom:10}}>
@@ -2051,20 +2049,20 @@ export default function PatrimoineTracker(){
           L'ID CoinGecko se trouve dans l'URL : coingecko.com/en/coins/<span style={{color:C.accent}}>bitcoin</span> → l'ID est <span style={{color:C.accent}}>bitcoin</span>
         </div>
         <div style={{marginBottom:14}}>
-          <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>Prix moy (€)</label>
+          <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>Prix moy</label>
           <div style={{display:"flex",gap:8}}>
+            <select value={avgPriceCur} onChange={e=>{setAvgPriceCur(e.target.value);if(e.target.value==="usd")fetchFxRate();}}
+              style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 10px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",cursor:"pointer"}}>
+              <option value="eur">€</option>
+              <option value="usd">$</option>
+            </select>
             <input value={form.avgPrice||""} onChange={e=>setForm(p=>({...p,avgPrice:e.target.value}))} type="number" placeholder="0"
               style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
               onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
-            <button type="button" onClick={()=>convertFx("usd2eur")} disabled={fxLoading||!form.avgPrice}
-              style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 10px",color:C.accent,cursor:"pointer",fontSize:11,fontWeight:600,whiteSpace:"nowrap",opacity:(fxLoading||!form.avgPrice)?0.5:1}}>
-              {fxLoading?"...":"$ → €"}
-            </button>
-            <button type="button" onClick={()=>convertFx("eur2usd")} disabled={fxLoading||!form.avgPrice}
-              style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 10px",color:C.accent,cursor:"pointer",fontSize:11,fontWeight:600,whiteSpace:"nowrap",opacity:(fxLoading||!form.avgPrice)?0.5:1}}>
-              {fxLoading?"...":"€ → $"}
-            </button>
           </div>
+          {avgPriceCur==="usd"&&<div style={{fontSize:11,color:C.textDim,marginTop:5}}>
+            {fxLoading?"Chargement du taux...":fxRate&&form.avgPrice?`≈ ${fmtEur(Math.round(parseFloat(form.avgPrice)/fxRate*100)/100)} · 1 € = ${fxRate.toFixed(4)} $`:"Entrez un montant en $"}
+          </div>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number"/>
