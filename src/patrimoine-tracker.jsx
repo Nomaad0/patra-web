@@ -621,7 +621,7 @@ export default function PatrimoineTracker(){
   const [searchLoading,setSearchLoading]=useState(false);
   const [fxLoading,setFxLoading]=useState(false);
   const [cryptoResults,setCryptoResults]=useState([]);
-  const [cryptoLoading,setCryptoLoading]=useState(false);
+  const [cgSearchLoading,setCgSearchLoading]=useState(false);
   const searchTimer=useRef(null);
   const cryptoTimer=useRef(null);
 
@@ -775,8 +775,8 @@ export default function PatrimoineTracker(){
   },[quickSearch,showModal]);
 
   useEffect(()=>{
-    if(!quickSearch||showModal!=="crypto"){setCryptoResults([]);setCryptoLoading(false);return;}
-    setCryptoLoading(true);
+    if(!quickSearch||showModal!=="crypto"){setCryptoResults([]);setCgSearchLoading(false);return;}
+    setCgSearchLoading(true);
     clearTimeout(cryptoTimer.current);
     cryptoTimer.current=setTimeout(async()=>{
       try{
@@ -784,7 +784,7 @@ export default function PatrimoineTracker(){
         const d=await r.json();
         setCryptoResults((d.coins||[]).slice(0,12));
       }catch(e){setCryptoResults([]);}
-      setCryptoLoading(false);
+      setCgSearchLoading(false);
     },400);
     return()=>clearTimeout(cryptoTimer.current);
   },[quickSearch,showModal]);
@@ -2026,14 +2026,14 @@ export default function PatrimoineTracker(){
             onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
         </div>
         {(()=>{
-          if(cryptoLoading)return<div style={{fontSize:12,color:C.textDim,textAlign:"center",padding:"16px 0",marginBottom:10}}>Recherche...</div>;
+          if(cgSearchLoading)return<div style={{fontSize:12,color:C.textDim,textAlign:"center",padding:"16px 0",marginBottom:10}}>Recherche...</div>;
           if(quickSearch&&cryptoResults.length>0)return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(90px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
               {cryptoResults.map(c=><CryptoCard key={c.id} name={c.name} symbol={c.symbol?.toUpperCase()} logo={c.thumb} selected={form.cgId===c.id}
                 onSelect={()=>setForm(p=>({...p,name:c.name,symbol:c.symbol?.toUpperCase(),cgId:c.id}))}/>)}
             </div>
           );
-          if(quickSearch&&!cryptoLoading)return<div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0",marginBottom:10}}>Aucun résultat</div>;
+          if(quickSearch&&!cgSearchLoading)return<div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0",marginBottom:10}}>Aucun résultat</div>;
           return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(90px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
               {QUICK_CRYPTO.map(c=><CryptoCard key={c.cgId} name={c.name} symbol={c.symbol} logo={c.logo} bg={c.bg} letter={c.letter} selected={form.cgId===c.cgId}
