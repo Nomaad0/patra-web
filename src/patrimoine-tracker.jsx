@@ -595,6 +595,7 @@ export default function PatrimoineTracker(){
   const [quickSearch,setQuickSearch]=useState("");
   const [searchResults,setSearchResults]=useState([]);
   const [searchLoading,setSearchLoading]=useState(false);
+  const [fxLoading,setFxLoading]=useState(false);
   const searchTimer=useRef(null);
 
   // Labels
@@ -886,6 +887,18 @@ export default function PatrimoineTracker(){
       }
     }catch(e){setDivFetchStatus("❌ Erreur de récupération");}
     setTimeout(()=>setDivFetchStatus(""),5000);
+  };
+
+  const convertUsdToEur=async()=>{
+    if(!form.avgPrice)return;
+    setFxLoading(true);
+    try{
+      const r=await fetch(`/api/quote?ticker=${encodeURIComponent("EURUSD=X")}&range=1d&interval=1d`);
+      const d=await r.json();
+      const rate=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+      if(rate)setForm(p=>({...p,avgPrice:String(Math.round(parseFloat(p.avgPrice)/rate*100)/100)}));
+    }catch(e){}
+    setFxLoading(false);
   };
 
   // Export CSV
@@ -1967,9 +1980,20 @@ export default function PatrimoineTracker(){
         <div style={{padding:"8px 12px",background:C.bg,borderRadius:6,marginBottom:14,fontSize:11,color:C.textDim}}>
           L'ID CoinGecko se trouve dans l'URL : coingecko.com/en/coins/<span style={{color:C.accent}}>bitcoin</span> → l'ID est <span style={{color:C.accent}}>bitcoin</span>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+        <div style={{marginBottom:14}}>
+          <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>Prix moy (€)</label>
+          <div style={{display:"flex",gap:8}}>
+            <input value={form.avgPrice||""} onChange={e=>setForm(p=>({...p,avgPrice:e.target.value}))} type="number" placeholder="0"
+              style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
+              onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+            <button type="button" onClick={convertUsdToEur} disabled={fxLoading||!form.avgPrice}
+              style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 12px",color:C.accent,cursor:"pointer",fontSize:12,fontWeight:600,whiteSpace:"nowrap",opacity:(fxLoading||!form.avgPrice)?0.5:1}}>
+              {fxLoading?"...":"$ → €"}
+            </button>
+          </div>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number"/>
-          <InputField label="Prix moy (€)" value={form.avgPrice||""} onChange={v=>setForm(p=>({...p,avgPrice:v}))} type="number"/>
           <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number"/>
         </div></>}
       {showModal==="livret"&&<>
