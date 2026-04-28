@@ -10,6 +10,7 @@ export default async function handler(req, res) {
 
   const { ticker, range, interval, period1, period2 } = req.query;
   if (!ticker) return res.status(400).json({ error: "ticker required" });
+  console.log(JSON.stringify({ event:"quote", ticker, range:range||"1d", historical:!!(period1&&period2), ts:Date.now() }));
 
   const base = "https://query1.finance.yahoo.com/v8/finance/chart";
   const url = period1 && period2

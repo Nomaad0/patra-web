@@ -11,6 +11,7 @@ export default async function handler(req, res) {
 
   const { q, account } = req.query;
   if (!q || q.trim().length < 1) return res.status(400).json({ error: "q required" });
+  console.log(JSON.stringify({ event:"search", q, account:account||"cto", ts:Date.now() }));
 
   // Suffixes de bourses UE/EEE — titres éligibles au PEA
   const PEA_SUFFIXES = [

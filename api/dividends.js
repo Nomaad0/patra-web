@@ -10,6 +10,7 @@ export default async function handler(req, res) {
 
   const { ticker } = req.query;
   if (!ticker) return res.status(400).json({ error: "ticker required" });
+  console.log(JSON.stringify({ event:"dividends", ticker, ts:Date.now() }));
 
   // Use v8/chart with events=dividends (same endpoint as quotes — known to work)
   const oneYearAgo = Math.floor((Date.now() - 365 * 24 * 3600 * 1000) / 1000);

@@ -6,6 +6,7 @@
   "description": "PaTra - Suivi de patrimoine personnel",
   "author": "Pierrick",
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "lucide-react": "^0.383.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
