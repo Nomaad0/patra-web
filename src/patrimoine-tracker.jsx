@@ -2060,8 +2060,8 @@ export default function PatrimoineTracker(){
               style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
               onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
           </div>
-          {avgPriceCur==="usd"&&<div style={{fontSize:11,color:C.textDim,marginTop:5}}>
-            {fxLoading?"Chargement du taux...":fxRate&&form.avgPrice?`≈ ${fmtEur(Math.round(parseFloat(form.avgPrice)/fxRate*100)/100)} · 1 € = ${fxRate.toFixed(4)} $`:"Entrez un montant en $"}
+          {avgPriceCur==="usd"&&<div style={{fontSize:11,marginTop:5,color:(!fxLoading&&!fxRate)?C.red:C.textDim}}>
+            {fxLoading?"Chargement du taux...":fxRate&&form.avgPrice?`≈ ${fmtEur(Math.round(parseFloat(form.avgPrice)/fxRate*100)/100)} · 1 € = ${fxRate.toFixed(4)} $`:fxRate?"Entrez un montant en $":"❌ Taux indisponible — vérifiez votre connexion"}
           </div>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
@@ -2080,7 +2080,7 @@ export default function PatrimoineTracker(){
           <InputField label="Taux (%)" value={form.rate||""} onChange={v=>setForm(p=>({...p,rate:v}))} type="number"/>
         </div>
       </>}
-      <button onClick={handleAdd} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginTop:6}}><Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>Ajouter</button>
+      {(()=>{const blocked=avgPriceCur==="usd"&&!fxRate&&!fxLoading;return<button onClick={handleAdd} disabled={blocked} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:blocked?"#374151":`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:blocked?"not-allowed":"pointer",marginTop:6,opacity:blocked?0.6:1}}><Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>{blocked?"Taux de change indisponible":"Ajouter"}</button>;})()}
     </Modal>
 
     <Modal show={!!editItem} onClose={()=>{setEditItem(null);setForm({})}} title={`Modifier — ${form.name||""}`}>
