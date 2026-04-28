@@ -889,14 +889,18 @@ export default function PatrimoineTracker(){
     setTimeout(()=>setDivFetchStatus(""),5000);
   };
 
-  const convertUsdToEur=async()=>{
+  const convertFx=async(dir)=>{
     if(!form.avgPrice)return;
     setFxLoading(true);
     try{
       const r=await fetch(`/api/quote?ticker=${encodeURIComponent("EURUSD=X")}&range=1d&interval=1d`);
       const d=await r.json();
       const rate=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
-      if(rate)setForm(p=>({...p,avgPrice:String(Math.round(parseFloat(p.avgPrice)/rate*100)/100)}));
+      if(rate){
+        const v=parseFloat(form.avgPrice);
+        const converted=dir==="usd2eur"?v/rate:v*rate;
+        setForm(p=>({...p,avgPrice:String(Math.round(converted*100)/100)}));
+      }
     }catch(e){}
     setFxLoading(false);
   };
@@ -1986,9 +1990,13 @@ export default function PatrimoineTracker(){
             <input value={form.avgPrice||""} onChange={e=>setForm(p=>({...p,avgPrice:e.target.value}))} type="number" placeholder="0"
               style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
               onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
-            <button type="button" onClick={convertUsdToEur} disabled={fxLoading||!form.avgPrice}
-              style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 12px",color:C.accent,cursor:"pointer",fontSize:12,fontWeight:600,whiteSpace:"nowrap",opacity:(fxLoading||!form.avgPrice)?0.5:1}}>
+            <button type="button" onClick={()=>convertFx("usd2eur")} disabled={fxLoading||!form.avgPrice}
+              style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 10px",color:C.accent,cursor:"pointer",fontSize:11,fontWeight:600,whiteSpace:"nowrap",opacity:(fxLoading||!form.avgPrice)?0.5:1}}>
               {fxLoading?"...":"$ → €"}
+            </button>
+            <button type="button" onClick={()=>convertFx("eur2usd")} disabled={fxLoading||!form.avgPrice}
+              style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"9px 10px",color:C.accent,cursor:"pointer",fontSize:11,fontWeight:600,whiteSpace:"nowrap",opacity:(fxLoading||!form.avgPrice)?0.5:1}}>
+              {fxLoading?"...":"€ → $"}
             </button>
           </div>
         </div>
