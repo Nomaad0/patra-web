@@ -231,7 +231,12 @@ Utiliser **Parqet ISIN** pour PEA/CTO : `https://assets.parqet.com/logos/isin/{I
 - Livrets : letter avatar coloré (pas d'ISIN)
 - Crypto : URLs CoinGecko hardcodées pour top 10, `c.thumb` pour résultats recherche
 
+- ✅ **Stablecoins** : séparés du tableau crypto principal (section dédiée sous le tableau)
+- ✅ **Permissions-Policy** header ajouté dans `vercel.json`
+- ✅ **URL routing** : `patra.fr/` → landing (postbuild rename `index.html` → `app.html`), `/app` → app, `/demo` → démo
+- ✅ **Landing copy** : retouche items 1/5/6 section "Fait pour toi si..." (style "Tu...", formulations allégées)
+
 ### Prochaine session
-1. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR
-2. Éventuellement : `/api/search-crypto.js` proxy CoinGecko (si traffic monte)
-4. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR (posts dans patra-distribution.html sur le bureau)
+1. **Réflexion monétisation** : couvrir les frais à minima — modèle freemium ? one-shot ? abonnement léger ? Inclure la réflexion sur une **app mobile iPhone/Android** (React Native ? PWA ? Capacitor ?)
+2. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR (posts dans `patra-distribution.html` sur le bureau)
+3. Éventuellement : `/api/search-crypto.js` proxy CoinGecko (si trafic monte)
