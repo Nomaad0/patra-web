@@ -208,8 +208,30 @@ Utiliser **Parqet ISIN** pour tous les instruments : `https://assets.parqet.com/
 - Pour les résultats de recherche : passer `logo={r.symbol}` (symbole complet avec suffixe)
 - Parqet supporte aussi les symboles avec suffixe exchange : `ENGI.PA`, `TTE.PA`, etc.
 
+## Marque-page session 2026-04-29
+
+### Fait aujourd'hui
+- ✅ **Quick-add Livrets** : `QUICK_LIVRETS` (Livret A, LDDS, LEP, Livret Jeune, PEL, CEL, Super Livret, Autre) — taux officiels 1er fév 2026 (LA/LDDS 1.5%, LEP 2.5%, PEL 2%, CEL 1%)
+- ✅ `LivretCard` composant module-level : nom lisible, avatar lettre coloré, taux affiché (pas de ticker monospace)
+- ✅ **Quick-add Crypto** : `QUICK_CRYPTO` top 10 (BTC, ETH, BNB, SOL, XRP, ADA, AVAX, DOGE, DOT, LINK) + logos CoinGecko
+- ✅ `CryptoCard` composant module-level : logo CoinGecko + symbole + nom
+- ✅ Recherche live CoinGecko (`/api/v3/search`, debounce 400ms) — pré-remplit nom/symbole/cgId
+- ✅ **Sélecteur devise €/$ sur PRU crypto** : fetch taux EURUSD=X (Yahoo, mis en cache session), preview `≈ X € · 1€ = X$`, conversion auto à l'ajout
+- ✅ Fix : bouton Ajouter bloqué si devise=$ et taux FX indisponible (message rouge)
+- ✅ Fix : hint cgId masqué si déjà rempli via grille/recherche
+- ✅ Fix build : conflit `cryptoLoading` → renommé `cgSearchLoading` pour la recherche CG
+- ✅ Merge `feat/quick-add` → `main`
+
+## Méthode logos (important)
+
+Utiliser **Parqet ISIN** pour PEA/CTO : `https://assets.parqet.com/logos/isin/{ISIN}`
+- Helper : `const _p = isin => \`https://assets.parqet.com/logos/isin/\${isin}\``
+- Vérifier l'ISIN exact avant d'ajouter (erreur Berkshire vs Amazon !)
+- Pour les résultats de recherche : passer `logo={r.symbol}` (symbole complet avec suffixe)
+- Livrets : letter avatar coloré (pas d'ISIN)
+- Crypto : URLs CoinGecko hardcodées pour top 10, `c.thumb` pour résultats recherche
+
 ### Prochaine session
-1. **Quick-add Livrets** : grille des livrets réglementés FR (Livret A, LDDS, LEP, PEL, CEL...)
-2. **Quick-add Crypto** : grille BTC, ETH, SOL, BNB, ADA, XRP, AVAX, MATIC...
-3. Merger `feat/quick-add` → `main` quand tout est validé
+1. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR
+2. Éventuellement : `/api/search-crypto.js` proxy CoinGecko (si traffic monte)
 4. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR (posts dans patra-distribution.html sur le bureau)
