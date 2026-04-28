@@ -1901,7 +1901,7 @@ export default function PatrimoineTracker(){
 
           if(quickSearch&&searchResults.length>0)return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
-              {searchResults.map(r=>{const n=((r.shortname||r.longname||r.symbol)).replace(/\s+/g,' ').trim();return<InstrCard key={r.symbol} ticker={r.symbol} name={n} issuer={r.exchange||r.typeDisp||""} selected={form.ticker===r.symbol}
+              {searchResults.map(r=>{const n=((r.shortname||r.longname||r.symbol)).replace(/\s+/g,' ').trim();return<InstrCard key={r.symbol} ticker={r.symbol} name={n} issuer={r.exchange||r.typeDisp||""} logo={r.symbol} selected={form.ticker===r.symbol}
                 onSelect={()=>setForm(p=>({...p,name:n,ticker:r.symbol}))}/>})}
             </div>
           );
