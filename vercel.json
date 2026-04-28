@@ -1,11 +1,17 @@
 {
   "redirects": [
-    { "source": "/", "destination": "/home", "permanent": false }
+    { "source": "/demo", "destination": "/app?demo=1", "permanent": false },
+    { "source": "/home", "destination": "/", "permanent": true },
+    { "source": "/landing.html", "destination": "/", "permanent": true }
   ],
-  "rewrites": [
-    { "source": "/home", "destination": "/landing.html" },
-    { "source": "/app", "destination": "/index.html" }
-  ],
+  "rewrites": {
+    "beforeFiles": [
+      { "source": "/", "destination": "/landing.html" }
+    ],
+    "afterFiles": [
+      { "source": "/app", "destination": "/index.html" }
+    ]
+  },
   "headers": [
     {
       "source": "/(.*)",
