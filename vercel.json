@@ -4,14 +4,10 @@
     { "source": "/home", "destination": "/", "permanent": true },
     { "source": "/landing.html", "destination": "/", "permanent": true }
   ],
-  "rewrites": {
-    "beforeFiles": [
-      { "source": "/", "destination": "/landing.html" }
-    ],
-    "afterFiles": [
-      { "source": "/app", "destination": "/index.html" }
-    ]
-  },
+  "rewrites": [
+    { "source": "/", "destination": "/landing.html" },
+    { "source": "/app", "destination": "/app.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",

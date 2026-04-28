@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build && node -e \"const fs=require('fs');fs.renameSync('build/index.html','build/app.html');\""
   },
   "engines": {
     "node": "22.x"
