@@ -78,7 +78,7 @@ const QUICK_CTO=[
   {ticker:"META",    name:"Meta",                    issuer:"US",        bg:"#1e3a5f",letter:"Me",logo:"META"},
   {ticker:"TSLA",    name:"Tesla",                   issuer:"US",        bg:"#7f1d1d",letter:"Ts",logo:"TSLA"},
   {ticker:"JPM",     name:"JPMorgan",                issuer:"US",        bg:"#1e3a5f",letter:"JP",logo:"JPM"},
-  {ticker:"BRK-B",   name:"Berkshire Hathaway",      issuer:"US",        bg:"#292524",letter:"Bk",logo:_p("US0231351067")},
+  {ticker:"BRK-B",   name:"Berkshire Hathaway",      issuer:"US",        bg:"#292524",letter:"Bk",logo:_p("US0846701086")},
   {ticker:"V",       name:"Visa",                    issuer:"US",        bg:"#1e3a5f",letter:"Vi",logo:"V"},
   {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:_p("IE00B5BMR087")},
   {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V", logo:_p("IE00B3RBWM25")},
