@@ -54,8 +54,8 @@ const _SCHNEIDER="https://www.google.com/s2/favicons?domain=se.com&sz=128";
 const _AIRLIQUIDE="https://www.google.com/s2/favicons?domain=airliquide.com&sz=128";
 const _SANOFI="https://www.google.com/s2/favicons?domain=sanofi.com&sz=128";
 const _LVMH="https://www.google.com/s2/favicons?domain=lvmh.com&sz=128";
-const _LOREAL="https://www.google.com/s2/favicons?domain=loreal.com&sz=128";
-const _SAFRAN="https://www.google.com/s2/favicons?domain=safran-group.com&sz=128";
+const _LOREAL="https://logo.clearbit.com/loreal.com";
+const _SAFRAN="https://logo.clearbit.com/safran-group.com";
 const _BERKSHIRE="https://www.google.com/s2/favicons?domain=berkshirehathaway.com&sz=128";
 // PEA : interleaved ETFs + actions FR/EU
 const QUICK_PEA=[
