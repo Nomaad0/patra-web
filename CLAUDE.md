@@ -187,9 +187,29 @@ Approche **delta-based** :
 - ✅ Grilles séparées `QUICK_PEA` / `QUICK_CTO` — PEA : ETFs intercalés actions FR/EU (TTE, MC, AIR, BNP, SAN, ASML, SAP...) — CTO : big caps US en tête
 - ✅ Modal élargie 520→640px, logos 34→40px
 
+### Marque-page session 2026-04-28 (suite — logos & analytics)
+
+### Fait aujourd'hui
+- ✅ **Logos quick-add : migration complète vers Parqet ISIN** (`_p(isin)` helper) — zéro collision, 100% fiable
+- ✅ Correction ISINs erronés : TTE → `FR0000120271` (ancien, mieux référencé), Berkshire → `US0846701086` (US0231351067 = Amazon !)
+- ✅ Logos résultats de recherche : passage du symbole complet (`ENGI.PA`) au lieu de stripper le suffixe
+- ✅ Nettoyage noms Yahoo Finance : `replace(/\s+/g,' ').trim()` (ex: "Coface S.A.                   A")
+- ✅ Search amélioré : `quotesCount 40`, `enableFuzzyQuery=true`, tri `.PA` en tête (PEA)
+- ✅ **Vercel Analytics** (`@vercel/analytics`) sur `main` — visites, pays, device
+- ✅ Logs structurés JSON dans `/api/quote`, `/api/dividends`, `/api/search` (Runtime Logs Vercel)
+- ✅ Fix build : `@vercel/analytics` ajouté dans `package.json` sur `main` (manquait → build KO)
+- ✅ Fix 403 previews Vercel : `isVercelPreview` bypass ajouté sur `api/quote.js` et `api/dividends.js`
+
+## Méthode logos (important)
+
+Utiliser **Parqet ISIN** pour tous les instruments : `https://assets.parqet.com/logos/isin/{ISIN}`
+- Helper : `const _p = isin => \`https://assets.parqet.com/logos/isin/\${isin}\``
+- Vérifier l'ISIN exact avant d'ajouter (erreur Berkshire vs Amazon !)
+- Pour les résultats de recherche : passer `logo={r.symbol}` (symbole complet avec suffixe)
+- Parqet supporte aussi les symboles avec suffixe exchange : `ENGI.PA`, `TTE.PA`, etc.
+
 ### Prochaine session
-1. **Vérifier feat/quick-add** sur le preview Vercel (logos US stocks Parqet, Amundi favicon, grilles PEA/CTO)
-2. **Quick-add Livrets** : grille des livrets réglementés FR (Livret A, LDDS, LEP, PEL, CEL...)
-3. **Quick-add Crypto** : grille BTC, ETH, SOL, BNB, ADA, XRP, AVAX, MATIC...
-4. Merger `feat/quick-add` → `main` quand tout est validé
-5. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR (posts dans patra-distribution.html sur le bureau)
+1. **Quick-add Livrets** : grille des livrets réglementés FR (Livret A, LDDS, LEP, PEL, CEL...)
+2. **Quick-add Crypto** : grille BTC, ETH, SOL, BNB, ADA, XRP, AVAX, MATIC...
+3. Merger `feat/quick-add` → `main` quand tout est validé
+4. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR (posts dans patra-distribution.html sur le bureau)
