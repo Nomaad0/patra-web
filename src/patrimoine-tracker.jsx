@@ -2045,9 +2045,9 @@ export default function PatrimoineTracker(){
           <InputField label="Symbole" value={form.symbol||""} onChange={v=>setForm(p=>({...p,symbol:v}))} placeholder="BTC"/>
           <InputField label="ID CoinGecko" value={form.cgId||""} onChange={v=>setForm(p=>({...p,cgId:v}))} placeholder="bitcoin"/>
         </div>
-        <div style={{padding:"8px 12px",background:C.bg,borderRadius:6,marginBottom:14,fontSize:11,color:C.textDim}}>
+        {!form.cgId&&<div style={{padding:"8px 12px",background:C.bg,borderRadius:6,marginBottom:14,fontSize:11,color:C.textDim}}>
           L'ID CoinGecko se trouve dans l'URL : coingecko.com/en/coins/<span style={{color:C.accent}}>bitcoin</span> → l'ID est <span style={{color:C.accent}}>bitcoin</span>
-        </div>
+        </div>}
         <div style={{marginBottom:14}}>
           <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>Prix moy</label>
           <div style={{display:"flex",gap:8}}>
