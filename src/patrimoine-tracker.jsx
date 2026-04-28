@@ -54,9 +54,10 @@ const _SCHNEIDER="https://www.google.com/s2/favicons?domain=se.com&sz=128";
 const _AIRLIQUIDE="https://www.google.com/s2/favicons?domain=airliquide.com&sz=128";
 const _SANOFI="https://www.google.com/s2/favicons?domain=sanofi.com&sz=128";
 const _LVMH="https://www.google.com/s2/favicons?domain=lvmh.com&sz=128";
-const _LOREAL="https://logo.clearbit.com/loreal.com";
-const _SAFRAN="https://logo.clearbit.com/safran-group.com";
-const _BERKSHIRE="https://www.google.com/s2/favicons?domain=berkshirehathaway.com&sz=128";
+const _LOREAL="https://www.google.com/s2/favicons?domain=loreal.fr&sz=128";
+const _SAFRAN="https://www.google.com/s2/favicons?domain=safran.com&sz=128";
+const _BERKSHIRE="https://www.google.com/s2/favicons?domain=brk.com&sz=128";
+const _VANGUARD="https://www.google.com/s2/favicons?domain=vanguard.com&sz=128";
 // PEA : interleaved ETFs + actions FR/EU
 const QUICK_PEA=[
   {ticker:"CW8.PA",  name:"Amundi MSCI World",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_AMUNDI},
@@ -65,7 +66,7 @@ const QUICK_PEA=[
   {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
   {ticker:"AI.PA",   name:"Air Liquide",             issuer:"FR",        bg:"#1e3a5f",letter:"AL",logo:_AIRLIQUIDE},
   {ticker:"SU.PA",   name:"Schneider Electric",      issuer:"FR",        bg:"#14532d",letter:"SE",logo:_SCHNEIDER},
-  {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V"},
+  {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V",logo:_VANGUARD},
   {ticker:"BNP.PA",  name:"BNP Paribas",             issuer:"FR",        bg:"#1a3a1f",letter:"BN",logo:_BNP},
   {ticker:"PE500.PA",name:"Amundi PEA S&P 500",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_AMUNDI},
   {ticker:"SAN.PA",  name:"Sanofi",                  issuer:"FR",        bg:"#4a044e",letter:"SA",logo:_SANOFI},
@@ -89,7 +90,7 @@ const QUICK_CTO=[
   {ticker:"BRK-B",   name:"Berkshire Hathaway",      issuer:"US",        bg:"#292524",letter:"Bk",logo:_BERKSHIRE},
   {ticker:"V",       name:"Visa",                    issuer:"US",        bg:"#1e3a5f",letter:"Vi",logo:"V"},
   {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
-  {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V"},
+  {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V",logo:_VANGUARD},
   {ticker:"IMDA.AS", name:"iShares Core MSCI World", issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
 ];
 
