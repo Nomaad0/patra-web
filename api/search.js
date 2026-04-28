@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     ".PR",                    // République tchèque (Prague)
   ];
 
-  const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=25&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
+  const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=40&newsCount=0&enableFuzzyQuery=true&quotesQueryId=tss_match_phrase_query`;
 
   try {
     const response = await fetch(url, {
