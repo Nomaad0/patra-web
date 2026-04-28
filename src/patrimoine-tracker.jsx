@@ -1702,12 +1702,12 @@ export default function PatrimoineTracker(){
             </div>
           </div>
           {isMobile
-            ? <div>{[...stableHoldings,...sortHoldings(crypto,"crypto")].map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={h._isStable?()=>{}:i=>openEdit(i,"crypto")} onDelete={h._isStable?id=>setStablecoins(p=>p.filter(s=>s.id!==id)):id=>del("crypto",id)} isMobile/>)}</div>
+            ? <div>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)} isMobile/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 0.8fr 0.8fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:680}}>
                   <SortHeader label="CRYPTO" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
                 </div>
-                <div style={{minWidth:680}}>{[...stableHoldings,...sortHoldings(crypto,"crypto")].map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={h._isStable?()=>{}:i=>openEdit(i,"crypto")} onDelete={h._isStable?id=>setStablecoins(p=>p.filter(s=>s.id!==id)):id=>del("crypto",id)}/>)}</div>
+                <div style={{minWidth:680}}>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)}/>)}</div>
               </div>
           }
         </div>
