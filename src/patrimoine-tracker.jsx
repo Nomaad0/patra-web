@@ -48,6 +48,69 @@ const STABLE_LIST=[
   {symbol:"EURS",name:"EURS (Stasis)",cgId:"stasis-eurs"},
 ];
 
+const _p=isin=>`https://assets.parqet.com/logos/isin/${isin}`;
+// PEA : interleaved ETFs + actions FR/EU
+const QUICK_PEA=[
+  {ticker:"CW8.PA",  name:"Amundi MSCI World",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_p("LU1681043599")},
+  {ticker:"TTE.PA",  name:"TotalEnergies",           issuer:"FR",        bg:"#7f1d1d",letter:"TT",logo:_p("FR0000120271")},
+  {ticker:"MC.PA",   name:"LVMH",                    issuer:"FR",        bg:"#3b0764",letter:"LV",logo:_p("FR0000121014")},
+  {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:_p("IE00B5BMR087")},
+  {ticker:"AI.PA",   name:"Air Liquide",             issuer:"FR",        bg:"#1e3a5f",letter:"AL",logo:_p("FR0000120073")},
+  {ticker:"SU.PA",   name:"Schneider Electric",      issuer:"FR",        bg:"#14532d",letter:"SE",logo:_p("FR0000121972")},
+  {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V", logo:_p("IE00B3RBWM25")},
+  {ticker:"BNP.PA",  name:"BNP Paribas",             issuer:"FR",        bg:"#1a3a1f",letter:"BN",logo:_p("FR0000131104")},
+  {ticker:"PE500.PA",name:"Amundi PEA S&P 500",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_p("FR0013412285")},
+  {ticker:"SAN.PA",  name:"Sanofi",                  issuer:"FR",        bg:"#4a044e",letter:"SA",logo:_p("FR0000120578")},
+  {ticker:"ASML.AS", name:"ASML",                    issuer:"NL",        bg:"#1e3a5f",letter:"AS",logo:_p("NL0010273215")},
+  {ticker:"IMDA.AS", name:"iShares Core MSCI World", issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:_p("IE00B4L5Y983")},
+  {ticker:"OR.PA",   name:"L'Oréal",                issuer:"FR",        bg:"#78350f",letter:"LO",logo:_p("FR0000120321")},
+  {ticker:"SAF.PA",  name:"Safran",                  issuer:"FR",        bg:"#1e3a5f",letter:"SF",logo:_p("FR0000073272")},
+  {ticker:"PUST.PA", name:"Amundi PEA Nasdaq-100",   issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_p("FR0013412020")},
+  {ticker:"SAP.DE",  name:"SAP",                     issuer:"DE",        bg:"#1e3a5f",letter:"SP",logo:_p("DE0007164600")},
+];
+// CTO : big caps US en tête, puis ETFs
+const QUICK_CTO=[
+  {ticker:"AAPL",    name:"Apple",                   issuer:"US",        bg:"#1c1917",letter:"Ap",logo:"AAPL"},
+  {ticker:"MSFT",    name:"Microsoft",               issuer:"US",        bg:"#1e3a5f",letter:"Ms",logo:"MSFT"},
+  {ticker:"NVDA",    name:"NVIDIA",                  issuer:"US",        bg:"#14532d",letter:"Nv",logo:"NVDA"},
+  {ticker:"AMZN",    name:"Amazon",                  issuer:"US",        bg:"#78350f",letter:"Az",logo:"AMZN"},
+  {ticker:"GOOGL",   name:"Alphabet",                issuer:"US",        bg:"#1e3a5f",letter:"Go",logo:"GOOGL"},
+  {ticker:"META",    name:"Meta",                    issuer:"US",        bg:"#1e3a5f",letter:"Me",logo:"META"},
+  {ticker:"TSLA",    name:"Tesla",                   issuer:"US",        bg:"#7f1d1d",letter:"Ts",logo:"TSLA"},
+  {ticker:"JPM",     name:"JPMorgan",                issuer:"US",        bg:"#1e3a5f",letter:"JP",logo:"JPM"},
+  {ticker:"BRK-B",   name:"Berkshire Hathaway",      issuer:"US",        bg:"#292524",letter:"Bk",logo:_p("US0846701086")},
+  {ticker:"V",       name:"Visa",                    issuer:"US",        bg:"#1e3a5f",letter:"Vi",logo:"V"},
+  {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:_p("IE00B5BMR087")},
+  {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V", logo:_p("IE00B3RBWM25")},
+  {ticker:"IMDA.AS", name:"iShares Core MSCI World", issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:_p("IE00B4L5Y983")},
+];
+
+// Top 10 cryptos (hors stablecoins)
+const QUICK_CRYPTO=[
+  {name:"Bitcoin",   symbol:"BTC", cgId:"bitcoin",       bg:"#78350f",letter:"₿", logo:"https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png"},
+  {name:"Ethereum",  symbol:"ETH", cgId:"ethereum",      bg:"#312e81",letter:"Ξ", logo:"https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"},
+  {name:"BNB",       symbol:"BNB", cgId:"binancecoin",   bg:"#78350f",letter:"BN",logo:"https://assets.coingecko.com/coins/images/825/thumb/bnb-icon2_2x.png"},
+  {name:"Solana",    symbol:"SOL", cgId:"solana",        bg:"#4c1d95",letter:"SO",logo:"https://assets.coingecko.com/coins/images/4128/thumb/solana.png"},
+  {name:"XRP",       symbol:"XRP", cgId:"ripple",        bg:"#1e3a5f",letter:"XR",logo:"https://assets.coingecko.com/coins/images/44/thumb/xrp-symbol-white-128.png"},
+  {name:"Cardano",   symbol:"ADA", cgId:"cardano",       bg:"#1e3a5f",letter:"AD",logo:"https://assets.coingecko.com/coins/images/975/thumb/cardano.png"},
+  {name:"Avalanche", symbol:"AVAX",cgId:"avalanche-2",   bg:"#7f1d1d",letter:"AV",logo:"https://assets.coingecko.com/coins/images/12559/thumb/Avalanche_Circle_RedWhite_Trans.png"},
+  {name:"Dogecoin",  symbol:"DOGE",cgId:"dogecoin",      bg:"#78350f",letter:"D", logo:"https://assets.coingecko.com/coins/images/5/thumb/dogecoin.png"},
+  {name:"Polkadot",  symbol:"DOT", cgId:"polkadot",      bg:"#831843",letter:"DO",logo:"https://assets.coingecko.com/coins/images/12171/thumb/polkadot.png"},
+  {name:"Chainlink", symbol:"LINK",cgId:"chainlink",     bg:"#1e3a5f",letter:"LI",logo:"https://assets.coingecko.com/coins/images/877/thumb/chainlink-new-logo.png"},
+];
+
+// Livrets réglementés FR
+const QUICK_LIVRETS=[
+  {ticker:"LA",   name:"Livret A",     issuer:"État",   plafond:22950, defaultRate:1.5,  bg:"#1e3a5f",letter:"LA"},
+  {ticker:"LDDS", name:"LDDS",         issuer:"État",   plafond:12000, defaultRate:1.5,  bg:"#1a4731",letter:"LD"},
+  {ticker:"LEP",  name:"LEP",          issuer:"État",   plafond:10000, defaultRate:2.5,  bg:"#4a044e",letter:"LP"},
+  {ticker:"LJ",   name:"Livret Jeune", issuer:"État",   plafond:1600,  defaultRate:1.5,  bg:"#7c2d12",letter:"LJ"},
+  {ticker:"PEL",  name:"PEL",          issuer:"État",   plafond:61200, defaultRate:2,    bg:"#166534",letter:"PL"},
+  {ticker:"CEL",  name:"CEL",          issuer:"État",   plafond:15300, defaultRate:1,    bg:"#14532d",letter:"CL"},
+  {ticker:"SL",   name:"Super Livret", issuer:"Banque", plafond:null,  defaultRate:0,    bg:"#1c1917",letter:"SL"},
+  {ticker:"OT",   name:"Autre",        issuer:"Banque", plafond:null,  defaultRate:0,    bg:"#374151",letter:"?"},
+];
+
 const defaultPEA=[];
 const defaultCrypto=[];
 const defaultCTO=[];
@@ -306,10 +369,50 @@ function HoldingRow({item,onEdit,onDelete,type,totalValue,isMobile}){
   </div>);
 }
 
+function LogoImg({symbol,bg,letter,size=34}){
+  const [err,setErr]=useState(false);
+  const src=symbol?.startsWith("https://")?symbol:`https://assets.parqet.com/logos/symbol/${symbol}`;
+  if(!symbol||err)return<div style={{width:size,height:size,borderRadius:8,background:bg||"#1a2744",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5,flexShrink:0}}>{letter||(symbol||"??").slice(0,2).toUpperCase()}</div>;
+  return<img src={src} alt=""
+    style={{width:size,height:size,borderRadius:8,objectFit:"contain",flexShrink:0,background:"#fff",padding:2}}
+    onError={()=>setErr(true)}
+    onLoad={e=>{if(e.target.naturalWidth<10)setErr(true);}}/>;
+}
+
+function InstrCard({ticker,name,issuer,bg,letter,logo,onSelect,selected}){
+  return<button onClick={onSelect}
+    style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:5,transition:"border-color .15s",textAlign:"center"}}
+    onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
+    <LogoImg symbol={logo||ticker.split(".")[0]} bg={bg} letter={letter} size={40}/>
+    <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2,wordBreak:"break-all"}}>{ticker.split(".")[0]}</div>
+    <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{issuer}</div>
+  </button>;
+}
+
+function CryptoCard({name,symbol,logo,bg,letter,selected,onSelect}){
+  return<button onClick={onSelect}
+    style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"border-color .15s",textAlign:"center",minWidth:0}}
+    onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
+    <LogoImg symbol={logo} bg={bg||"#1c1917"} letter={letter||symbol?.slice(0,2)} size={36}/>
+    <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2}}>{symbol}</div>
+    <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{name}</div>
+  </button>;
+}
+
+function LivretCard({name,bg,letter,defaultRate,selected,onSelect}){
+  return<button onClick={onSelect}
+    style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"10px 8px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"border-color .15s",textAlign:"center",minWidth:0}}
+    onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
+    <div style={{width:36,height:36,borderRadius:8,background:bg||C.card,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:"#fff",fontFamily:"'JetBrains Mono',monospace",flexShrink:0}}>{letter}</div>
+    <div style={{fontSize:11,fontWeight:700,color:selected?C.accent:C.text,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{name}</div>
+    {defaultRate>0&&<div style={{fontSize:9,color:C.textDim,lineHeight:1.2,fontFamily:"'JetBrains Mono',monospace"}}>{defaultRate}%</div>}
+  </button>;
+}
+
 function Modal({show,onClose,title,children}){
   if(!show)return null;
   return(<div style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,.7)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-    <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:18,padding:"28px 32px",width:"min(520px,calc(100vw - 32px))",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 25px 60px rgba(0,0,0,.5)"}} onClick={e=>e.stopPropagation()}>
+    <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:18,padding:"28px 32px",width:"min(640px,calc(100vw - 32px))",maxHeight:"90vh",overflowY:"auto",boxShadow:"0 25px 60px rgba(0,0,0,.5)"}} onClick={e=>e.stopPropagation()}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
         <h3 style={{color:C.text,fontSize:17,fontWeight:700,margin:0}}>{title}</h3>
         <button onClick={onClose} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4}}><X size={18}/></button>
@@ -513,6 +616,16 @@ export default function PatrimoineTracker(){
   const [isDemo,setIsDemo]=useState(false);
   const [txForm,setTxForm]=useState({date:new Date().toISOString().slice(0,10),type:"buy",account:"pea",holdingId:"new",name:"",quantity:"",price:"",notes:"",payWith:"cash"});
   const [peaOpenDate,setPeaOpenDate]=useState(null);
+  const [quickSearch,setQuickSearch]=useState("");
+  const [searchResults,setSearchResults]=useState([]);
+  const [searchLoading,setSearchLoading]=useState(false);
+  const [fxLoading,setFxLoading]=useState(false);
+  const [avgPriceCur,setAvgPriceCur]=useState("eur");
+  const [fxRate,setFxRate]=useState(null);
+  const [cryptoResults,setCryptoResults]=useState([]);
+  const [cgSearchLoading,setCgSearchLoading]=useState(false);
+  const searchTimer=useRef(null);
+  const cryptoTimer=useRef(null);
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
@@ -648,6 +761,36 @@ export default function PatrimoineTracker(){
   useEffect(()=>{if(loaded){syncCrypto();syncPEA();syncCTO();}},[loaded]);
   useEffect(()=>{const h=()=>setIsMobile(window.innerWidth<768);window.addEventListener("resize",h);return()=>window.removeEventListener("resize",h);},[]);
 
+  useEffect(()=>{
+    if(!quickSearch||(showModal!=="pea"&&showModal!=="cto")){setSearchResults([]);setSearchLoading(false);return;}
+    setSearchLoading(true);
+    clearTimeout(searchTimer.current);
+    searchTimer.current=setTimeout(async()=>{
+      try{
+        const r=await fetch(`/api/search?q=${encodeURIComponent(quickSearch)}&account=${showModal}`);
+        const d=await r.json();
+        setSearchResults(d.quotes||[]);
+      }catch(e){setSearchResults([]);}
+      setSearchLoading(false);
+    },350);
+    return()=>clearTimeout(searchTimer.current);
+  },[quickSearch,showModal]);
+
+  useEffect(()=>{
+    if(!quickSearch||showModal!=="crypto"){setCryptoResults([]);setCgSearchLoading(false);return;}
+    setCgSearchLoading(true);
+    clearTimeout(cryptoTimer.current);
+    cryptoTimer.current=setTimeout(async()=>{
+      try{
+        const r=await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(quickSearch)}`);
+        const d=await r.json();
+        setCryptoResults((d.coins||[]).slice(0,12));
+      }catch(e){setCryptoResults([]);}
+      setCgSearchLoading(false);
+    },400);
+    return()=>clearTimeout(cryptoTimer.current);
+  },[quickSearch,showModal]);
+
   // Auto-sync quand on change d'onglet (cooldown 5 min)
   useEffect(()=>{
     if(!loaded)return;
@@ -734,9 +877,9 @@ export default function PatrimoineTracker(){
   const handleAdd=()=>{const t=showModal;
     if(t==="pea")setPea(p=>[...p,{id:Date.now().toString(),name:form.name||"",ticker:form.ticker||"",quantity:parseFloat(form.quantity)||0,pru:parseFloat(form.pru)||0,currentPrice:parseFloat(form.currentPrice)||0,divPerShare:parseFloat(form.divPerShare)||0,divFreq:form.divFreq||"annuel"}]);
     else if(t==="cto")setCto(p=>[...p,{id:Date.now().toString(),name:form.name||"",ticker:form.ticker||"",quantity:parseFloat(form.quantity)||0,pru:parseFloat(form.pru)||0,currentPrice:parseFloat(form.currentPrice)||0,divPerShare:parseFloat(form.divPerShare)||0,divFreq:form.divFreq||"annuel"}]);
-    else if(t==="crypto")setCrypto(p=>[...p,{id:Date.now().toString(),name:form.name||"",symbol:form.symbol||"",cgId:form.cgId||"",quantity:parseFloat(form.quantity)||0,avgPrice:parseFloat(form.avgPrice)||0,currentPrice:parseFloat(form.currentPrice)||0}]);
+    else if(t==="crypto"){const avgEur=(avgPriceCur==="usd"&&fxRate)?Math.round(parseFloat(form.avgPrice)/fxRate*100)/100:parseFloat(form.avgPrice)||0;setCrypto(p=>[...p,{id:Date.now().toString(),name:form.name||"",symbol:form.symbol||"",cgId:form.cgId||"",quantity:parseFloat(form.quantity)||0,avgPrice:avgEur,currentPrice:parseFloat(form.currentPrice)||0}]);}
     else setLivrets(p=>[...p,{id:Date.now().toString(),name:form.name||"",balance:parseFloat(form.balance)||0,rate:parseFloat(form.rate)||0}]);
-    setShowModal(null);setForm({});};
+    setShowModal(null);setForm({});setAvgPriceCur("eur");};
 
   const handleEdit=()=>{const t=editItem._type;
     if(t==="pea")setPea(p=>p.map(h=>h.id===editItem.id?{...h,name:form.name??h.name,ticker:form.ticker??h.ticker,quantity:parseFloat(form.quantity)||h.quantity,pru:parseFloat(form.pru)||h.pru,currentPrice:parseFloat(form.currentPrice)||h.currentPrice,divPerShare:parseFloat(form.divPerShare)>=0?parseFloat(form.divPerShare):h.divPerShare,divFreq:form.divFreq||h.divFreq}:h));
@@ -790,6 +933,18 @@ export default function PatrimoineTracker(){
     setTimeout(()=>setDivFetchStatus(""),5000);
   };
 
+  const fetchFxRate=async()=>{
+    if(fxRate)return;
+    setFxLoading(true);
+    try{
+      const r=await fetch(`/api/quote?ticker=${encodeURIComponent("EURUSD=X")}&range=1d&interval=1d`);
+      const d=await r.json();
+      const rate=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+      if(rate)setFxRate(rate);
+    }catch(e){}
+    setFxLoading(false);
+  };
+
   // Export CSV
   const csvField=v=>{const s=String(v??"");const safe=/^[=+\-@|%]/.test(s)?"'"+s:s;return(safe.includes(",")||safe.includes('"')||safe.includes("\n"))?'"'+safe.replace(/"/g,'""')+'"':safe;};
   const exportCSV=()=>{
@@ -841,7 +996,7 @@ export default function PatrimoineTracker(){
   })();
 
   const thStyle={color:C.textMuted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:.8,padding:"10px 16px",textAlign:"right"};
-  const addBtn=(type)=>(<button onClick={()=>{setShowModal(type);setForm({})}} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Plus size={13}/>Ajouter</button>);
+  const addBtn=(type)=>(<button onClick={()=>{setShowModal(type);setForm({});setQuickSearch("");}}style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 14px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Plus size={13}/>Ajouter</button>);
 
   // Sortable header
   const SortHeader=({label,sortKey,style:s})=>{
@@ -1811,7 +1966,36 @@ export default function PatrimoineTracker(){
     </div>
 
     {/* ═══ MODALS ═══ */}
-    <Modal show={!!showModal} onClose={()=>{setShowModal(null);setForm({})}} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
+    <Modal show={!!showModal} onClose={()=>{setShowModal(null);setForm({});setQuickSearch("");setAvgPriceCur("eur");}} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
+      {(showModal==="pea"||showModal==="cto")&&<>
+        {/* Sélection rapide */}
+        <div style={{marginBottom:10}}>
+          <input autoFocus value={quickSearch} onChange={e=>setQuickSearch(e.target.value)}
+            placeholder="Rechercher un instrument (nom, ticker...)"
+            style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box"}}
+            onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+        </div>
+        {(()=>{
+          if(searchLoading)return<div style={{fontSize:12,color:C.textDim,textAlign:"center",padding:"16px 0",marginBottom:10}}>Recherche...</div>;
+
+          if(quickSearch&&searchResults.length>0)return(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+              {searchResults.map(r=>{const n=((r.shortname||r.longname||r.symbol)).replace(/\s+/g,' ').trim();return<InstrCard key={r.symbol} ticker={r.symbol} name={n} issuer={r.exchange||r.typeDisp||""} logo={r.symbol} selected={form.ticker===r.symbol}
+                onSelect={()=>setForm(p=>({...p,name:n,ticker:r.symbol}))}/>})}
+            </div>
+          );
+
+          if(quickSearch&&!searchLoading)return<div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0",marginBottom:10}}>Aucun résultat</div>;
+
+          return(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+              {(showModal==="pea"?QUICK_PEA:QUICK_CTO).map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} logo={instr.logo} selected={form.ticker===instr.ticker}
+                onSelect={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}/>)}
+            </div>
+          );
+        })()}
+        <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
+      </>}
       {(showModal==="pea"||showModal==="cto")&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="TOTALENERGIES"/>
         <div style={{marginBottom:14}}>
           <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>Ticker Yahoo</label>
@@ -1832,25 +2016,71 @@ export default function PatrimoineTracker(){
           <InputField label="Div/action (€)" value={form.divPerShare||""} onChange={v=>setForm(p=>({...p,divPerShare:v}))} type="number" placeholder="0 si capitalisant"/>
           <SelectField label="Fréquence" value={form.divFreq||"annuel"} onChange={v=>setForm(p=>({...p,divFreq:v}))} options={[{value:"annuel",label:"Annuel"},{value:"trim",label:"Trimestriel"},{value:"cap",label:"Capitalisant"}]}/>
         </div></>}
-      {showModal==="crypto"&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Bitcoin"/>
+      {showModal==="crypto"&&<>
+        <div style={{marginBottom:10}}>
+          <input autoFocus value={quickSearch} onChange={e=>setQuickSearch(e.target.value)}
+            placeholder="Rechercher une crypto (nom, symbole...)"
+            style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box"}}
+            onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+        </div>
+        {(()=>{
+          if(cgSearchLoading)return<div style={{fontSize:12,color:C.textDim,textAlign:"center",padding:"16px 0",marginBottom:10}}>Recherche...</div>;
+          if(quickSearch&&cryptoResults.length>0)return(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(90px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+              {cryptoResults.map(c=><CryptoCard key={c.id} name={c.name} symbol={c.symbol?.toUpperCase()} logo={c.thumb} selected={form.cgId===c.id}
+                onSelect={()=>setForm(p=>({...p,name:c.name,symbol:c.symbol?.toUpperCase(),cgId:c.id}))}/>)}
+            </div>
+          );
+          if(quickSearch&&!cgSearchLoading)return<div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0",marginBottom:10}}>Aucun résultat</div>;
+          return(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(90px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+              {QUICK_CRYPTO.map(c=><CryptoCard key={c.cgId} name={c.name} symbol={c.symbol} logo={c.logo} bg={c.bg} letter={c.letter} selected={form.cgId===c.cgId}
+                onSelect={()=>setForm(p=>({...p,name:c.name,symbol:c.symbol,cgId:c.cgId}))}/>)}
+            </div>
+          );
+        })()}
+        <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
+        <InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Bitcoin"/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Symbole" value={form.symbol||""} onChange={v=>setForm(p=>({...p,symbol:v}))} placeholder="BTC"/>
           <InputField label="ID CoinGecko" value={form.cgId||""} onChange={v=>setForm(p=>({...p,cgId:v}))} placeholder="bitcoin"/>
         </div>
-        <div style={{padding:"8px 12px",background:C.bg,borderRadius:6,marginBottom:14,fontSize:11,color:C.textDim}}>
+        {!form.cgId&&<div style={{padding:"8px 12px",background:C.bg,borderRadius:6,marginBottom:14,fontSize:11,color:C.textDim}}>
           L'ID CoinGecko se trouve dans l'URL : coingecko.com/en/coins/<span style={{color:C.accent}}>bitcoin</span> → l'ID est <span style={{color:C.accent}}>bitcoin</span>
+        </div>}
+        <div style={{marginBottom:14}}>
+          <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>Prix moy</label>
+          <div style={{display:"flex",gap:8}}>
+            <select value={avgPriceCur} onChange={e=>{setAvgPriceCur(e.target.value);if(e.target.value==="usd")fetchFxRate();}}
+              style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 10px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",cursor:"pointer"}}>
+              <option value="eur">€</option>
+              <option value="usd">$</option>
+            </select>
+            <input value={form.avgPrice||""} onChange={e=>setForm(p=>({...p,avgPrice:e.target.value}))} type="number" placeholder="0"
+              style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
+              onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+          </div>
+          {avgPriceCur==="usd"&&<div style={{fontSize:11,marginTop:5,color:(!fxLoading&&!fxRate)?C.red:C.textDim}}>
+            {fxLoading?"Chargement du taux...":fxRate&&form.avgPrice?`≈ ${fmtEur(Math.round(parseFloat(form.avgPrice)/fxRate*100)/100)} · 1 € = ${fxRate.toFixed(4)} $`:fxRate?"Entrez un montant en $":"❌ Taux indisponible — vérifiez votre connexion"}
+          </div>}
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number"/>
-          <InputField label="Prix moy (€)" value={form.avgPrice||""} onChange={v=>setForm(p=>({...p,avgPrice:v}))} type="number"/>
           <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number"/>
         </div></>}
-      {showModal==="livret"&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Livret A"/>
+      {showModal==="livret"&&<>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,marginBottom:10}}>
+          {QUICK_LIVRETS.map(l=><LivretCard key={l.ticker} name={l.name} bg={l.bg} letter={l.letter} defaultRate={l.defaultRate} selected={form.name===l.name}
+            onSelect={()=>setForm(p=>({...p,name:l.name,rate:l.defaultRate>0?l.defaultRate.toString():""}))}/>)}
+        </div>
+        <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
+        <InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Livret A"/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Solde (€)" value={form.balance||""} onChange={v=>setForm(p=>({...p,balance:v}))} type="number"/>
           <InputField label="Taux (%)" value={form.rate||""} onChange={v=>setForm(p=>({...p,rate:v}))} type="number"/>
-        </div></>}
-      <button onClick={handleAdd} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginTop:6}}><Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>Ajouter</button>
+        </div>
+      </>}
+      {(()=>{const blocked=avgPriceCur==="usd"&&!fxRate&&!fxLoading;return<button onClick={handleAdd} disabled={blocked} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:blocked?"#374151":`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:blocked?"not-allowed":"pointer",marginTop:6,opacity:blocked?0.6:1}}><Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>{blocked?"Taux de change indisponible":"Ajouter"}</button>;})()}
     </Modal>
 
     <Modal show={!!editItem} onClose={()=>{setEditItem(null);setForm({})}} title={`Modifier — ${form.name||""}`}>

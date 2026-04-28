@@ -173,7 +173,43 @@ Approche **delta-based** :
 - ✅ Script inline landing déplacé vers `public/landing-redirect.js` (requis par CSP)
 - ✅ Fix `MetricCard` : chiffres tronqués (`...`) → seuils font-size corrigés (>12→15px, >9→18px, >6→22px)
 
+### Marque-page session 2026-04-28
+
+### Fait aujourd'hui
+- ✅ **Feature "maturité fiscale PEA"** : `peaOpenDate` state, date input en bas de l'onglet PEA, calcul 5 ans, PS à 18.6% (LFSS 2026), carte verte "PEA mature" après 5 ans
+- ✅ **Feature "quick-add" PEA/CTO** : grille d'instruments populaires + recherche live Yahoo Finance, branche `feat/quick-add`
+- ✅ `LogoImg` component (module level) : logos Parqet via ticker, fallback letter avatar, détection placeholder (`naturalWidth<10`)
+- ✅ `InstrCard` component (module level) : correction bug remount (était dans IIFE → reset err à chaque render)
+- ✅ `api/search.js` : serverless function Yahoo Finance search, filtre suffixes EU/EEE pour PEA
+- ✅ Logos ETF : iShares via `BLK` (Parqet), Amundi via Google favicon `amundi.com`
+- ✅ LogoImg supporte URLs directes (startsWith "https://")
+- ✅ Logos US stocks : AAPL, MSFT, NVDA, AMZN, GOOGL, META, TSLA, JPM, V via Parqet
+- ✅ Grilles séparées `QUICK_PEA` / `QUICK_CTO` — PEA : ETFs intercalés actions FR/EU (TTE, MC, AIR, BNP, SAN, ASML, SAP...) — CTO : big caps US en tête
+- ✅ Modal élargie 520→640px, logos 34→40px
+
+### Marque-page session 2026-04-28 (suite — logos & analytics)
+
+### Fait aujourd'hui
+- ✅ **Logos quick-add : migration complète vers Parqet ISIN** (`_p(isin)` helper) — zéro collision, 100% fiable
+- ✅ Correction ISINs erronés : TTE → `FR0000120271` (ancien, mieux référencé), Berkshire → `US0846701086` (US0231351067 = Amazon !)
+- ✅ Logos résultats de recherche : passage du symbole complet (`ENGI.PA`) au lieu de stripper le suffixe
+- ✅ Nettoyage noms Yahoo Finance : `replace(/\s+/g,' ').trim()` (ex: "Coface S.A.                   A")
+- ✅ Search amélioré : `quotesCount 40`, `enableFuzzyQuery=true`, tri `.PA` en tête (PEA)
+- ✅ **Vercel Analytics** (`@vercel/analytics`) sur `main` — visites, pays, device
+- ✅ Logs structurés JSON dans `/api/quote`, `/api/dividends`, `/api/search` (Runtime Logs Vercel)
+- ✅ Fix build : `@vercel/analytics` ajouté dans `package.json` sur `main` (manquait → build KO)
+- ✅ Fix 403 previews Vercel : `isVercelPreview` bypass ajouté sur `api/quote.js` et `api/dividends.js`
+
+## Méthode logos (important)
+
+Utiliser **Parqet ISIN** pour tous les instruments : `https://assets.parqet.com/logos/isin/{ISIN}`
+- Helper : `const _p = isin => \`https://assets.parqet.com/logos/isin/\${isin}\``
+- Vérifier l'ISIN exact avant d'ajouter (erreur Berkshire vs Amazon !)
+- Pour les résultats de recherche : passer `logo={r.symbol}` (symbole complet avec suffixe)
+- Parqet supporte aussi les symboles avec suffixe exchange : `ENGI.PA`, `TTE.PA`, etc.
+
 ### Prochaine session
-1. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR (posts dans patra-distribution.html sur le bureau)
-2. **QA mobile terrain** — tester sur téléphone réel
-3. **Logo** — intégrer quand la nouvelle version est prête (remplacer `public/patra-logo.svg`)
+1. **Quick-add Livrets** : grille des livrets réglementés FR (Livret A, LDDS, LEP, PEL, CEL...)
+2. **Quick-add Crypto** : grille BTC, ETH, SOL, BNB, ADA, XRP, AVAX, MATIC...
+3. Merger `feat/quick-add` → `main` quand tout est validé
+4. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR (posts dans patra-distribution.html sur le bureau)
