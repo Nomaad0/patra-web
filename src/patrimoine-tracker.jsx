@@ -50,18 +50,21 @@ const STABLE_LIST=[
 
 const _AMUNDI="https://www.google.com/s2/favicons?domain=amundi.com&sz=128";
 const _BNP="https://www.google.com/s2/favicons?domain=bnpparibas.com&sz=128";
+const _SCHNEIDER="https://www.google.com/s2/favicons?domain=se.com&sz=128";
+const _AIRLIQUIDE="https://www.google.com/s2/favicons?domain=airliquide.com&sz=128";
+const _SANOFI="https://www.google.com/s2/favicons?domain=sanofi.com&sz=128";
 // PEA : interleaved ETFs + actions FR/EU
 const QUICK_PEA=[
   {ticker:"CW8.PA",  name:"Amundi MSCI World",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_AMUNDI},
   {ticker:"TTE.PA",  name:"TotalEnergies",           issuer:"FR",        bg:"#7f1d1d",letter:"TT"},
   {ticker:"MC.PA",   name:"LVMH",                    issuer:"FR",        bg:"#3b0764",letter:"LV"},
   {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
-  {ticker:"AIR.PA",  name:"Air Liquide",             issuer:"FR",        bg:"#1e3a5f",letter:"AL"},
-  {ticker:"SU.PA",   name:"Schneider Electric",      issuer:"FR",        bg:"#14532d",letter:"SE"},
+  {ticker:"AI.PA",   name:"Air Liquide",             issuer:"FR",        bg:"#1e3a5f",letter:"AL",logo:_AIRLIQUIDE},
+  {ticker:"SU.PA",   name:"Schneider Electric",      issuer:"FR",        bg:"#14532d",letter:"SE",logo:_SCHNEIDER},
   {ticker:"VWCE.DE", name:"Vanguard All-World",      issuer:"Vanguard",  bg:"#7f1d1d",letter:"V"},
   {ticker:"BNP.PA",  name:"BNP Paribas",             issuer:"FR",        bg:"#1a3a1f",letter:"BN",logo:_BNP},
   {ticker:"PE500.PA",name:"Amundi PEA S&P 500",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_AMUNDI},
-  {ticker:"SAN.PA",  name:"Sanofi",                  issuer:"FR",        bg:"#4a044e",letter:"SA"},
+  {ticker:"SAN.PA",  name:"Sanofi",                  issuer:"FR",        bg:"#4a044e",letter:"SA",logo:_SANOFI},
   {ticker:"ASML.AS", name:"ASML",                    issuer:"NL",        bg:"#1e3a5f",letter:"AS"},
   {ticker:"IMDA.AS", name:"iShares Core MSCI World", issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:"BLK"},
   {ticker:"OR.PA",   name:"L'Oréal",                issuer:"FR",        bg:"#78350f",letter:"LO"},
