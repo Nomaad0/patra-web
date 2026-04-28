@@ -85,6 +85,20 @@ const QUICK_CTO=[
   {ticker:"IMDA.AS", name:"iShares Core MSCI World", issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:_p("IE00B4L5Y983")},
 ];
 
+// Top 10 cryptos (hors stablecoins)
+const QUICK_CRYPTO=[
+  {name:"Bitcoin",   symbol:"BTC", cgId:"bitcoin",       bg:"#78350f",letter:"₿", logo:"https://assets.coingecko.com/coins/images/1/thumb/bitcoin.png"},
+  {name:"Ethereum",  symbol:"ETH", cgId:"ethereum",      bg:"#312e81",letter:"Ξ", logo:"https://assets.coingecko.com/coins/images/279/thumb/ethereum.png"},
+  {name:"BNB",       symbol:"BNB", cgId:"binancecoin",   bg:"#78350f",letter:"BN",logo:"https://assets.coingecko.com/coins/images/825/thumb/bnb-icon2_2x.png"},
+  {name:"Solana",    symbol:"SOL", cgId:"solana",        bg:"#4c1d95",letter:"SO",logo:"https://assets.coingecko.com/coins/images/4128/thumb/solana.png"},
+  {name:"XRP",       symbol:"XRP", cgId:"ripple",        bg:"#1e3a5f",letter:"XR",logo:"https://assets.coingecko.com/coins/images/44/thumb/xrp-symbol-white-128.png"},
+  {name:"Cardano",   symbol:"ADA", cgId:"cardano",       bg:"#1e3a5f",letter:"AD",logo:"https://assets.coingecko.com/coins/images/975/thumb/cardano.png"},
+  {name:"Avalanche", symbol:"AVAX",cgId:"avalanche-2",   bg:"#7f1d1d",letter:"AV",logo:"https://assets.coingecko.com/coins/images/12559/thumb/Avalanche_Circle_RedWhite_Trans.png"},
+  {name:"Dogecoin",  symbol:"DOGE",cgId:"dogecoin",      bg:"#78350f",letter:"D", logo:"https://assets.coingecko.com/coins/images/5/thumb/dogecoin.png"},
+  {name:"Polkadot",  symbol:"DOT", cgId:"polkadot",      bg:"#831843",letter:"DO",logo:"https://assets.coingecko.com/coins/images/12171/thumb/polkadot.png"},
+  {name:"Chainlink", symbol:"LINK",cgId:"chainlink",     bg:"#1e3a5f",letter:"LI",logo:"https://assets.coingecko.com/coins/images/877/thumb/chainlink-new-logo.png"},
+];
+
 // Livrets réglementés FR
 const QUICK_LIVRETS=[
   {ticker:"LA",   name:"Livret A",     issuer:"État",   plafond:22950, defaultRate:1.5,  bg:"#1e3a5f",letter:"LA"},
@@ -375,6 +389,16 @@ function InstrCard({ticker,name,issuer,bg,letter,logo,onSelect,selected}){
   </button>;
 }
 
+function CryptoCard({name,symbol,logo,bg,letter,selected,onSelect}){
+  return<button onClick={onSelect}
+    style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"8px 6px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"border-color .15s",textAlign:"center",minWidth:0}}
+    onMouseEnter={e=>{if(!selected)e.currentTarget.style.borderColor=C.accent;}} onMouseLeave={e=>{if(!selected)e.currentTarget.style.borderColor=C.border;}}>
+    <LogoImg symbol={logo} bg={bg||"#1c1917"} letter={letter||symbol?.slice(0,2)} size={36}/>
+    <div style={{fontSize:10,fontWeight:700,color:selected?C.accent:C.text,fontFamily:"'JetBrains Mono',monospace",lineHeight:1.2}}>{symbol}</div>
+    <div style={{fontSize:9,color:C.textDim,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:"100%"}}>{name}</div>
+  </button>;
+}
+
 function LivretCard({name,bg,letter,defaultRate,selected,onSelect}){
   return<button onClick={onSelect}
     style={{background:selected?C.accentDim:C.bg,border:`1px solid ${selected?C.accent:C.border}`,borderRadius:10,padding:"10px 8px",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"border-color .15s",textAlign:"center",minWidth:0}}
@@ -596,7 +620,10 @@ export default function PatrimoineTracker(){
   const [searchResults,setSearchResults]=useState([]);
   const [searchLoading,setSearchLoading]=useState(false);
   const [fxLoading,setFxLoading]=useState(false);
+  const [cryptoResults,setCryptoResults]=useState([]);
+  const [cryptoLoading,setCryptoLoading]=useState(false);
   const searchTimer=useRef(null);
+  const cryptoTimer=useRef(null);
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
@@ -745,6 +772,21 @@ export default function PatrimoineTracker(){
       setSearchLoading(false);
     },350);
     return()=>clearTimeout(searchTimer.current);
+  },[quickSearch,showModal]);
+
+  useEffect(()=>{
+    if(!quickSearch||showModal!=="crypto"){setCryptoResults([]);setCryptoLoading(false);return;}
+    setCryptoLoading(true);
+    clearTimeout(cryptoTimer.current);
+    cryptoTimer.current=setTimeout(async()=>{
+      try{
+        const r=await fetch(`https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(quickSearch)}`);
+        const d=await r.json();
+        setCryptoResults((d.coins||[]).slice(0,12));
+      }catch(e){setCryptoResults([]);}
+      setCryptoLoading(false);
+    },400);
+    return()=>clearTimeout(cryptoTimer.current);
   },[quickSearch,showModal]);
 
   // Auto-sync quand on change d'onglet (cooldown 5 min)
@@ -1976,7 +2018,31 @@ export default function PatrimoineTracker(){
           <InputField label="Div/action (€)" value={form.divPerShare||""} onChange={v=>setForm(p=>({...p,divPerShare:v}))} type="number" placeholder="0 si capitalisant"/>
           <SelectField label="Fréquence" value={form.divFreq||"annuel"} onChange={v=>setForm(p=>({...p,divFreq:v}))} options={[{value:"annuel",label:"Annuel"},{value:"trim",label:"Trimestriel"},{value:"cap",label:"Capitalisant"}]}/>
         </div></>}
-      {showModal==="crypto"&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Bitcoin"/>
+      {showModal==="crypto"&&<>
+        <div style={{marginBottom:10}}>
+          <input autoFocus value={quickSearch} onChange={e=>setQuickSearch(e.target.value)}
+            placeholder="Rechercher une crypto (nom, symbole...)"
+            style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box"}}
+            onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+        </div>
+        {(()=>{
+          if(cryptoLoading)return<div style={{fontSize:12,color:C.textDim,textAlign:"center",padding:"16px 0",marginBottom:10}}>Recherche...</div>;
+          if(quickSearch&&cryptoResults.length>0)return(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(90px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+              {cryptoResults.map(c=><CryptoCard key={c.id} name={c.name} symbol={c.symbol?.toUpperCase()} logo={c.thumb} selected={form.cgId===c.id}
+                onSelect={()=>setForm(p=>({...p,name:c.name,symbol:c.symbol?.toUpperCase(),cgId:c.id}))}/>)}
+            </div>
+          );
+          if(quickSearch&&!cryptoLoading)return<div style={{fontSize:12,color:C.textMuted,textAlign:"center",padding:"12px 0",marginBottom:10}}>Aucun résultat</div>;
+          return(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(90px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
+              {QUICK_CRYPTO.map(c=><CryptoCard key={c.cgId} name={c.name} symbol={c.symbol} logo={c.logo} bg={c.bg} letter={c.letter} selected={form.cgId===c.cgId}
+                onSelect={()=>setForm(p=>({...p,name:c.name,symbol:c.symbol,cgId:c.cgId}))}/>)}
+            </div>
+          );
+        })()}
+        <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
+        <InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Bitcoin"/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Symbole" value={form.symbol||""} onChange={v=>setForm(p=>({...p,symbol:v}))} placeholder="BTC"/>
           <InputField label="ID CoinGecko" value={form.cgId||""} onChange={v=>setForm(p=>({...p,cgId:v}))} placeholder="bitcoin"/>
