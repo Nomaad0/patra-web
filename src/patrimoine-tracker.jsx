@@ -52,7 +52,7 @@ const _p=isin=>`https://assets.parqet.com/logos/isin/${isin}`;
 // PEA : interleaved ETFs + actions FR/EU
 const QUICK_PEA=[
   {ticker:"CW8.PA",  name:"Amundi MSCI World",      issuer:"Amundi",    bg:"#0f3460",letter:"Am",logo:_p("LU1681043599")},
-  {ticker:"TTE.PA",  name:"TotalEnergies",           issuer:"FR",        bg:"#7f1d1d",letter:"TT",logo:_p("FR0014000MR3")},
+  {ticker:"TTE.PA",  name:"TotalEnergies",           issuer:"FR",        bg:"#7f1d1d",letter:"TT",logo:_p("FR0000120271")},
   {ticker:"MC.PA",   name:"LVMH",                    issuer:"FR",        bg:"#3b0764",letter:"LV",logo:_p("FR0000121014")},
   {ticker:"CSPX.AS", name:"iShares Core S&P 500",    issuer:"iShares",   bg:"#1a4731",letter:"iS",logo:_p("IE00B5BMR087")},
   {ticker:"AI.PA",   name:"Air Liquide",             issuer:"FR",        bg:"#1e3a5f",letter:"AL",logo:_p("FR0000120073")},
@@ -1901,8 +1901,8 @@ export default function PatrimoineTracker(){
 
           if(quickSearch&&searchResults.length>0)return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
-              {searchResults.map(r=><InstrCard key={r.symbol} ticker={r.symbol} name={r.shortname||r.longname||r.symbol} issuer={r.exchange||r.typeDisp||""} selected={form.ticker===r.symbol}
-                onSelect={()=>setForm(p=>({...p,name:r.shortname||r.longname||r.symbol,ticker:r.symbol}))}/>)}
+              {searchResults.map(r=>{const n=((r.shortname||r.longname||r.symbol)).replace(/\s+/g,' ').trim();return<InstrCard key={r.symbol} ticker={r.symbol} name={n} issuer={r.exchange||r.typeDisp||""} selected={form.ticker===r.symbol}
+                onSelect={()=>setForm(p=>({...p,name:n,ticker:r.symbol}))}/>})}
             </div>
           );
 

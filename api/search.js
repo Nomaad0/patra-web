@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     ".PR",                    // République tchèque (Prague)
   ];
 
-  const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=16&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
+  const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(q)}&quotesCount=25&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query`;
 
   try {
     const response = await fetch(url, {
@@ -45,6 +45,12 @@ export default async function handler(req, res) {
     let quotes = (data.quotes || []).filter(q => q.isYahooFinance && ["EQUITY","ETF","MUTUALFUND"].includes(q.quoteType));
     if (account === "pea") {
       quotes = quotes.filter(q => PEA_SUFFIXES.some(s => q.symbol.endsWith(s)));
+      // Trier : .PA en premier (Euronext Paris), puis le reste
+      quotes.sort((a, b) => {
+        const aPA = a.symbol.endsWith(".PA") ? 0 : 1;
+        const bPA = b.symbol.endsWith(".PA") ? 0 : 1;
+        return aPA - bPA;
+      });
     }
     res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=30");
     return res.status(200).json({ quotes });
