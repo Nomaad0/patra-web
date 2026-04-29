@@ -30,9 +30,11 @@
     };
   }
 
+  var isMobile = window.innerWidth < 600;
+  var COUNT = isMobile ? 9 : 18;
   var candles = [];
   var W = canvas.width, H = canvas.height;
-  for(var i = 0; i < 18; i++) candles.push(randCandle(W, H));
+  for(var i = 0; i < COUNT; i++) candles.push(randCandle(W, H));
 
   function draw(){
     if(prefersReduced) return;
