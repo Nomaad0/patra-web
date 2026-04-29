@@ -20,7 +20,7 @@
       wick: .014 + Math.random() * .038,
       bull: Math.random() > .42,
       op: .10 + Math.random() * .22,
-      speed: .00007 + Math.random() * .00011,
+      speed: .00014 + Math.random() * .00018,
       ph: Math.random() * Math.PI * 2,
       scale: .45 + Math.random() * .95
     });
@@ -36,7 +36,7 @@
       var cx = cd.x * W;
       var cy = prefersReduced
         ? cd.y * H
-        : (cd.y + Math.sin(t * cd.speed + cd.ph) * .05) * H;
+        : (cd.y + Math.sin(t * cd.speed + cd.ph) * .18 + Math.sin(t * cd.speed * 2.3 + cd.ph) * .06) * H;
       var bh = cd.body * H * cd.scale;
       var wh = cd.wick * H * cd.scale;
       var bw = 13 * cd.scale;
