@@ -42,7 +42,18 @@
     .bg-alt { background: #080d16; }
 
     /* HERO */
-    .hero { text-align: center; padding-top: 100px; padding-bottom: 64px; }
+    .hero-wrap { position: relative; overflow: hidden; }
+    .hero { text-align: center; padding-top: 100px; padding-bottom: 64px; position: relative; z-index: 1; }
+    .hero-blobs { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .18; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-direction: alternate; }
+    .blob-1 { width: 520px; height: 520px; background: #4f8ff7; top: -120px; left: -100px; animation: blob1 9s infinite alternate ease-in-out; }
+    .blob-2 { width: 420px; height: 420px; background: #A855F7; top: -60px; right: -80px; animation: blob2 12s infinite alternate ease-in-out; opacity: .14; }
+    .blob-3 { width: 300px; height: 300px; background: #4f8ff7; bottom: 40px; left: 50%; transform: translateX(-50%); animation: blob3 8s infinite alternate ease-in-out; opacity: .1; }
+    @keyframes blob1 { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(60px,40px) scale(1.08)} 100%{transform:translate(20px,80px) scale(.95)} }
+    @keyframes blob2 { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(-50px,30px) scale(1.1)} 100%{transform:translate(-20px,60px) scale(.92)} }
+    @keyframes blob3 { 0%{transform:translateX(-50%) scale(1)} 100%{transform:translateX(-40%) scale(1.15)} }
+    .hero-grain { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .035; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E"); background-size: 200px 200px; }
+    @media (prefers-reduced-motion: reduce) { .blob { animation: none; } }
     .badge { display: inline-flex; align-items: center; gap: 8px; background: var(--accent-dim); border: 1px solid #4f8ff733; border-radius: 20px; padding: 6px 16px; font-size: 13px; color: var(--accent); font-weight: 600; margin-bottom: 32px; }
     .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
@@ -226,6 +237,13 @@
 </nav>
 
 <!-- HERO -->
+<div class="hero-wrap">
+  <div class="hero-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+  <div class="hero-grain"></div>
 <section class="hero">
   <div class="badge"><div class="badge-dot"></div>Gratuit · Sans compte · Open source</div>
   <h1>Ton patrimoine,<br/><span>enfin lisible.</span></h1>
@@ -248,6 +266,7 @@
     <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Lignes illimitées</div></div>
   </div>
 </section>
+</div>
 
 <!-- SCREENSHOT -->
 <div class="screenshot-wrap">
