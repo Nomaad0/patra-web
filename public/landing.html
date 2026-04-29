@@ -133,6 +133,16 @@
     .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
     .feature-card p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
 
+    /* QUICKADD STRIP */
+    .quickadd-strip { padding: 48px 24px; max-width: 900px; margin: 0 auto; text-align: center; }
+    .quickadd-strip p { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); font-weight: 600; margin-bottom: 20px; }
+    .quickadd-chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 16px; }
+    .chip { display: inline-flex; align-items: center; gap: 7px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 13px; font-weight: 600; color: var(--text); transition: border-color .15s; }
+    .chip:hover { border-color: var(--accent); }
+    .chip-tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-muted); font-weight: 500; }
+    .quickadd-note { font-size: 12px; color: var(--text-muted); }
+    .quickadd-note span { color: var(--accent); }
+
     /* HOW IT WORKS */
     .hiw { text-align: center; }
     .hiw h2 { font-size: clamp(26px,4vw,36px); font-weight: 800; letter-spacing: -.5px; margin-bottom: 48px; }
@@ -316,13 +326,24 @@
       <h3>Benchmark & historique</h3>
       <p>Compare ta performance au CAC 40, S&P 500 et MSCI World en base 100. Courbe valeur vs capital investi.</p>
     </div>
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
-      <h3>Ajout en 1 clic</h3>
-      <p>CW8, PE500, BTC, Livret A… sélectionne depuis une grille d'instruments populaires ou recherche n'importe quel ticker. Cours et dividende récupérés automatiquement.</p>
-    </div>
   </div>
 </section>
+
+<!-- QUICKADD STRIP -->
+<div class="quickadd-strip">
+  <p>Ajout en 1 clic — instruments populaires inclus</p>
+  <div class="quickadd-chips">
+    <div class="chip">🌍 <span>Amundi MSCI World</span> <span class="chip-tag">CW8</span></div>
+    <div class="chip">🇺🇸 <span>S&P 500</span> <span class="chip-tag">PE500</span></div>
+    <div class="chip">🟠 <span>Bitcoin</span> <span class="chip-tag">BTC</span></div>
+    <div class="chip">🔷 <span>Ethereum</span> <span class="chip-tag">ETH</span></div>
+    <div class="chip">🏦 <span>Livret A</span> <span class="chip-tag">1,5 %</span></div>
+    <div class="chip">💰 <span>LEP</span> <span class="chip-tag">2,5 %</span></div>
+    <div class="chip">🛢️ <span>TotalEnergies</span> <span class="chip-tag">TTE</span></div>
+    <div class="chip">💎 <span>LVMH</span> <span class="chip-tag">MC</span></div>
+  </div>
+  <p class="quickadd-note">+ recherche live sur <span>tous les tickers Yahoo Finance</span> et <span>CoinGecko</span></p>
+</div>
 
 <!-- HOW IT WORKS -->
 <div class="bg-alt">
