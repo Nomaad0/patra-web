@@ -240,3 +240,28 @@ Utiliser **Parqet ISIN** pour PEA/CTO : `https://assets.parqet.com/logos/isin/{I
 1. **Réflexion monétisation** : couvrir les frais à minima — modèle freemium ? one-shot ? abonnement léger ? Inclure la réflexion sur une **app mobile iPhone/Android** (React Native ? PWA ? Capacitor ?)
 2. **Phase 4 Distribution** — poster sur r/vosfinances + Twitter FR (posts dans `patra-distribution.html` sur le bureau)
 3. Éventuellement : `/api/search-crypto.js` proxy CoinGecko (si trafic monte)
+
+## Marque-page session 2026-04-29 (suite)
+
+### Fait aujourd'hui
+- ✅ **Réflexion monétisation** : Ko-fi + Stripe actif, one-shot Pro via Ko-fi Shop, mobile via Capacitor (Apple account déjà payé)
+- ✅ **Fetch dividende auto** au clic sur instrument quick-add (PEA/CTO)
+- ✅ **Landing — audit complet + corrections** : FAQ navigateur/PC, quick-add dans features, step HIW corrigé, URL posts `https://patra.fr`
+- ✅ **Strip quick-add** : chips instruments populaires entre features et HIW (branche mergée)
+- ✅ **Animation hero** : chandeliers flottants canvas 2D (bleu = monte, violet = descend), système particules entrent/sortent, fade bords, 9 sur mobile / 18 desktop — fichier `public/hero-canvas.js`
+- ✅ **og:image régénérée** : ticker header + gradient bleu/violet + `patra.fr` (script puppeteer one-shot)
+- ✅ **Ko-fi lien corrigé** : `nomaad0` → `patracker` sur la landing (nomaad0 requiert compte)
+- ✅ **Screenshot app** mis à jour avec ticker header
+- ✅ **Distribution** : modmail envoyé aux mods r/vosfinances, réponse en attente (ils ont demandé le lien)
+- ✅ Premier don Ko-fi reçu (1€, amie)
+
+### Infra Ko-fi
+- URL correcte : `https://ko-fi.com/patracker`
+- Minimum configuré à 1€
+- App utilise `patracker`, landing aussi (corrigé)
+
+### Prochaine session
+1. **Attendre retour mods r/vosfinances** — si oui → poster avec screenshot
+2. **Créer compte Twitter dédié** `@PaTra_app` ou `@patratracker` → poster le tweet
+3. Hashtags Twitter à ajouter au post : `#PEA #investissement #vosfinances`
+4. Éventuellement : `/api/search-crypto.js` proxy CoinGecko (si trafic monte)
