@@ -1981,7 +1981,7 @@ export default function PatrimoineTracker(){
           if(quickSearch&&searchResults.length>0)return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
               {searchResults.map(r=>{const n=((r.shortname||r.longname||r.symbol)).replace(/\s+/g,' ').trim();return<InstrCard key={r.symbol} ticker={r.symbol} name={n} issuer={r.exchange||r.typeDisp||""} logo={r.symbol} selected={form.ticker===r.symbol}
-                onSelect={()=>setForm(p=>({...p,name:n,ticker:r.symbol}))}/>})}
+                onSelect={()=>{setForm(p=>({...p,name:n,ticker:r.symbol}));fetchDivForTicker(r.symbol);}}/>})}
             </div>
           );
 
@@ -1990,7 +1990,7 @@ export default function PatrimoineTracker(){
           return(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,maxHeight:200,overflowY:"auto",marginBottom:10,paddingRight:2}}>
               {(showModal==="pea"?QUICK_PEA:QUICK_CTO).map(instr=><InstrCard key={instr.ticker} ticker={instr.ticker} name={instr.name} issuer={instr.issuer} bg={instr.bg} letter={instr.letter} logo={instr.logo} selected={form.ticker===instr.ticker}
-                onSelect={()=>setForm(p=>({...p,name:instr.name,ticker:instr.ticker}))}/>)}
+                onSelect={()=>{setForm(p=>({...p,name:instr.name,ticker:instr.ticker}));fetchDivForTicker(instr.ticker);}}/>)}
             </div>
           );
         })()}
