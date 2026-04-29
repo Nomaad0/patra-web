@@ -13,64 +13,61 @@
 
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function randCandle(W, H, forceY){
-    var dir = Math.random() > .5 ? 1 : -1; // 1 = descend, -1 = monte
+  // dir = -1 : monte (bleu), dir = 1 : descend (violet)
+  function randCandle(W, H, startY, dir){
+    if(dir === undefined) dir = Math.random() > .5 ? 1 : -1;
+    var y = startY !== undefined ? startY : (.05 + Math.random() * .90) * H;
     return {
       x:     (.04 + Math.random() * .92) * W,
-      y:     forceY !== undefined ? forceY : (.05 + Math.random() * .90) * H,
-      vy:    (0.18 + Math.random() * 0.32) * dir,   // px/frame
-      vx:    (Math.random() - .5) * 0.08,            // légère dérive horizontale
+      y:     y,
+      vy:    (0.20 + Math.random() * 0.35) * dir,
+      vx:    (Math.random() - .5) * 0.07,
       body:  .030 + Math.random() * .080,
       wick:  .015 + Math.random() * .040,
-      bull:  Math.random() > .42,
-      op:    .12 + Math.random() * .24,
+      dir:   dir,
+      op:    .13 + Math.random() * .24,
       scale: .45 + Math.random() * 1.0,
-      dir:   dir
     };
   }
 
-  function initCandles(){
-    var W = canvas.width, H = canvas.height;
-    var candles = [];
-    for(var i = 0; i < 18; i++) candles.push(randCandle(W, H));
-    return candles;
-  }
-
-  var candles = initCandles();
+  var candles = [];
+  var W = canvas.width, H = canvas.height;
+  for(var i = 0; i < 18; i++) candles.push(randCandle(W, H));
 
   function draw(){
-    if(prefersReduced){ return; }
+    if(prefersReduced) return;
     var W = canvas.width, H = canvas.height;
     ctx.clearRect(0, 0, W, H);
 
-    candles.forEach(function(cd, i){
-      // déplacement
+    for(var i = 0; i < candles.length; i++){
+      var cd = candles[i];
       cd.y += cd.vy;
       cd.x += cd.vx;
 
-      var bh  = cd.body  * H * cd.scale;
-      var wh  = cd.wick  * H * cd.scale;
-      var bw  = 13 * cd.scale;
+      var bh     = cd.body * H * cd.scale;
+      var wh     = cd.wick * H * cd.scale;
+      var bw     = 13 * cd.scale;
       var margin = bh/2 + wh + 20;
 
-      // fade selon la proximité des bords
-      var fadeTop    = Math.min(1, cd.y / (H * .12));
-      var fadeBottom = Math.min(1, (H - cd.y) / (H * .12));
-      var fade       = Math.min(fadeTop, fadeBottom);
-      var op = cd.op * fade;
-
-      // reset quand sorti du cadre
-      if(cd.y < -margin || cd.y > H + margin){
-        var entryY = cd.dir === 1 ? -margin : H + margin;
-        candles[i] = randCandle(W, H, entryY);
-        candles[i].dir = cd.dir * -1; // alterne direction à la réapparition
-        candles[i].vy  = (0.18 + Math.random() * 0.32) * candles[i].dir;
-        return;
+      // sorti par le bas → réapparaît en haut avec la même direction
+      if(cd.y > H + margin){
+        candles[i] = randCandle(W, H, -margin, cd.dir);
+        continue;
+      }
+      // sorti par le haut → réapparaît en bas avec la même direction
+      if(cd.y < -margin){
+        candles[i] = randCandle(W, H, H + margin, cd.dir);
+        continue;
       }
 
-      var col = cd.bull ? '79,143,247' : '168,85,247';
+      // fade aux bords
+      var fadeTop    = Math.min(1, cd.y / (H * .10));
+      var fadeBottom = Math.min(1, (H - cd.y) / (H * .10));
+      var op = cd.op * Math.min(fadeTop, fadeBottom);
 
-      // mèche
+      // bleu = monte (dir=-1), violet = descend (dir=1)
+      var col = cd.dir === -1 ? '79,143,247' : '168,85,247';
+
       ctx.strokeStyle = 'rgba('+col+','+op+')';
       ctx.lineWidth   = 1.5;
       ctx.beginPath();
@@ -78,7 +75,6 @@
       ctx.lineTo(cd.x, cd.y + bh/2 + wh);
       ctx.stroke();
 
-      // corps
       ctx.fillStyle   = 'rgba('+col+','+(op * .65)+')';
       ctx.strokeStyle = 'rgba('+col+','+op+')';
       ctx.lineWidth   = 1;
@@ -86,7 +82,7 @@
       ctx.rect(cd.x - bw/2, cd.y - bh/2, bw, bh);
       ctx.fill();
       ctx.stroke();
-    });
+    }
 
     requestAnimationFrame(draw);
   }
