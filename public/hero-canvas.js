@@ -11,35 +11,54 @@
   resize();
   window.addEventListener('resize', resize);
 
-  var blobs = [
-    { x:.15, y:.25, r:.55, cx:79,  cg:143, cb:247, op:.65, vx:.00022,  vy:.00015,  ph:0   },
-    { x:.85, y:.15, r:.48, cx:168, cg:85,  cb:247, op:.55, vx:-.00018, vy:.00020,  ph:2.1 },
-    { x:.50, y:.80, r:.40, cx:79,  cg:143, cb:247, op:.40, vx:.00015,  vy:-.00018, ph:4.4 },
-    { x:.28, y:.60, r:.32, cx:168, cg:85,  cb:247, op:.35, vx:-.00012, vy:.00022,  ph:1.3 },
-  ];
+  var candles = [];
+  for(var i=0; i<16; i++){
+    candles.push({
+      x: .04 + Math.random() * .92,
+      y: .05 + Math.random() * .90,
+      body: .028 + Math.random() * .075,
+      wick: .014 + Math.random() * .038,
+      bull: Math.random() > .42,
+      op: .10 + Math.random() * .22,
+      speed: .00007 + Math.random() * .00011,
+      ph: Math.random() * Math.PI * 2,
+      scale: .45 + Math.random() * .95
+    });
+  }
 
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function draw(t){
     var W = canvas.width, H = canvas.height;
-    ctx.clearRect(0,0,W,H);
+    ctx.clearRect(0, 0, W, H);
 
-    blobs.forEach(function(b){
-      var drift = prefersReduced ? 0 : .14;
-      var bx = (b.x + Math.sin(t * b.vx + b.ph) * drift) * W;
-      var by = (b.y + Math.cos(t * b.vy + b.ph) * drift) * H;
-      var radius = b.r * Math.min(W, H);
+    candles.forEach(function(cd){
+      var cx = cd.x * W;
+      var cy = prefersReduced
+        ? cd.y * H
+        : (cd.y + Math.sin(t * cd.speed + cd.ph) * .05) * H;
+      var bh = cd.body * H * cd.scale;
+      var wh = cd.wick * H * cd.scale;
+      var bw = 13 * cd.scale;
+      var op = cd.op + Math.sin(t * cd.speed * 1.5 + cd.ph) * .04;
+      var col = cd.bull ? '79,143,247' : '168,85,247';
 
-      var g = ctx.createRadialGradient(bx, by, 0, bx, by, radius);
-      g.addColorStop(0,    'rgba('+b.cx+','+b.cg+','+b.cb+','+b.op+')');
-      g.addColorStop(0.25, 'rgba('+b.cx+','+b.cg+','+b.cb+','+(b.op*.7)+')');
-      g.addColorStop(0.6,  'rgba('+b.cx+','+b.cg+','+b.cb+','+(b.op*.2)+')');
-      g.addColorStop(1,    'rgba('+b.cx+','+b.cg+','+b.cb+',0)');
-
-      ctx.fillStyle = g;
+      // mèche
+      ctx.strokeStyle = 'rgba('+col+','+op+')';
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.arc(bx, by, radius, 0, Math.PI * 2);
+      ctx.moveTo(cx, cy - bh/2 - wh);
+      ctx.lineTo(cx, cy + bh/2 + wh);
+      ctx.stroke();
+
+      // corps
+      ctx.fillStyle   = 'rgba('+col+','+(op * .65)+')';
+      ctx.strokeStyle = 'rgba('+col+','+op+')';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.rect(cx - bw/2, cy - bh/2, bw, bh);
       ctx.fill();
+      ctx.stroke();
     });
 
     requestAnimationFrame(draw);
