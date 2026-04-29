@@ -10,12 +10,14 @@
     .card{width:1200px;height:630px;position:relative;display:flex;flex-direction:column;justify-content:center;padding:72px 80px;background:linear-gradient(135deg,#060a11 60%,#0d1a2e)}
     .noise{position:absolute;inset:0;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")}
     .glow{position:absolute;top:-80px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,#4f8ff722 0%,transparent 70%);pointer-events:none}
-    .glow2{position:absolute;bottom:-100px;left:200px;width:400px;height:400px;background:radial-gradient(circle,#7c3aed11 0%,transparent 70%);pointer-events:none}
+    .glow2{position:absolute;bottom:-100px;left:200px;width:400px;height:400px;background:radial-gradient(circle,#A855F711 0%,transparent 70%);pointer-events:none}
     .badge{display:inline-flex;align-items:center;gap:8px;background:#4f8ff715;border:1px solid #4f8ff733;border-radius:20px;padding:6px 16px;font-size:13px;color:#4f8ff7;font-weight:600;letter-spacing:.5px;margin-bottom:28px}
     .dot{width:7px;height:7px;background:#00d67e;border-radius:50%;animation:pulse 2s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
     h1{font-size:68px;font-weight:900;line-height:1.05;letter-spacing:-1.5px;margin-bottom:18px}
-    h1 span{color:#4f8ff7}
+    h1 span{background:linear-gradient(135deg,#4f8ff7,#A855F7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .logo-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:#A855F7;border:1px solid #A855F740;border-radius:3px;padding:2px 6px;letter-spacing:2px}
+    .logo-delta{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:#A855F7}
     .sub{font-size:22px;color:#8892a4;line-height:1.5;max-width:600px;margin-bottom:40px}
     .pills{display:flex;gap:12px}
     .pill{background:#0d1321;border:1px solid #1e2a3a;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;color:#8892a4;display:flex;align-items:center;gap:8px}
@@ -41,7 +43,14 @@
   <div class="glow2"></div>
 
   <div>
-    <div class="logo"><div class="logo-dot"></div>PaTra</div>
+    <div class="logo">
+      <div class="logo-dot"></div>PaTra
+      <span class="logo-tag">PATRIMOINE</span>
+      <svg width="80" height="22" viewBox="0 0 120 28" fill="none">
+        <path d="M0,22 L15,15 L28,12 L48,26 L58,20 L72,10 L88,5 L120,1" stroke="#A855F7" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
+      </svg>
+      <span class="logo-delta">▲ 4.2%</span>
+    </div>
     <div class="badge"><div class="dot"></div>Gratuit · Sans compte · Tes données chez toi</div>
     <h1>Ton <span>patrimoine</span>,<br/>enfin lisible.</h1>
     <p class="sub">PEA, Crypto, Livrets — tout au même endroit.<br/>L'alternative honnête à Finary.</p>
@@ -50,7 +59,7 @@
       <div class="pill"><span class="label">Crypto</span><span class="val">+61,0%</span></div>
       <div class="pill"><span class="label">Total</span><span class="val">148 400 €</span></div>
     </div>
-    <div class="url" style="margin-top:24px">patra-web-phi.vercel.app</div>
+    <div class="url" style="margin-top:24px">patra.fr</div>
   </div>
 
   <div class="right">
