@@ -11,13 +11,17 @@
 
     /* HEADER */
     .header{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid #1e2a3a;background:linear-gradient(180deg,#0d1321,#060a11)}
-    .logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;letter-spacing:1.5px;color:#4f8ff7}
-    .logo-dot{width:8px;height:8px;border-radius:50%;background:#4f8ff7}
+    .logo-area{display:flex;align-items:center;gap:12px}
+    .logo-name{font-weight:800;font-size:15px;letter-spacing:1.5px;color:#4f8ff7;font-family:'Outfit',sans-serif}
+    .patrimoine-tag{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;letter-spacing:1.5px;color:#A855F7;border:1px solid #A855F740;border-radius:4px;padding:2px 7px}
+    .sparkline-wrap{display:flex;align-items:center;gap:8px}
+    .delta{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#A855F7}
     .tabs{display:flex;gap:4px}
     .tab{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;color:#8892a4;cursor:pointer}
     .tab.active{background:#4f8ff718;color:#4f8ff7;border:1px solid #4f8ff733}
     .tab:not(.active){border:1px solid transparent}
-    .sync-btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;background:#0d1321;border:1px solid #1e2a3a;color:#8892a4;display:flex;align-items:center;gap:6px}
+    .sync-badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:4px 10px;border-radius:6px;background:#0d1321;border:1px solid #1e2a3a;color:#8892a4;display:flex;align-items:center;gap:5px}
+    .sync-badge .dot{width:6px;height:6px;border-radius:50%;background:#00d67e}
 
     /* MAIN */
     .main{padding:24px 28px;display:flex;flex-direction:column;gap:16px}
@@ -71,7 +75,16 @@
 <!-- HEADER -->
 <div class="header">
   <div style="display:flex;align-items:center;gap:20px">
-    <div class="logo"><div class="logo-dot"></div>PaTra</div>
+    <div class="logo-area">
+      <div class="logo-name">PaTra</div>
+      <div class="patrimoine-tag">PATRIMOINE</div>
+      <div class="sparkline-wrap">
+        <svg width="120" height="28" viewBox="0 0 120 28" fill="none">
+          <path d="M0,22 L15,15 L28,12 L48,26 L58,20 L72,10 L88,5 L120,1" stroke="#A855F7" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="delta">▲ 4.2%</span>
+      </div>
+    </div>
     <div class="tabs">
       <div class="tab active">Dashboard</div>
       <div class="tab">PEA</div>
@@ -84,9 +97,10 @@
     </div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
-    <div class="sync-btn">⟳ Sync actions</div>
-    <div class="sync-btn">⟳ Sync crypto</div>
-    <div style="padding:7px 10px;border-radius:8px;background:#0d1321;border:1px solid #1e2a3a;color:#8892a4">⚙</div>
+    <div class="sync-badge"><span class="dot"></span>PEA</div>
+    <div class="sync-badge"><span class="dot"></span>CTO</div>
+    <div class="sync-badge"><span class="dot"></span>Crypto</div>
+    <div style="padding:7px 10px;border-radius:8px;background:#0d1321;border:1px solid #1e2a3a;color:#8892a4;font-size:14px">⚙</div>
   </div>
 </div>
 
@@ -144,9 +158,9 @@
       </div>
       <!-- CTO -->
       <div class="alloc-row">
-        <div class="alloc-dot" style="background:#7c3aed"></div>
+        <div class="alloc-dot" style="background:#A855F7"></div>
         <div class="alloc-name">CTO</div>
-        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:11%;background:#7c3aed"></div></div>
+        <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:11%;background:#A855F7"></div></div>
         <div class="alloc-pct">11%</div>
         <div class="alloc-val">14 824 €</div>
       </div>
