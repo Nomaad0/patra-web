@@ -1371,7 +1371,7 @@ export default function PatrimoineTracker(){
                 <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.gold}}>{fmtEur(s.crypto||0)}</span>
                 <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.green}}>{fmtEur(s.livrets||0)}</span>
                 <div style={{display:"flex",justifyContent:"flex-end"}}>
-                  <button onClick={()=>setSnapshots(prev=>prev.filter((_,j)=>j!==idx))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3,borderRadius:4}}
+                  <button onClick={()=>setPendingDelete({kind:"snapshot",idx,label:new Date(s.date).toLocaleDateString("fr-FR",{day:"numeric",month:"long",year:"numeric"})})} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3,borderRadius:4}}
                     onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}>
                     <Trash2 size={13}/>
                   </button>
@@ -1718,7 +1718,7 @@ export default function PatrimoineTracker(){
                 <span style={{flex:1,fontFamily:"'JetBrains Mono',monospace",fontSize:12,color:C.textDim}}>{st.quantity.toLocaleString("fr-FR")}</span>
                 <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:13,fontWeight:700,color:C.text}}>{fmtEur(val)}</span>
                 {price>0&&<span style={{fontSize:10,color:C.textMuted,width:110,textAlign:"right"}}>1 {st.symbol} = {fmtEur(price)}</span>}
-                <button onClick={()=>setStablecoins(p=>p.filter((_,j)=>j!==i))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3,marginLeft:4}}
+                <button onClick={()=>setPendingDelete({kind:"stablecoin",stIdx:i,symbol:st.symbol})} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3,marginLeft:4}}
                   onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={12}/></button>
               </div>);
             })}
@@ -1808,7 +1808,7 @@ export default function PatrimoineTracker(){
                 <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:C.green}}>{fmtEur(d.total)}</span>
                 <div style={{display:"flex",gap:4,justifyContent:"flex-end"}}>
                   <button onClick={()=>{setHistoryForm({year:String(d.year),total:String(d.total)});setShowHistoryModal(true);}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={13}/></button>
-                  <button onClick={()=>setDivHistory(p=>p.filter(x=>x.year!==d.year))} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
+                  <button onClick={()=>setPendingDelete({kind:"divyear",year:d.year})} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}} onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
                 </div>
               </div>
             ))}
@@ -1917,7 +1917,7 @@ export default function PatrimoineTracker(){
                 {tx.stableDelta&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontWeight:400,marginTop:2}}>{tx.stableDelta.symbol} : {tx.stableDelta.delta>0?"+":""}{tx.stableDelta.delta.toFixed(2)}</span>}
               </span>
               <div style={{display:"flex",justifyContent:"flex-end"}}>
-                <button onClick={()=>{const tx2=transactions[tx._origIdx];if(tx2?.cashDelta){if(tx2.account==="pea")setPeaCash(c=>c-tx2.cashDelta);else if(tx2.account==="cto")setCtoCash(c=>c-tx2.cashDelta);else setCryptoCash(c=>c-tx2.cashDelta);}if(tx2?.stableDelta){setStablecoins(p=>p.map(s=>s.symbol===tx2.stableDelta.symbol?{...s,quantity:s.quantity-tx2.stableDelta.delta}:s));}setTransactions(p=>p.filter((_,j)=>j!==tx._origIdx));}} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
+                <button onClick={()=>setPendingDelete({kind:"tx",origIdx:tx._origIdx,name:tx.name,cashDelta:tx.cashDelta,account:tx.account,stableDelta:tx.stableDelta})} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
                   onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
               </div>
             </div>
@@ -2253,16 +2253,40 @@ export default function PatrimoineTracker(){
       </button>
     </Modal>
 
-    {/* ═══ DELETE HOLDING MODAL ═══ */}
-    <Modal show={!!pendingDelete} onClose={()=>setPendingDelete(null)} title="Supprimer cette ligne">
-      <div style={{padding:"4px 0 12px"}}>
-        <div style={{fontSize:13,color:C.textDim,lineHeight:1.6,marginBottom:20}}>Supprimer <strong style={{color:C.text}}>{pendingDelete?.name}</strong> ? Cette action est irréversible — PRU, quantité et historique de PV seront perdus.</div>
-        <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
-          <button onClick={()=>setPendingDelete(null)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 18px",color:C.textDim,cursor:"pointer",fontSize:13,fontWeight:600}}>Annuler</button>
-          <button onClick={()=>{del(pendingDelete.type,pendingDelete.id);setPendingDelete(null);}} style={{background:C.red,border:"none",borderRadius:8,padding:"9px 18px",color:"#fff",cursor:"pointer",fontSize:13,fontWeight:700}}>Supprimer</button>
+    {/* ═══ DELETE CONFIRM MODAL ═══ */}
+    {pendingDelete&&(()=>{
+      const titles={holding:"Supprimer cette ligne",snapshot:"Supprimer ce snapshot",stablecoin:"Supprimer ce stablecoin",tx:"Supprimer cette transaction",divyear:"Supprimer cette année"};
+      const body=pendingDelete.kind==="holding"
+        ?<>Supprimer <strong style={{color:C.text}}>{pendingDelete.name}</strong> ? PRU, quantité et historique de PV seront perdus.</>
+        :pendingDelete.kind==="snapshot"
+        ?<>Ce snapshot du <strong style={{color:C.text}}>{pendingDelete.label}</strong> sera retiré de ta courbe d'évolution.</>
+        :pendingDelete.kind==="stablecoin"
+        ?<>Supprimer <strong style={{color:C.text}}>{pendingDelete.symbol}</strong> ? La quantité sera définitivement retirée.</>
+        :pendingDelete.kind==="tx"
+        ?<>Supprimer <strong style={{color:C.text}}>{pendingDelete.name}</strong> ?{pendingDelete.cashDelta?<><br/><span style={{color:C.gold}}>Cette suppression réinjectera <strong>{fmtEur(Math.abs(pendingDelete.cashDelta))}</strong> dans le cash {pendingDelete.account.toUpperCase()}.</span></>:null}</>
+        :<>Supprimer les dividendes de <strong style={{color:C.text}}>{pendingDelete.year}</strong> ? Ce point sera retiré du graphe annuel.</>;
+      const confirm=()=>{
+        if(pendingDelete.kind==="holding"){del(pendingDelete.type,pendingDelete.id);}
+        else if(pendingDelete.kind==="snapshot"){setSnapshots(prev=>prev.filter((_,j)=>j!==pendingDelete.idx));}
+        else if(pendingDelete.kind==="stablecoin"){setStablecoins(p=>p.filter((_,j)=>j!==pendingDelete.stIdx));}
+        else if(pendingDelete.kind==="tx"){
+          const tx2=transactions[pendingDelete.origIdx];
+          if(tx2?.cashDelta){if(tx2.account==="pea")setPeaCash(c=>c-tx2.cashDelta);else if(tx2.account==="cto")setCtoCash(c=>c-tx2.cashDelta);else setCryptoCash(c=>c-tx2.cashDelta);}
+          if(tx2?.stableDelta){setStablecoins(p=>p.map(s=>s.symbol===tx2.stableDelta.symbol?{...s,quantity:s.quantity-tx2.stableDelta.delta}:s));}
+          setTransactions(p=>p.filter((_,j)=>j!==pendingDelete.origIdx));
+        }else if(pendingDelete.kind==="divyear"){setDivHistory(p=>p.filter(x=>x.year!==pendingDelete.year));}
+        setPendingDelete(null);
+      };
+      return(<Modal show onClose={()=>setPendingDelete(null)} title={titles[pendingDelete.kind]||"Supprimer"}>
+        <div style={{padding:"4px 0 12px"}}>
+          <div style={{fontSize:13,color:C.textDim,lineHeight:1.6,marginBottom:20}}>{body}</div>
+          <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+            <button onClick={()=>setPendingDelete(null)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 18px",color:C.textDim,cursor:"pointer",fontSize:13,fontWeight:600}}>Annuler</button>
+            <button onClick={confirm} style={{background:C.red,border:"none",borderRadius:8,padding:"9px 18px",color:"#fff",cursor:"pointer",fontSize:13,fontWeight:700}}>Supprimer</button>
+          </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>);
+    })()}
 
     {/* ═══ RESTORE CONFIRM MODAL ═══ */}
     <Modal show={showRestoreConfirm} onClose={()=>{setShowRestoreConfirm(false);setPendingImportFile(null);}} title="Restaurer un backup">
