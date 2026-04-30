@@ -1195,7 +1195,7 @@ export default function PatrimoineTracker(){
             <path d="M0,22 L15,15 L28,12 L48,26 L58,20 L72,10 L88,5 L120,1" fill="none" stroke="#A855F7" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity=".6"/>
             <circle cx="120" cy="3" r="2" fill="#C084FC"/>
           </svg>}
-          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:600,color:C.purple}}>▲ 4.2%</span>
+          {snapshots.length>=2&&(()=>{const prev=snapshots[snapshots.length-2];const curr=snapshots[snapshots.length-1];const pct=prev.total>0?((curr.total-prev.total)/prev.total)*100:null;if(pct===null)return null;const up=pct>=0;return<span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:12,fontWeight:600,color:up?C.green:C.red}}>{up?"▲":"▼"} {Math.abs(pct).toFixed(1)}%</span>;})()}
         </div>
         {/* Badges sync */}
         <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
