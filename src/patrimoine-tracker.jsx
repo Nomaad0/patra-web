@@ -704,7 +704,7 @@ export default function PatrimoineTracker(){
       const h=newPea[i];
       if(!h.ticker){failed++;continue;}
       try{
-        setPeaSyncStatus(`${h.name}...`);
+        setPeaSyncStatus(`${i+1}/${newPea.length} — ${h.name}...`);
         const url=`/api/quote?ticker=${encodeURIComponent(h.ticker)}&range=1d&interval=1d`;
         const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
         const d=await r.json();
@@ -740,7 +740,7 @@ export default function PatrimoineTracker(){
       const h=newCto[i];
       if(!h.ticker){failed++;continue;}
       try{
-        setCtoSyncStatus(`${h.name}...`);
+        setCtoSyncStatus(`${i+1}/${newCto.length} — ${h.name}...`);
         const url=`/api/quote?ticker=${encodeURIComponent(h.ticker)}&range=1d&interval=1d`;
         const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
         const d=await r.json();
