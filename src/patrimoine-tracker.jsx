@@ -820,6 +820,20 @@ export default function PatrimoineTracker(){
     return()=>clearTimeout(cryptoTimer.current);
   },[quickSearch,showModal]);
 
+  // Raccourcis clavier 1-8 pour les onglets
+  useEffect(()=>{
+    const tabs=["dashboard","pea","cto","crypto","livrets","dividendes","objectif","transactions"];
+    const handler=(e)=>{
+      if(e.ctrlKey||e.metaKey||e.altKey)return;
+      const t=e.target;
+      if(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.tagName==="SELECT"||t.isContentEditable)return;
+      const idx=parseInt(e.key)-1;
+      if(idx>=0&&idx<tabs.length)setActiveTab(tabs[idx]);
+    };
+    window.addEventListener("keydown",handler);
+    return()=>window.removeEventListener("keydown",handler);
+  },[]);
+
   // Auto-sync quand on change d'onglet (cooldown 5 min)
   useEffect(()=>{
     if(!loaded)return;
