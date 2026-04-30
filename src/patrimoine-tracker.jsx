@@ -624,6 +624,7 @@ export default function PatrimoineTracker(){
   const [showRestoreConfirm,setShowRestoreConfirm]=useState(false);
   const [pendingImportFile,setPendingImportFile]=useState(null);
   const [showDeleteAllSnaps,setShowDeleteAllSnaps]=useState(false);
+  const [txFilter,setTxFilter]=useState({accounts:[],types:[]});
   const [pendingDelete,setPendingDelete]=useState(null);
   const [showDirtyConfirm,setShowDirtyConfirm]=useState(false);
   const [pendingClose,setPendingClose]=useState(null);
@@ -1922,7 +1923,14 @@ export default function PatrimoineTracker(){
           <div style={{color:C.textDim,fontSize:14}}>{t.noTx}</div>
           <div style={{color:C.textMuted,fontSize:12,marginTop:6}}>Enregistre tes achats et ventes pour garder un historique.</div>
         </div>}
-        {transactions.length>0&&<SectionCard scrollable>
+        {transactions.length>0&&<>
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:12}}>
+            {["pea","cto","crypto"].map(acc=>{const on=txFilter.accounts.includes(acc);return<button key={acc} onClick={()=>setTxFilter(p=>({...p,accounts:on?p.accounts.filter(a=>a!==acc):[...p.accounts,acc]}))} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${on?C.accent:C.border}`,background:on?C.accentDim:"transparent",color:on?C.accent:C.textDim,fontSize:11,fontWeight:700,cursor:"pointer",letterSpacing:.5,textTransform:"uppercase"}}>{acc}</button>;})}
+            <div style={{width:1,background:C.border,margin:"0 4px"}}/>
+            {["buy","sell"].map(type=>{const on=txFilter.types.includes(type);const col=type==="buy"?C.green:C.red;const colDim=type==="buy"?C.greenDim:C.redDim;return<button key={type} onClick={()=>setTxFilter(p=>({...p,types:on?p.types.filter(t=>t!==type):[...p.types,type]}))} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${on?col:C.border}`,background:on?colDim:"transparent",color:on?col:C.textDim,fontSize:11,fontWeight:700,cursor:"pointer"}}>{type==="buy"?"Achat":"Vente"}</button>;})}
+            {(txFilter.accounts.length>0||txFilter.types.length>0)&&<button onClick={()=>setTxFilter({accounts:[],types:[]})} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${C.border}`,background:"transparent",color:C.textMuted,fontSize:11,cursor:"pointer"}}>✕ Tout</button>}
+          </div>
+        <SectionCard scrollable>
           <div style={{minWidth:680}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
             <TxSortHeader label={t.date} sortKey="date" style={{textAlign:"left"}}/>
@@ -1934,7 +1942,7 @@ export default function PatrimoineTracker(){
             <TxSortHeader label={t.total} sortKey="total"/>
             <span style={thStyle}></span>
           </div>
-          {[...transactions].map((tx,origIdx)=>({...tx,_origIdx:origIdx})).sort((a,b)=>{
+          {[...transactions].map((tx,origIdx)=>({...tx,_origIdx:origIdx})).filter(tx=>(txFilter.accounts.length===0||txFilter.accounts.includes(tx.account))&&(txFilter.types.length===0||txFilter.types.includes(tx.type))).sort((a,b)=>{
             const {key,dir}=txSortConfig;
             if(key==="date"){const d=new Date(a.date).getTime()-new Date(b.date).getTime();return dir==="asc"?d:-d;}
             if(key==="type"||key==="account"||key==="name"){const s=a[key].localeCompare(b[key]);return dir==="asc"?s:-s;}
@@ -1965,7 +1973,8 @@ export default function PatrimoineTracker(){
             </div>
           ))}
           </div>
-        </SectionCard>}
+        </SectionCard>
+        </>}
       </>}
 
       {/* ═══ OBJECTIF 1M ═══ */}
