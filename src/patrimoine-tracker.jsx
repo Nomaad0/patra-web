@@ -2264,14 +2264,13 @@ export default function PatrimoineTracker(){
           <div style={{fontSize:48,marginBottom:16}}>📈</div>
           <h2 style={{color:C.text,fontSize:24,fontWeight:800,margin:"0 0 12px"}}>Commence par ton PEA</h2>
           <p style={{color:C.textDim,fontSize:14,lineHeight:1.7,marginBottom:12}}>
-            Va dans l'onglet <strong style={{color:C.accent}}>PEA</strong> et clique <strong style={{color:C.accent}}>Ajouter</strong> pour chaque ligne de ton portefeuille.
+            Va dans l'onglet <strong style={{color:C.accent}}>PEA</strong> et clique <strong style={{color:C.accent}}>Ajouter</strong>. Choisis un instrument dans la grille des populaires, ou tape son nom dans la barre de recherche.
           </p>
           <div style={{background:C.bg,borderRadius:10,padding:16,marginBottom:20,fontSize:13,color:C.textDim,lineHeight:1.8}}>
-            <strong style={{color:C.text}}>Pour chaque action, renseigne :</strong><br/>
-            • Le nom (ex: TOTALENERGIES)<br/>
-            • Le ticker Yahoo Finance (ex: TTE.PA)<br/>
-            • La quantité et le PRU<br/>
-            • Le dividende par action (optionnel)
+            <strong style={{color:C.text}}>Pour chaque ligne :</strong><br/>
+            • Quantité et PRU (prix de revient unitaire)<br/>
+            • Le dividende se pré-remplit automatiquement<br/>
+            • Les cours se synchronisent en temps réel
           </div>
           <button onClick={()=>setOnboardingStep(2)} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
             Suivant <ChevronRight size={18}/>
@@ -2281,12 +2280,13 @@ export default function PatrimoineTracker(){
           <div style={{fontSize:48,marginBottom:16}}>⚡</div>
           <h2 style={{color:C.text,fontSize:24,fontWeight:800,margin:"0 0 12px"}}>Ajoute tes cryptos</h2>
           <p style={{color:C.textDim,fontSize:14,lineHeight:1.7,marginBottom:12}}>
-            Onglet <strong style={{color:C.gold}}>Crypto</strong>, même principe. Le cours se synchronise automatiquement via CoinGecko.
+            Onglet <strong style={{color:C.gold}}>Crypto</strong>, même principe. Tape le nom de ta crypto dans la recherche — BTC, ETH, SOL... — et sélectionne-la dans la liste.
           </p>
           <div style={{background:C.bg,borderRadius:10,padding:16,marginBottom:20,fontSize:13,color:C.textDim,lineHeight:1.8}}>
-            <strong style={{color:C.text}}>L'ID CoinGecko se trouve dans l'URL :</strong><br/>
-            coingecko.com/en/coins/<strong style={{color:C.gold}}>bitcoin</strong> → ID = <strong style={{color:C.gold}}>bitcoin</strong><br/>
-            coingecko.com/en/coins/<strong style={{color:C.gold}}>ethereum</strong> → ID = <strong style={{color:C.gold}}>ethereum</strong>
+            <strong style={{color:C.text}}>À savoir :</strong><br/>
+            • Le cours se synchronise automatiquement via CoinGecko<br/>
+            • Tu peux saisir ton PRU en € ou en $<br/>
+            • Stablecoins (USDT, USDC...) dans la section dédiée
           </div>
           <button onClick={()=>setOnboardingStep(3)} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:`linear-gradient(135deg,${C.gold},${C.orange})`,color:"#fff",fontWeight:700,fontSize:15,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
             Suivant <ChevronRight size={18}/>
@@ -2316,10 +2316,9 @@ export default function PatrimoineTracker(){
             Quelques tips pour bien démarrer :
           </p>
           <div style={{background:C.bg,borderRadius:10,padding:16,marginBottom:20,fontSize:13,color:C.textDim,lineHeight:1.8}}>
-            • Bouton <strong style={{color:C.purple}}>⚡ Avancé</strong> pour débloquer les features pro<br/>
-            • Bouton <strong style={{color:C.green}}>Backup</strong> pour sauvegarder tes données<br/>
-            • Bouton <strong style={{color:darkMode?C.text:C.textDim}}>{darkMode?"☀":"🌙"}</strong> pour changer de thème<br/>
-            • Onglet <strong style={{color:C.gold}}>Objectif 1M</strong> pour visualiser ta trajectoire
+            • Menu <strong style={{color:C.text}}>⚙ Paramètres</strong> (en haut à droite) : backup, export CSV, mode clair/sombre<br/>
+            • Onglet <strong style={{color:C.gold}}>Objectif</strong> pour visualiser ta trajectoire<br/>
+            • Tes données restent dans ton navigateur — pense au <strong style={{color:C.green}}>backup</strong> régulier !
           </div>
           <button onClick={()=>{setShowOnboarding(false);setOnboardingStep(0);}} style={{width:"100%",padding:14,borderRadius:10,border:"none",background:`linear-gradient(135deg,${C.green},${C.accent})`,color:"#fff",fontWeight:700,fontSize:15,cursor:"pointer"}}>
             Commencer
