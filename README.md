@@ -70,3 +70,9 @@ Issues et PRs bienvenues. Pas de feuille de route publique pour l'instant — l'
 ---
 
 *Fait par un investisseur français pour des investisseurs français.*
+
+---
+
+## Contact
+
+[contact@patra.fr](mailto:contact@patra.fr)

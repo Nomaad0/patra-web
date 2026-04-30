@@ -2045,6 +2045,11 @@ export default function PatrimoineTracker(){
         onMouseLeave={e=>{e.currentTarget.style.borderColor=C.border;e.currentTarget.style.color=C.textDim;}}>
         ☕ Soutenir PaTra — un café (tarif aéroport)
       </a>
+      <a href="mailto:contact@patra.fr" style={{fontSize:12,color:C.textMuted,textDecoration:"none",transition:"color .15s"}}
+        onMouseEnter={e=>e.currentTarget.style.color=C.textDim}
+        onMouseLeave={e=>e.currentTarget.style.color=C.textMuted}>
+        contact@patra.fr
+      </a>
       <span style={{fontSize:12,color:C.textMuted}}>© 2026 PaTra — MIT License</span>
     </div>
 
