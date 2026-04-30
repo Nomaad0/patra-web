@@ -430,12 +430,12 @@ function Modal({show,onClose,title,children}){
   </div>);
 }
 
-function InputField({label,value,onChange,type="text",placeholder,min,max}){
+function InputField({label,value,onChange,type="text",placeholder,min,max,onBlur}){
   return(<div style={{marginBottom:14}}>
     <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>{label}</label>
     <input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} min={min} max={max}
       style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box"}}
-      onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
+      onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>{e.target.style.borderColor=C.border;if(onBlur)onBlur(e.target.value);}}/>
   </div>);
 }
 
@@ -641,10 +641,12 @@ export default function PatrimoineTracker(){
   const [fxRate,setFxRate]=useState(null);
   const [cryptoResults,setCryptoResults]=useState([]);
   const [cgSearchLoading,setCgSearchLoading]=useState(false);
+  const [cgIdStatus,setCgIdStatus]=useState("");
   const searchTimer=useRef(null);
   const cryptoTimer=useRef(null);
 
   const showToast=(msg,type="green",ms=3000)=>{setToast({msg,type});setTimeout(()=>setToast(null),ms);};
+  const validateCgId=async(id)=>{if(!id){setCgIdStatus("");return;}setCgIdStatus("⏳ Vérification...");try{const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(id)}&vs_currencies=eur`);const d=await r.json();if(d[id]?.eur!==undefined){setCgIdStatus("✓ ID valide");}else{setCgIdStatus("⚠️ ID inconnu — tape le nom dans la recherche");}}catch(e){setCgIdStatus("⚠️ Impossible de vérifier (connexion ?)");}};
   const tryCloseForm=(closeFn)=>{
     if(Object.keys(form).length>0){setPendingClose(()=>closeFn);setShowDirtyConfirm(true);}
     else{closeFn();}
@@ -2115,8 +2117,9 @@ export default function PatrimoineTracker(){
         <InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Bitcoin"/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Symbole" value={form.symbol||""} onChange={v=>setForm(p=>({...p,symbol:v}))} placeholder="BTC"/>
-          <InputField label="ID CoinGecko" value={form.cgId||""} onChange={v=>setForm(p=>({...p,cgId:v}))} placeholder="bitcoin"/>
+          <InputField label="ID CoinGecko" value={form.cgId||""} onChange={v=>{setForm(p=>({...p,cgId:v}));setCgIdStatus("");}} placeholder="bitcoin" onBlur={validateCgId}/>
         </div>
+        {cgIdStatus&&<div style={{fontSize:11,color:cgIdStatus.startsWith("✓")?C.green:cgIdStatus.startsWith("⏳")?C.textDim:C.gold,marginBottom:10,marginTop:-8}}>{cgIdStatus}</div>}
         {!form.cgId&&<div style={{padding:"8px 12px",background:C.bg,borderRadius:6,marginBottom:14,fontSize:11,color:C.textDim}}>
           L'ID CoinGecko se trouve dans l'URL : coingecko.com/en/coins/<span style={{color:C.accent}}>bitcoin</span> → l'ID est <span style={{color:C.accent}}>bitcoin</span>
         </div>}
@@ -2171,8 +2174,9 @@ export default function PatrimoineTracker(){
       {editItem?._type==="crypto"&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))}/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
           <InputField label="Symbole" value={form.symbol||""} onChange={v=>setForm(p=>({...p,symbol:v}))}/>
-          <InputField label="ID CoinGecko" value={form.cgId||""} onChange={v=>setForm(p=>({...p,cgId:v}))} placeholder="bitcoin"/>
+          <InputField label="ID CoinGecko" value={form.cgId||""} onChange={v=>{setForm(p=>({...p,cgId:v}));setCgIdStatus("");}} placeholder="bitcoin" onBlur={validateCgId}/>
         </div>
+        {cgIdStatus&&<div style={{fontSize:11,color:cgIdStatus.startsWith("✓")?C.green:cgIdStatus.startsWith("⏳")?C.textDim:C.gold,marginBottom:10}}>{cgIdStatus}</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
           <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number" min="0"/>
           <InputField label="Prix moy (€)" value={form.avgPrice||""} onChange={v=>setForm(p=>({...p,avgPrice:v}))} type="number" min="0"/>
