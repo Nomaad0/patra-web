@@ -625,6 +625,8 @@ export default function PatrimoineTracker(){
   const [pendingImportFile,setPendingImportFile]=useState(null);
   const [showDeleteAllSnaps,setShowDeleteAllSnaps]=useState(false);
   const [pendingDelete,setPendingDelete]=useState(null);
+  const [showDirtyConfirm,setShowDirtyConfirm]=useState(false);
+  const [pendingClose,setPendingClose]=useState(null);
   const [onboardingStep,setOnboardingStep]=useState(0);
   const [transactions,setTransactions]=useState([]);
   const [showTxModal,setShowTxModal]=useState(false);
@@ -643,6 +645,10 @@ export default function PatrimoineTracker(){
   const cryptoTimer=useRef(null);
 
   const showToast=(msg,type="green",ms=3000)=>{setToast({msg,type});setTimeout(()=>setToast(null),ms);};
+  const tryCloseForm=(closeFn)=>{
+    if(Object.keys(form).length>0){setPendingClose(()=>closeFn);setShowDirtyConfirm(true);}
+    else{closeFn();}
+  };
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
@@ -1998,7 +2004,7 @@ export default function PatrimoineTracker(){
     </div>
 
     {/* ═══ MODALS ═══ */}
-    <Modal show={!!showModal} onClose={()=>{setShowModal(null);setForm({});setQuickSearch("");setAvgPriceCur("eur");}} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
+    <Modal show={!!showModal} onClose={()=>tryCloseForm(()=>{setShowModal(null);setForm({});setQuickSearch("");setAvgPriceCur("eur");})} title={`Ajouter — ${showModal==="pea"?"PEA":showModal==="cto"?"CTO":showModal==="crypto"?"Crypto":"Livret"}`}>
       {(showModal==="pea"||showModal==="cto")&&<>
         {/* Sélection rapide */}
         <div style={{marginBottom:10}}>
@@ -2115,7 +2121,7 @@ export default function PatrimoineTracker(){
       {(()=>{const blocked=avgPriceCur==="usd"&&!fxRate&&!fxLoading;return<button onClick={handleAdd} disabled={blocked} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:blocked?"#374151":`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:blocked?"not-allowed":"pointer",marginTop:6,opacity:blocked?0.6:1}}><Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>{blocked?"Taux de change indisponible":"Ajouter"}</button>;})()}
     </Modal>
 
-    <Modal show={!!editItem} onClose={()=>{setEditItem(null);setForm({})}} title={`Modifier — ${form.name||""}`}>
+    <Modal show={!!editItem} onClose={()=>tryCloseForm(()=>{setEditItem(null);setForm({})})} title={`Modifier — ${form.name||""}`}>
       {(editItem?._type==="pea"||editItem?._type==="cto")&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))}/>
         <InputField label="Ticker Yahoo" value={form.ticker||""} onChange={v=>setForm(p=>({...p,ticker:v}))}/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
@@ -2287,6 +2293,17 @@ export default function PatrimoineTracker(){
         </div>
       </Modal>);
     })()}
+
+    {/* ═══ DIRTY FORM CONFIRM MODAL ═══ */}
+    <Modal show={showDirtyConfirm} onClose={()=>setShowDirtyConfirm(false)} title="Abandonner les modifications ?">
+      <div style={{padding:"4px 0 12px"}}>
+        <div style={{fontSize:13,color:C.textDim,lineHeight:1.6,marginBottom:20}}>Tu as des données saisies non enregistrées. Fermer le formulaire maintenant les supprimera.</div>
+        <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+          <button onClick={()=>setShowDirtyConfirm(false)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 18px",color:C.textDim,cursor:"pointer",fontSize:13,fontWeight:600}}>Continuer la saisie</button>
+          <button onClick={()=>{setShowDirtyConfirm(false);if(pendingClose){pendingClose();setPendingClose(null);}}} style={{background:C.red,border:"none",borderRadius:8,padding:"9px 18px",color:"#fff",cursor:"pointer",fontSize:13,fontWeight:700}}>Abandonner</button>
+        </div>
+      </div>
+    </Modal>
 
     {/* ═══ RESTORE CONFIRM MODAL ═══ */}
     <Modal show={showRestoreConfirm} onClose={()=>{setShowRestoreConfirm(false);setPendingImportFile(null);}} title="Restaurer un backup">
