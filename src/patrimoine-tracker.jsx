@@ -409,6 +409,15 @@ function LivretCard({name,bg,letter,defaultRate,selected,onSelect}){
   </button>;
 }
 
+function Toast({toast}){
+  if(!toast)return null;
+  const bg=toast.type==="red"?C.red:toast.type==="blue"?C.accent:C.green;
+  const col=toast.type==="red"||toast.type==="blue"?"#fff":"#000";
+  return(<div style={{position:"fixed",bottom:24,right:24,zIndex:2000,background:bg,color:col,padding:"10px 18px",borderRadius:10,fontSize:13,fontWeight:600,boxShadow:"0 4px 20px rgba(0,0,0,.4)",display:"flex",alignItems:"center",gap:8,animation:"fadeInUp .2s ease",maxWidth:340}}>
+    {toast.msg}
+  </div>);
+}
+
 function Modal({show,onClose,title,children}){
   if(!show)return null;
   return(<div style={{position:"fixed",inset:0,zIndex:1000,background:"rgba(0,0,0,.7)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
@@ -610,6 +619,12 @@ export default function PatrimoineTracker(){
   const [darkMode,setDarkMode]=useState(true);
   const [isMobile,setIsMobile]=useState(()=>window.innerWidth<768);
   const [showOnboarding,setShowOnboarding]=useState(false);
+  const [toast,setToast]=useState(null);
+  const [snapBlocked,setSnapBlocked]=useState(false);
+  const [showRestoreConfirm,setShowRestoreConfirm]=useState(false);
+  const [pendingImportFile,setPendingImportFile]=useState(null);
+  const [showDeleteAllSnaps,setShowDeleteAllSnaps]=useState(false);
+  const [pendingDelete,setPendingDelete]=useState(null);
   const [onboardingStep,setOnboardingStep]=useState(0);
   const [transactions,setTransactions]=useState([]);
   const [showTxModal,setShowTxModal]=useState(false);
@@ -626,6 +641,8 @@ export default function PatrimoineTracker(){
   const [cgSearchLoading,setCgSearchLoading]=useState(false);
   const searchTimer=useRef(null);
   const cryptoTimer=useRef(null);
+
+  const showToast=(msg,type="green",ms=3000)=>{setToast({msg,type});setTimeout(()=>setToast(null),ms);};
 
   // Labels
   const t={dashboard:"Dashboard",pea:"PEA",cto:"CTO",crypto:"Crypto",livrets:"Livrets",dividendes:"Dividendes",objectif:`Objectif ${fmtK(goalAmount)}`,patrimoine:"PATRIMOINE",plusValue:"PLUS-VALUE",divAn:"DIVIDENDES/AN",snapshot:"Snapshot",backup:"Backup",restore:"Restore",add:"Ajouter",save:"Sauvegarder",delete:"Supprimer",syncActions:"Sync Actions",syncCrypto:"Sync Crypto",invested:"investis",month:"/mois",year:"/an",total:"Total",buy:"Achat",sell:"Vente",transactions:"Transactions",noTx:"Aucune transaction enregistrée",logTx:"Enregistrer",name:"Nom",quantity:"Quantité",price:"Prix",notes:"Notes",date:"Date",type:"Type",account:"Compte"};
@@ -650,14 +667,20 @@ export default function PatrimoineTracker(){
   };
   const importBackup=(e)=>{
     const file=e.target.files?.[0];if(!file)return;
-    if(!window.confirm("⚠️ Vous importez des données d'une source externe.\n\nAssurez-vous que ce fichier vient bien de vous — un fichier malveillant peut afficher de fausses données financières.\n\nContinuer ?")){e.target.value="";return;}
+    setPendingImportFile(file);
+    setShowRestoreConfirm(true);
+    e.target.value="";
+  };
+  const confirmImport=()=>{
+    setShowRestoreConfirm(false);
+    if(!pendingImportFile)return;
     const reader=new FileReader();
     reader.onload=(ev)=>{
       try{
-        if(ev.target.result.length>5*1024*1024){alert("Fichier trop volumineux (max 5 Mo).");return;}
+        if(ev.target.result.length>5*1024*1024){showToast("⚠️ Fichier trop volumineux (max 5 Mo).","red");return;}
         const d=JSON.parse(ev.target.result);
-        if(d.snapshots?.length>500){alert("Fichier invalide : trop de snapshots (max 500).");return;}
-        if(d.transactions?.length>10000){alert("Fichier invalide : trop de transactions (max 10 000).");return;}
+        if(d.snapshots?.length>500){showToast("⚠️ Trop de snapshots dans ce fichier (max 500).","red");return;}
+        if(d.transactions?.length>10000){showToast("⚠️ Trop de transactions dans ce fichier (max 10 000).","red");return;}
         if(d.pea)setPea(d.pea);if(d.crypto)setCrypto(d.crypto);if(d.cto)setCto(d.cto);
         if(d.livrets)setLivrets(d.livrets);if(d.peaCash!==undefined)setPeaCash(d.peaCash);
         if(d.ctoCash!==undefined)setCtoCash(d.ctoCash);if(d.cryptoCash!==undefined)setCryptoCash(d.cryptoCash);if(d.stablecoins)setStablecoins(d.stablecoins);if(d.versements)setVersements(d.versements);
@@ -665,11 +688,11 @@ export default function PatrimoineTracker(){
         if(d.monthlyIncome)setMonthlyIncome(d.monthlyIncome);if(d.targetAlloc)setTargetAlloc(d.targetAlloc);
         if(d.darkMode!==undefined)setDarkMode(d.darkMode);
         if(d.transactions)setTransactions(d.transactions);
-        alert("Données restaurées avec succès !");
-      }catch(err){alert("Fichier invalide.");}
+        showToast("✅ Données restaurées avec succès !","green");
+      }catch(err){showToast("⚠️ Fichier invalide — impossible de lire ce JSON.","red");}
     };
-    reader.readAsText(file);
-    e.target.value="";
+    reader.readAsText(pendingImportFile);
+    setPendingImportFile(null);
   };
 
   // ═══ SYNC PEA PRICES via Yahoo Finance ═══
@@ -871,7 +894,14 @@ export default function PatrimoineTracker(){
     return null;
   }).filter(Boolean);
 
-  const takeSnap=()=>{const s={date:new Date().toISOString(),total:totalPat,invested:totalInv,pea:peaTotal,cto:ctoTotal,crypto:cryptoTotal,livrets:livretsTotal};setSnapshots(prev=>[...prev,s].slice(-100));};
+  const takeSnap=()=>{
+    const s={date:new Date().toISOString(),total:totalPat,invested:totalInv,pea:peaTotal,cto:ctoTotal,crypto:cryptoTotal,livrets:livretsTotal};
+    setSnapshots(prev=>[...prev,s].slice(-100));
+    const dateStr=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
+    setToast({msg:`📸 Snapshot du ${dateStr} enregistré`});
+    setSnapBlocked(true);
+    setTimeout(()=>{setSnapBlocked(false);setToast(null);},3000);
+  };;
 
   // CRUD
   const handleAdd=()=>{const t=showModal;
@@ -889,6 +919,7 @@ export default function PatrimoineTracker(){
     setEditItem(null);setForm({});};
 
   const del=(type,id)=>{if(type==="pea")setPea(p=>p.filter(h=>h.id!==id));else if(type==="cto")setCto(p=>p.filter(h=>h.id!==id));else if(type==="crypto")setCrypto(p=>p.filter(h=>h.id!==id));else setLivrets(p=>p.filter(l=>l.id!==id));};
+  const askDelete=(type,id)=>{const arr={pea,cto,crypto,livret:livrets}[type];const item=arr?.find(x=>x.id===id);setPendingDelete({type,id,name:item?.name||item?.symbol||"cette ligne"});};
 
   const openEdit=(item,type)=>{setEditItem({...item,_type:type});
     if(type==="pea"||type==="cto")setForm({name:item.name,ticker:item.ticker,quantity:String(item.quantity),pru:String(item.pru),currentPrice:String(item.currentPrice),divPerShare:String(item.divPerShare||0),divFreq:item.divFreq||"annuel"});
@@ -1039,7 +1070,7 @@ export default function PatrimoineTracker(){
 
   // Benchmark
   const fetchBenchmark=async()=>{
-    if(snapshots.length<2){alert("Il faut au moins 2 snapshots pour comparer.");return;}
+    if(snapshots.length<2){showToast("ℹ️ Il faut au moins 2 snapshots pour comparer.","blue");return;}
     setBenchLoading(true);
     const indices=[{key:"cac",ticker:"^FCHI"},{key:"sp500",ticker:"^GSPC"},{key:"msci",ticker:"CW8.PA"}];
     const startDate=Math.floor(new Date(snapshots[0].date).getTime()/1000);
@@ -1121,7 +1152,8 @@ export default function PatrimoineTracker(){
 
   return(<div style={{background:C.bg,minHeight:"100vh",color:C.text,fontFamily:"'Outfit',-apple-system,sans-serif",overflowX:"hidden"}}>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-    <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}} ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:${C.bg}} ::-webkit-scrollbar-thumb{background:${C.border};border-radius:3px}`}</style>
+    <style>{`@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}} @keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:${C.bg}} ::-webkit-scrollbar-thumb{background:${C.border};border-radius:3px}`}</style>
+    <Toast toast={toast}/>
 
     {/* HEADER */}
     <div style={{padding:isMobile?"10px 14px":"12px 28px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",background:`linear-gradient(180deg,${C.card},${C.bg})`,flexWrap:"wrap",gap:8}}>
@@ -1162,7 +1194,7 @@ export default function PatrimoineTracker(){
         <button onClick={syncCrypto} disabled={cryptoLoading} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 14px",color:C.gold,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}>
           <RefreshCw size={13} style={cryptoLoading?{animation:"spin 1s linear infinite"}:{}}/>{cryptoLoading?"...":t.syncCrypto}
         </button></>}
-        <button onClick={takeSnap} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 12px",color:C.accent,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600}}><Camera size={13}/>{!isMobile&&t.snapshot}</button>
+        <button onClick={takeSnap} disabled={snapBlocked} style={{background:C.accentDim,border:`1px solid ${C.accent}`,borderRadius:8,padding:"7px 12px",color:snapBlocked?C.textDim:C.accent,cursor:snapBlocked?"default":"pointer",display:"flex",alignItems:"center",gap:5,fontSize:12,fontWeight:600,opacity:snapBlocked?.6:1}}><Camera size={13}/>{!isMobile&&t.snapshot}</button>
         <button onClick={()=>setDarkMode(!darkMode)} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 12px",color:C.textDim,cursor:"pointer",display:"flex",alignItems:"center",fontSize:12}}>
           {darkMode?<Sun size={15}/>:<Moon size={15}/>}
         </button>
@@ -1225,7 +1257,7 @@ export default function PatrimoineTracker(){
             <span style={{fontSize:13,fontWeight:600,color:C.text}}>Snapshot en retard</span>
             <span style={{fontSize:13,color:C.textDim,marginLeft:8}}>Dernier il y a {Math.floor((Date.now()-new Date(snapshots[snapshots.length-1].date).getTime())/(1000*60*60*24))} jours — prends-en un pour suivre ta progression</span>
           </div>
-          <button onClick={takeSnap} style={{background:C.gold,border:"none",borderRadius:8,padding:"7px 14px",color:"#000",cursor:"pointer",fontSize:12,fontWeight:700,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap"}}><Camera size={12}/>Snapshot</button>
+          <button onClick={takeSnap} disabled={snapBlocked} style={{background:C.gold,border:"none",borderRadius:8,padding:"7px 14px",color:"#000",cursor:snapBlocked?"default":"pointer",fontSize:12,fontWeight:700,display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap",opacity:snapBlocked?.6:1}}><Camera size={12}/>Snapshot</button>
         </div>}
         {/* Dividend notification */}
         {currentMonthDiv>0&&<div style={{background:C.greenDim,border:`1px solid ${C.green}33`,borderRadius:12,padding:"12px 20px",marginBottom:16,display:"flex",alignItems:"center",gap:12}}>
@@ -1347,7 +1379,7 @@ export default function PatrimoineTracker(){
               </div>);
             })}
             {snapshots.length>1&&<div style={{padding:"10px 16px",display:"flex",justifyContent:"flex-end"}}>
-              <button onClick={()=>{if(window.confirm("Supprimer tous les snapshots ?"))setSnapshots([])}} style={{background:C.redDim,border:`1px solid ${C.red}44`,borderRadius:8,padding:"6px 14px",color:C.red,cursor:"pointer",fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:5}}>
+              <button onClick={()=>setShowDeleteAllSnaps(true)} style={{background:C.redDim,border:`1px solid ${C.red}44`,borderRadius:8,padding:"6px 14px",color:C.red,cursor:"pointer",fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:5}}>
                 <Trash2 size={12}/>Tout supprimer
               </button>
             </div>}
@@ -1538,12 +1570,12 @@ export default function PatrimoineTracker(){
             </div>
           </div>
           {isMobile
-            ? <div>{sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>del("pea",id)} isMobile/>)}</div>
+            ? <div>{sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>askDelete("pea",id)} isMobile/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:640}}>
                   <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
                 </div>
-                <div style={{minWidth:640}}>{sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>del("pea",id)}/>)}</div>
+                <div style={{minWidth:640}}>{sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>askDelete("pea",id)}/>)}</div>
               </div>
           }
           {peaSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.accent,background:C.bg}}>{peaSyncStatus}</div>}
@@ -1620,12 +1652,12 @@ export default function PatrimoineTracker(){
             </div>
           </div>
           {isMobile
-            ? <div>{sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>del("cto",id)} isMobile/>)}</div>
+            ? <div>{sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>askDelete("cto",id)} isMobile/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:640}}>
                   <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
                 </div>
-                <div style={{minWidth:640}}>{sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>del("cto",id)}/>)}</div>
+                <div style={{minWidth:640}}>{sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>askDelete("cto",id)}/>)}</div>
               </div>
           }
           {ctoSyncStatus&&<div style={{padding:"10px 16px",fontSize:11,color:C.purple,background:C.bg}}>{ctoSyncStatus}</div>}
@@ -1702,12 +1734,12 @@ export default function PatrimoineTracker(){
             </div>
           </div>
           {isMobile
-            ? <div>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)} isMobile/>)}</div>
+            ? <div>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>askDelete("crypto",id)} isMobile/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 0.8fr 0.8fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:680}}>
                   <SortHeader label="CRYPTO" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
                 </div>
-                <div style={{minWidth:680}}>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>del("crypto",id)}/>)}</div>
+                <div style={{minWidth:680}}>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>askDelete("crypto",id)}/>)}</div>
               </div>
           }
         </div>
@@ -1722,12 +1754,12 @@ export default function PatrimoineTracker(){
             {addBtn("livret")}
           </div>
           {isMobile
-            ? <div>{livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)} isMobile/>)}</div>
+            ? <div>{livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>askDelete("livret",id)} isMobile/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 1fr 0.6fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:380}}>
                   <SortHeader label="LIVRET" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="SOLDE" sortKey="solde"/><SortHeader label="TAUX" sortKey="taux"/><SortHeader label="POIDS" sortKey="poids"/><span style={thStyle}></span>
                 </div>
-                <div style={{minWidth:380}}>{sortHoldings(livrets,"livret").map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>del("livret",id)}/>)}</div>
+                <div style={{minWidth:380}}>{sortHoldings(livrets,"livret").map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>askDelete("livret",id)}/>)}</div>
               </div>
           }
         </div>
@@ -2219,6 +2251,42 @@ export default function PatrimoineTracker(){
       }} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:txValidationError?C.border:`linear-gradient(135deg,${C.accent},${C.purple})`,color:txValidationError?C.textMuted:"#fff",fontWeight:700,fontSize:13,cursor:txValidationError?"not-allowed":"pointer",marginTop:6,opacity:txValidationError?0.6:1,transition:"all .15s"}}>
         <Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>{t.logTx}
       </button>
+    </Modal>
+
+    {/* ═══ DELETE HOLDING MODAL ═══ */}
+    <Modal show={!!pendingDelete} onClose={()=>setPendingDelete(null)} title="Supprimer cette ligne">
+      <div style={{padding:"4px 0 12px"}}>
+        <div style={{fontSize:13,color:C.textDim,lineHeight:1.6,marginBottom:20}}>Supprimer <strong style={{color:C.text}}>{pendingDelete?.name}</strong> ? Cette action est irréversible — PRU, quantité et historique de PV seront perdus.</div>
+        <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+          <button onClick={()=>setPendingDelete(null)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 18px",color:C.textDim,cursor:"pointer",fontSize:13,fontWeight:600}}>Annuler</button>
+          <button onClick={()=>{del(pendingDelete.type,pendingDelete.id);setPendingDelete(null);}} style={{background:C.red,border:"none",borderRadius:8,padding:"9px 18px",color:"#fff",cursor:"pointer",fontSize:13,fontWeight:700}}>Supprimer</button>
+        </div>
+      </div>
+    </Modal>
+
+    {/* ═══ RESTORE CONFIRM MODAL ═══ */}
+    <Modal show={showRestoreConfirm} onClose={()=>{setShowRestoreConfirm(false);setPendingImportFile(null);}} title="Restaurer un backup">
+      <div style={{padding:"4px 0 12px"}}>
+        <div style={{background:C.redDim,border:`1px solid ${C.red}44`,borderRadius:10,padding:"14px 16px",marginBottom:18}}>
+          <div style={{fontSize:14,fontWeight:700,color:C.red,marginBottom:6}}>⚠️ Données externes</div>
+          <div style={{fontSize:13,color:C.textDim,lineHeight:1.6}}>Tu importes un fichier <strong style={{color:C.text}}>{pendingImportFile?.name}</strong>. Assure-toi qu'il vient bien de toi — un fichier modifié peut afficher de fausses données financières.</div>
+        </div>
+        <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+          <button onClick={()=>{setShowRestoreConfirm(false);setPendingImportFile(null);}} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 18px",color:C.textDim,cursor:"pointer",fontSize:13,fontWeight:600}}>Annuler</button>
+          <button onClick={confirmImport} style={{background:C.accent,border:"none",borderRadius:8,padding:"9px 18px",color:"#fff",cursor:"pointer",fontSize:13,fontWeight:700}}>Restaurer</button>
+        </div>
+      </div>
+    </Modal>
+
+    {/* ═══ DELETE ALL SNAPS MODAL ═══ */}
+    <Modal show={showDeleteAllSnaps} onClose={()=>setShowDeleteAllSnaps(false)} title="Supprimer tous les snapshots">
+      <div style={{padding:"4px 0 12px"}}>
+        <div style={{fontSize:13,color:C.textDim,lineHeight:1.6,marginBottom:20}}>Cette action supprimera <strong style={{color:C.text}}>{snapshots.length} snapshot{snapshots.length>1?"s":""}</strong> et effacera ta courbe d'évolution. Cette action est irréversible.</div>
+        <div style={{display:"flex",gap:10,justifyContent:"flex-end"}}>
+          <button onClick={()=>setShowDeleteAllSnaps(false)} style={{background:"none",border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 18px",color:C.textDim,cursor:"pointer",fontSize:13,fontWeight:600}}>Annuler</button>
+          <button onClick={()=>{setSnapshots([]);setShowDeleteAllSnaps(false);showToast("Snapshots supprimés.","red",2000);}} style={{background:C.red,border:"none",borderRadius:8,padding:"9px 18px",color:"#fff",cursor:"pointer",fontSize:13,fontWeight:700}}>Tout supprimer</button>
+        </div>
+      </div>
     </Modal>
 
     {/* ═══ RESET MODAL ═══ */}
