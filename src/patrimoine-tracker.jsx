@@ -702,7 +702,7 @@ export default function PatrimoineTracker(){
   };
 
   // ═══ SYNC PEA PRICES via Yahoo Finance ═══
-  const syncPEA=async()=>{
+  const syncPEA=async(auto=false)=>{
     setPeaLoading(true);setPeaSyncStatus("Synchronisation...");
     let updated=0;let failed=0;
     const newPea=[...pea];
@@ -726,10 +726,11 @@ export default function PatrimoineTracker(){
     setPeaSyncStatus(`${updated} mis à jour${failed>0?`, ${failed} échoué(s)`:""}`);
     setPeaLoading(false);
     setTimeout(()=>setPeaSyncStatus(""),5000);
+    if(auto&&updated>0)showToast(`↻ ${updated} cours PEA rafraîchis`,"blue",2000);
   };
 
   // ═══ SYNC CTO PRICES via Yahoo Finance ═══
-  const syncCTO=async()=>{
+  const syncCTO=async(auto=false)=>{
     setCtoLoading(true);setCtoSyncStatus("Synchronisation...");
     let updated=0;let failed=0;
     // Fetch USD/EUR rate first
@@ -765,10 +766,11 @@ export default function PatrimoineTracker(){
     setCtoSyncStatus(`${updated} mis à jour${failed>0?`, ${failed} échoué(s)`:""} (1$=${usdEur.toFixed(4)}€)`);
     setCtoLoading(false);
     setTimeout(()=>setCtoSyncStatus(""),8000);
+    if(auto&&updated>0)showToast(`↻ ${updated} cours CTO rafraîchis`,"blue",2000);
   };
 
   // Crypto sync - dynamic, uses cgId field from each crypto + stablecoin prices
-  const syncCrypto=async()=>{
+  const syncCrypto=async(auto=false)=>{
     setCryptoLoading(true);
     try{
       const cryptoIds=crypto.map(c=>c.cgId).filter(Boolean);
@@ -783,6 +785,7 @@ export default function PatrimoineTracker(){
       const prices={};STABLE_LIST.forEach(s=>{if(d[s.cgId]?.eur)prices[s.cgId]=d[s.cgId].eur;});
       setStablecoinPrices(prices);
       setLastSync(new Date().toISOString());
+      if(auto)showToast("↻ Cours crypto rafraîchis","blue",2000);
     }catch(e){console.error(e)}
     setCryptoLoading(false);
   };
@@ -838,9 +841,9 @@ export default function PatrimoineTracker(){
   useEffect(()=>{
     if(!loaded)return;
     const stale=(last)=>!last||Date.now()-new Date(last).getTime()>5*60*1000;
-    if(activeTab==="pea"&&stale(lastPeaSync))syncPEA();
-    else if(activeTab==="cto"&&stale(lastCtoSync))syncCTO();
-    else if(activeTab==="crypto"&&stale(lastSync))syncCrypto();
+    if(activeTab==="pea"&&stale(lastPeaSync))syncPEA(true);
+    else if(activeTab==="cto"&&stale(lastCtoSync))syncCTO(true);
+    else if(activeTab==="crypto"&&stale(lastSync))syncCrypto(true);
   },[activeTab,loaded]);
 
   // Calculations
