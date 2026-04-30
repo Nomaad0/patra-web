@@ -983,7 +983,8 @@ export default function PatrimoineTracker(){
         setForm(p=>({...p,...updates}));
         setDivFetchStatus(`✅ ${msgs.join(" · ")}`);
       }else{
-        setDivFetchStatus("ℹ️ Ticker introuvable ou pas de dividende");
+        const tickerFound=!!priceData?.chart?.result?.[0];
+        setDivFetchStatus(tickerFound?"ℹ️ Action capitalisante (pas de dividende)":"⚠️ Ticker introuvable — vérifie la syntaxe (ex : TTE.PA, AAPL)");
       }
     }catch(e){setDivFetchStatus("❌ Erreur de récupération");}
     setTimeout(()=>setDivFetchStatus(""),5000);
