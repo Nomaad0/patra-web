@@ -1274,7 +1274,23 @@ export default function PatrimoineTracker(){
           </div>
           <span style={{fontSize:16,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:C.green}}>{fmtEur(currentMonthDiv)}</span>
         </div>}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:14,marginBottom:24}}>
+        {totalPat===0&&pea.length===0&&cto.length===0&&crypto.length===0&&livrets.length===0
+          ?<div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"60px 20px",gap:20,textAlign:"center"}}>
+            <div style={{fontSize:48,lineHeight:1}}>📊</div>
+            <div>
+              <div style={{fontSize:20,fontWeight:800,color:C.text,marginBottom:8}}>Ton patrimoine t'attend</div>
+              <div style={{fontSize:14,color:C.textDim,lineHeight:1.6,maxWidth:340}}>Ajoute ta première position pour commencer à suivre l'évolution de ton patrimoine.</div>
+            </div>
+            <div style={{display:"flex",gap:10,flexWrap:"wrap",justifyContent:"center"}}>
+              <button onClick={()=>{setActiveTab("pea");setShowModal("pea");}} style={{background:C.accent,border:"none",borderRadius:10,padding:"11px 22px",color:"#fff",cursor:"pointer",fontSize:14,fontWeight:700,display:"flex",alignItems:"center",gap:7}}>
+                <Plus size={16}/>Ajouter une position PEA
+              </button>
+              <button onClick={()=>{setActiveTab("crypto");setShowModal("crypto");}} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:"11px 22px",color:C.textDim,cursor:"pointer",fontSize:14,fontWeight:600,display:"flex",alignItems:"center",gap:7}}>
+                <Plus size={16}/>Crypto
+              </button>
+            </div>
+          </div>
+          :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:14,marginBottom:24}}>
           <MetricCard label={t.patrimoine} value={fmtEur(totalPat)} sub={fmtPct(totalPVPct)} icon={Layers} trend={totalPV>=0?"up":"down"}/>
           <MetricCard label={t.plusValue} value={fmtEur(totalPV)} sub={`sur ${fmtEur(totalInv)} ${t.invested}`} icon={TrendingUp} trend={totalPV>=0?"up":"down"} color={totalPV>=0?C.green:C.red}/>
           <MetricCard label="PEA" value={fmtEur(peaTotal)} sub={`PV ${fmtPct(peaPVPct)}`} icon={BarChart3} trend={peaPV>=0?"up":"down"} color={C.accent}/>
@@ -1282,7 +1298,7 @@ export default function PatrimoineTracker(){
           <MetricCard label="CRYPTO" value={fmtEur(cryptoTotal)} sub={`PV ${fmtPct(cryptoPVPct)}`} icon={Zap} trend={cryptoPV>=0?"up":"down"} color={C.gold}/>
           <MetricCard label="LIVRETS" value={fmtEur(livretsTotal)} sub={livretsTotal>0?`~${(livrets.reduce((s,l)=>s+l.balance*l.rate,0)/(livretsTotal||1)).toFixed(1)}% rendement pondéré`:`${livrets.length} livret(s)`} icon={Wallet} color={C.green}/>
           <MetricCard label={t.divAn} value={fmtEur(totalDivAnnual)} sub={`${fmtEur(divMonthly)}${t.month}`} icon={Banknote} color={C.purple}/>
-        </div>
+        </div>}
 
         <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 20px",marginBottom:20,display:"flex",alignItems:"center",gap:16}}>
           <Flag size={16} color={C.gold}/>
