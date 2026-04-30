@@ -31,7 +31,7 @@ const LIGHT = {
   red:"#dc2626",redDim:"#fee2e2",
   gold:"#d97706",goldDim:"#fef3c7",
   text:"#1C1917",textDim:"#78716C",textMuted:"#A8A29E",
-  purple:"#7c3aed",purpleDim:"#ede9fe",
+  purple:"#A855F7",purpleDim:"#ede9fe",
   cyan:"#0891b2",orange:"#ea580c",
 };
 let C = DARK;
