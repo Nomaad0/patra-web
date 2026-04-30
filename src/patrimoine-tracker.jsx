@@ -430,10 +430,10 @@ function Modal({show,onClose,title,children}){
   </div>);
 }
 
-function InputField({label,value,onChange,type="text",placeholder}){
+function InputField({label,value,onChange,type="text",placeholder,min,max}){
   return(<div style={{marginBottom:14}}>
     <label style={{color:C.textDim,fontSize:11,fontWeight:600,marginBottom:5,display:"block",letterSpacing:.5,textTransform:"uppercase"}}>{label}</label>
-    <input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder}
+    <input type={type} value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} min={min} max={max}
       style={{width:"100%",background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none",boxSizing:"border-box"}}
       onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
   </div>);
@@ -2079,12 +2079,13 @@ export default function PatrimoineTracker(){
           {divFetchStatus&&<div style={{fontSize:11,color:C.textDim,marginTop:5}}>{divFetchStatus}</div>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-          <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number"/>
-          <InputField label="PRU (€)" value={form.pru||""} onChange={v=>setForm(p=>({...p,pru:v}))} type="number"/>
-          <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number"/>
+          <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number" min="0"/>
+          <InputField label="PRU (€)" value={form.pru||""} onChange={v=>setForm(p=>({...p,pru:v}))} type="number" min="0"/>
+          <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number" min="0"/>
         </div>
+        {parseFloat(form.pru)>0&&parseFloat(form.currentPrice)>0&&parseFloat(form.pru)>10*parseFloat(form.currentPrice)&&<div style={{background:C.goldDim,border:`1px solid ${C.gold}44`,borderRadius:8,padding:"8px 12px",marginBottom:10,fontSize:12,color:C.gold}}>⚠️ PRU semble très élevé par rapport au cours actuel. Tu es sûr ?</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <InputField label="Div/action (€)" value={form.divPerShare||""} onChange={v=>setForm(p=>({...p,divPerShare:v}))} type="number" placeholder="0 si capitalisant"/>
+          <InputField label="Div/action (€)" value={form.divPerShare||""} onChange={v=>setForm(p=>({...p,divPerShare:v}))} type="number" min="0" placeholder="0 si capitalisant"/>
           <SelectField label="Fréquence" value={form.divFreq||"annuel"} onChange={v=>setForm(p=>({...p,divFreq:v}))} options={[{value:"annuel",label:"Annuel"},{value:"trim",label:"Trimestriel"},{value:"cap",label:"Capitalisant"}]}/>
         </div></>}
       {showModal==="crypto"&&<>
@@ -2127,7 +2128,7 @@ export default function PatrimoineTracker(){
               <option value="eur">€</option>
               <option value="usd">$</option>
             </select>
-            <input value={form.avgPrice||""} onChange={e=>setForm(p=>({...p,avgPrice:e.target.value}))} type="number" placeholder="0"
+            <input value={form.avgPrice||""} onChange={e=>setForm(p=>({...p,avgPrice:e.target.value}))} type="number" min="0" placeholder="0"
               style={{flex:1,background:C.bg,border:`1px solid ${C.border}`,borderRadius:8,padding:"9px 12px",color:C.text,fontSize:13,fontFamily:"'JetBrains Mono',monospace",outline:"none"}}
               onFocus={e=>e.target.style.borderColor=C.accent} onBlur={e=>e.target.style.borderColor=C.border}/>
           </div>
@@ -2136,8 +2137,8 @@ export default function PatrimoineTracker(){
           </div>}
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number"/>
-          <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number"/>
+          <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number" min="0"/>
+          <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number" min="0"/>
         </div></>}
       {showModal==="livret"&&<>
         <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(100px,1fr))",gap:6,marginBottom:10}}>
@@ -2147,8 +2148,8 @@ export default function PatrimoineTracker(){
         <div style={{borderTop:`1px solid ${C.border}`,marginBottom:14}}/>
         <InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))} placeholder="Livret A"/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <InputField label="Solde (€)" value={form.balance||""} onChange={v=>setForm(p=>({...p,balance:v}))} type="number"/>
-          <InputField label="Taux (%)" value={form.rate||""} onChange={v=>setForm(p=>({...p,rate:v}))} type="number"/>
+          <InputField label="Solde (€)" value={form.balance||""} onChange={v=>setForm(p=>({...p,balance:v}))} type="number" min="0"/>
+          <InputField label="Taux (%)" value={form.rate||""} onChange={v=>setForm(p=>({...p,rate:v}))} type="number" min="0" max="100"/>
         </div>
       </>}
       {(()=>{const blocked=avgPriceCur==="usd"&&!fxRate&&!fxLoading;return<button onClick={handleAdd} disabled={blocked} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:blocked?"#374151":`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:blocked?"not-allowed":"pointer",marginTop:6,opacity:blocked?0.6:1}}><Check size={14} style={{verticalAlign:"middle",marginRight:5}}/>{blocked?"Taux de change indisponible":"Ajouter"}</button>;})()}
@@ -2158,12 +2159,13 @@ export default function PatrimoineTracker(){
       {(editItem?._type==="pea"||editItem?._type==="cto")&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))}/>
         <InputField label="Ticker Yahoo" value={form.ticker||""} onChange={v=>setForm(p=>({...p,ticker:v}))}/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-          <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number"/>
-          <InputField label="PRU (€)" value={form.pru||""} onChange={v=>setForm(p=>({...p,pru:v}))} type="number"/>
-          <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number"/>
+          <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number" min="0"/>
+          <InputField label="PRU (€)" value={form.pru||""} onChange={v=>setForm(p=>({...p,pru:v}))} type="number" min="0"/>
+          <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number" min="0"/>
         </div>
+        {parseFloat(form.pru)>0&&parseFloat(form.currentPrice)>0&&parseFloat(form.pru)>10*parseFloat(form.currentPrice)&&<div style={{background:C.goldDim,border:`1px solid ${C.gold}44`,borderRadius:8,padding:"8px 12px",marginBottom:10,fontSize:12,color:C.gold}}>⚠️ PRU semble très élevé par rapport au cours actuel. Tu es sûr ?</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <InputField label="Div/action (€)" value={form.divPerShare||""} onChange={v=>setForm(p=>({...p,divPerShare:v}))} type="number"/>
+          <InputField label="Div/action (€)" value={form.divPerShare||""} onChange={v=>setForm(p=>({...p,divPerShare:v}))} type="number" min="0"/>
           <SelectField label="Fréquence" value={form.divFreq||"annuel"} onChange={v=>setForm(p=>({...p,divFreq:v}))} options={[{value:"annuel",label:"Annuel"},{value:"trim",label:"Trimestriel"},{value:"cap",label:"Capitalisant"}]}/>
         </div></>}
       {editItem?._type==="crypto"&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))}/>
@@ -2172,14 +2174,14 @@ export default function PatrimoineTracker(){
           <InputField label="ID CoinGecko" value={form.cgId||""} onChange={v=>setForm(p=>({...p,cgId:v}))} placeholder="bitcoin"/>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
-          <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number"/>
-          <InputField label="Prix moy (€)" value={form.avgPrice||""} onChange={v=>setForm(p=>({...p,avgPrice:v}))} type="number"/>
-          <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number"/>
+          <InputField label="Quantité" value={form.quantity||""} onChange={v=>setForm(p=>({...p,quantity:v}))} type="number" min="0"/>
+          <InputField label="Prix moy (€)" value={form.avgPrice||""} onChange={v=>setForm(p=>({...p,avgPrice:v}))} type="number" min="0"/>
+          <InputField label="Cours (€)" value={form.currentPrice||""} onChange={v=>setForm(p=>({...p,currentPrice:v}))} type="number" min="0"/>
         </div></>}
       {editItem?._type==="livret"&&<><InputField label="Nom" value={form.name||""} onChange={v=>setForm(p=>({...p,name:v}))}/>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <InputField label="Solde (€)" value={form.balance||""} onChange={v=>setForm(p=>({...p,balance:v}))} type="number"/>
-          <InputField label="Taux (%)" value={form.rate||""} onChange={v=>setForm(p=>({...p,rate:v}))} type="number"/>
+          <InputField label="Solde (€)" value={form.balance||""} onChange={v=>setForm(p=>({...p,balance:v}))} type="number" min="0"/>
+          <InputField label="Taux (%)" value={form.rate||""} onChange={v=>setForm(p=>({...p,rate:v}))} type="number" min="0" max="100"/>
         </div></>}
       <button onClick={handleEdit} style={{width:"100%",padding:11,borderRadius:8,border:"none",background:`linear-gradient(135deg,${C.accent},${C.purple})`,color:"#fff",fontWeight:700,fontSize:13,cursor:"pointer",marginTop:6}}><Save size={14} style={{verticalAlign:"middle",marginRight:5}}/>Sauvegarder</button>
     </Modal>
@@ -2205,7 +2207,7 @@ export default function PatrimoineTracker(){
     {/* ═══ TRANSACTION MODAL ═══ */}
     <Modal show={showTxModal} onClose={()=>setShowTxModal(false)} title={t.logTx}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-        <InputField label={t.date} value={txForm.date} onChange={v=>setTxForm(p=>({...p,date:v}))} type="date"/>
+        <InputField label={t.date} value={txForm.date} onChange={v=>setTxForm(p=>({...p,date:v}))} type="date" max={new Date().toISOString().slice(0,10)}/>
         <SelectField label={t.type} value={txForm.type} onChange={v=>setTxForm(p=>({...p,type:v}))} options={[{value:"buy",label:t.buy},{value:"sell",label:t.sell}]}/>
       </div>
       <SelectField label={t.account} value={txForm.account} onChange={v=>setTxForm(p=>({...p,account:v,holdingId:"new",name:""}))} options={[{value:"pea",label:"PEA"},{value:"cto",label:"CTO"},{value:"crypto",label:"Crypto"}]}/>
