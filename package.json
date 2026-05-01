@@ -16,7 +16,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && node -e \"const fs=require('fs');fs.renameSync('build/index.html','build/app.html');['og-preview.html','app-screenshot.html','app-screenshot.png'].forEach(f=>{if(fs.existsSync('build/'+f))fs.unlinkSync('build/'+f);});\""
+    "build": "react-scripts build && node -e \"const fs=require('fs');fs.renameSync('build/index.html','build/app.html');['og-preview.html','app-screenshot.html','app-screenshot.png'].forEach(f=>{if(fs.existsSync('build/'+f))fs.unlinkSync('build/'+f);});\"",
+    "build:icons": "node scripts/generate-icons.js"
   },
   "engines": {
     "node": "22.x"
@@ -30,5 +31,8 @@
     "development": [
       "last 1 chrome version"
     ]
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5"
   }
 }
