@@ -9,7 +9,7 @@ import {
   Trash2, Save, X, DollarSign, BarChart3,
   Target, Layers, ArrowUpRight,
   ArrowDownRight, Check, AlertCircle, Camera, Award,
-  Banknote, Zap, Flag, Download, Upload, Moon, Sun, HelpCircle, ChevronRight
+  Banknote, Zap, Flag, Download, Upload, Moon, Sun, HelpCircle, ChevronRight, Mail
 } from "lucide-react";
 
 const DARK = {
@@ -866,7 +866,8 @@ export default function PatrimoineTracker(){
   const ctoPV=ctoTitres-ctoInvested;const ctoPVPct=ctoInvested>0?(ctoPV/ctoInvested)*100:0;
   const livretsTotal=livrets.reduce((s,l)=>s+l.balance,0);
   const totalPat=peaTotal+cryptoTotal+ctoTotal+livretsTotal;const totalInv=peaInvested+cryptoInvested+ctoInvested+livretsTotal;
-  const totalPV=totalPat-totalInv;const totalPVPct=totalInv>0?(totalPV/totalInv)*100:0;
+  const totalInvPV=peaInvested+cryptoInvested+ctoInvested;
+  const totalPV=totalPat-totalInv;const totalPVPct=totalInvPV>0?(totalPV/totalInvPV)*100:0;
   const mensuel=versements.pea+versements.crypto+versements.cto;
 
   const divPayers=[...pea,...cto].filter(h=>h.divPerShare>0&&h.divFreq!=="cap");
@@ -1235,6 +1236,7 @@ export default function PatrimoineTracker(){
             {[
               {icon:<Download size={14}/>,label:"Export CSV",action:()=>{exportCSV();setShowSettings(false);}},
               {icon:<Download size={14}/>,label:"Backup JSON",action:()=>{exportBackup();setShowSettings(false);}},
+              {icon:<Mail size={14}/>,label:"Contact",action:()=>{window.location.href="mailto:contact@patra.fr?subject=PaTra%20%E2%80%94%20";setShowSettings(false);}},
             ].map(item=>(
               <button key={item.label} onClick={item.action} style={{width:"100%",background:"none",border:"none",padding:"9px 14px",display:"flex",alignItems:"center",gap:10,color:C.textDim,fontSize:13,cursor:"pointer",textAlign:"left",fontFamily:"'Outfit',sans-serif"}}
                 onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="none"}>
@@ -1352,7 +1354,7 @@ export default function PatrimoineTracker(){
               {totalPV>=0?<ArrowUpRight size={32}/>:<ArrowDownRight size={32}/>}{fmtEur(totalPV)}
             </div>
             <div style={{fontSize:20,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:totalPV>=0?C.green:C.red,marginTop:4}}>{fmtPct(totalPVPct)}</div>
-            <div style={{fontSize:12,color:C.textDim,marginTop:8}}>sur {fmtEur(totalInv)} investis</div>
+            <div style={{fontSize:12,color:C.textDim,marginTop:8}}>sur {fmtEur(totalInvPV)} investis</div>
           </div>
         </div>
 
