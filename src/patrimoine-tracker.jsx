@@ -115,7 +115,7 @@ const defaultPEA=[];
 const defaultCrypto=[];
 const defaultCTO=[];
 const defaultLivrets=[];
-const defaultVersements={pea:0,crypto:0,cto:0};
+const defaultVersements={pea:0,crypto:0,cto:0,livrets:0};
 const defaultDivHistory=[];
 
 const DEMO_DATA={
@@ -146,7 +146,7 @@ const DEMO_DATA={
     {id:"d10",name:"LEP",balance:7700,rate:4},
   ],
   peaCash:1650,ctoCash:320,cryptoCash:400,
-  versements:{pea:600,crypto:120,cto:0},
+  versements:{pea:600,crypto:120,cto:0,livrets:100},
   monthlyIncome:3800,
   targetAlloc:{pea:50,cto:10,crypto:20,livrets:16},
   divHistory:[{year:2021,total:180},{year:2022,total:420},{year:2023,total:780},{year:2024,total:1280}],
@@ -868,7 +868,7 @@ export default function PatrimoineTracker(){
   const totalPat=peaTotal+cryptoTotal+ctoTotal+livretsTotal;const totalInv=peaInvested+cryptoInvested+ctoInvested+livretsTotal;
   const totalInvPV=peaInvested+cryptoInvested+ctoInvested;
   const totalPV=totalPat-totalInv;const totalPVPct=totalInvPV>0?(totalPV/totalInvPV)*100:0;
-  const mensuel=versements.pea+versements.crypto+versements.cto;
+  const mensuel=versements.pea+versements.crypto+versements.cto+(versements.livrets||0);
 
   const divPayers=[...pea,...cto].filter(h=>h.divPerShare>0&&h.divFreq!=="cap");
   const totalDivAnnual=divPayers.reduce((s,h)=>s+h.divPerShare*h.quantity,0);
@@ -922,7 +922,7 @@ export default function PatrimoineTracker(){
   }).filter(Boolean);
 
   const takeSnap=()=>{
-    const s={date:new Date().toISOString(),total:totalPat,invested:totalInv,pea:peaTotal,cto:ctoTotal,crypto:cryptoTotal,livrets:livretsTotal};
+    const s={date:new Date().toISOString(),total:totalPat,invested:totalInvPV,pea:peaTotal,cto:ctoTotal,crypto:cryptoTotal,livrets:livretsTotal};
     setSnapshots(prev=>[...prev,s].slice(-100));
     const dateStr=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long'});
     setToast({msg:`📸 Snapshot du ${dateStr} enregistré`});
@@ -2030,10 +2030,11 @@ export default function PatrimoineTracker(){
           </div>
         </SectionCard>
         <SectionCard title="Versements mensuels">
-          <div style={{padding:20,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:14}}>
+          <div style={{padding:20,display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:14}}>
             <InputField label="PEA" value={versements.pea} type="number" onChange={v=>setVersements(p=>({...p,pea:parseFloat(v)||0}))}/>
             <InputField label="Crypto" value={versements.crypto} type="number" onChange={v=>setVersements(p=>({...p,crypto:parseFloat(v)||0}))}/>
             <InputField label="CTO" value={versements.cto} type="number" onChange={v=>setVersements(p=>({...p,cto:parseFloat(v)||0}))}/>
+            <InputField label="Livrets" value={versements.livrets||0} type="number" onChange={v=>setVersements(p=>({...p,livrets:parseFloat(v)||0}))}/>
           </div>
           <div style={{padding:"0 20px 16px",fontSize:13,color:C.textDim}}>{t.total} : <span style={{color:C.text,fontWeight:700,fontFamily:"'JetBrains Mono',monospace"}}>{fmtEur(mensuel)}{t.month}</span> · <span style={{color:C.text,fontWeight:700,fontFamily:"'JetBrains Mono',monospace"}}>{fmtEur(mensuel*12)}{t.year}</span></div>
         </SectionCard>
