@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && node -e \"const fs=require('fs');fs.renameSync('build/index.html','build/app.html');['og-preview.html','app-screenshot.html'].forEach(f=>{if(fs.existsSync('build/'+f))fs.unlinkSync('build/'+f);});\"",
+    "build": "react-scripts build && node -e \"const fs=require('fs');fs.renameSync('build/index.html','build/app.html');['og-preview.html','app-screenshot.html'].forEach(f=>{if(fs.existsSync('build/'+f))fs.unlinkSync('build/'+f);});const sw=fs.readFileSync('build/service-worker.js','utf8');fs.writeFileSync('build/service-worker.js',sw.replace('self.__BUILD_ID || Date.now()',Date.now()));\"",
     "build:icons": "node scripts/generate-icons.js"
   },
   "engines": {
