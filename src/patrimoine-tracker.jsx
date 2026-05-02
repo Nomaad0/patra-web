@@ -859,7 +859,7 @@ export default function PatrimoineTracker(){
   const stablecoinsTotal=stableHoldings.reduce((s,h)=>s+h.quantity*h.currentPrice,0);
   const cryptoTotal=cryptoTitres+cryptoCash+stablecoinsTotal;
   const cryptoInvested=crypto.reduce((s,h)=>s+h.quantity*h.avgPrice,0);
-  const cryptoPV=cryptoTotal-cryptoInvested;const cryptoPVPct=cryptoInvested>0?(cryptoPV/cryptoInvested)*100:0;
+  const cryptoPV=cryptoTitres+stablecoinsTotal-cryptoInvested;const cryptoPVPct=cryptoInvested>0?(cryptoPV/cryptoInvested)*100:0;
   const ctoTitres=cto.reduce((s,h)=>s+h.quantity*h.currentPrice,0);
   const ctoTotal=ctoTitres+ctoCash;
   const ctoInvested=cto.reduce((s,h)=>s+h.quantity*h.pru,0);
@@ -867,7 +867,8 @@ export default function PatrimoineTracker(){
   const livretsTotal=livrets.reduce((s,l)=>s+l.balance,0);
   const totalPat=peaTotal+cryptoTotal+ctoTotal+livretsTotal;const totalInv=peaInvested+cryptoInvested+ctoInvested+livretsTotal;
   const totalInvPV=peaInvested+cryptoInvested+ctoInvested;
-  const totalPV=totalPat-totalInv;const totalPVPct=totalInvPV>0?(totalPV/totalInvPV)*100:0;
+  const totalValPV=peaTitres+cryptoTitres+stablecoinsTotal+ctoTitres;
+  const totalPV=totalValPV-totalInvPV;const totalPVPct=totalInvPV>0?(totalPV/totalInvPV)*100:0;
   const mensuel=versements.pea+versements.crypto+versements.cto+(versements.livrets||0);
 
   const divPayers=[...pea,...cto].filter(h=>h.divPerShare>0&&h.divFreq!=="cap");
