@@ -369,10 +369,19 @@ function HoldingRow({item,onEdit,onDelete,type,totalValue,isMobile}){
   </div>);
 }
 
+const LOGO_HOST_WHITELIST=["assets.parqet.com","assets.coingecko.com","www.google.com"];
+function safeLogoSrc(symbol){
+  if(!symbol)return null;
+  if(symbol.startsWith("https://")){
+    try{const h=new URL(symbol).hostname;if(LOGO_HOST_WHITELIST.includes(h))return symbol;}catch{}
+    return null;
+  }
+  return `https://assets.parqet.com/logos/symbol/${encodeURIComponent(symbol)}`;
+}
 function LogoImg({symbol,bg,letter,size=34}){
   const [err,setErr]=useState(false);
-  const src=symbol?.startsWith("https://")?symbol:`https://assets.parqet.com/logos/symbol/${symbol}`;
-  if(!symbol||err)return<div style={{width:size,height:size,borderRadius:8,background:bg||"#1a2744",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5,flexShrink:0}}>{letter||(symbol||"??").slice(0,2).toUpperCase()}</div>;
+  const src=safeLogoSrc(symbol);
+  if(!src||err)return<div style={{width:size,height:size,borderRadius:8,background:bg||"#1a2744",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:"#fff",fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5,flexShrink:0}}>{letter||(symbol||"??").slice(0,2).toUpperCase()}</div>;
   return<img src={src} alt=""
     style={{width:size,height:size,borderRadius:8,objectFit:"contain",flexShrink:0,background:"#fff",padding:2}}
     onError={()=>setErr(true)}
@@ -585,6 +594,7 @@ export default function PatrimoineTracker(){
   const [loaded,setLoaded]=useState(false);
   const [sortConfig,setSortConfig]=useState({key:"montant",dir:"desc"});
   const [txSortConfig,setTxSortConfig]=useState({key:"date",dir:"desc"});
+  const [snapPeriod,setSnapPeriod]=useState("all");
   const [benchData,setBenchData]=useState(null);
   const [benchLoading,setBenchLoading]=useState(false);
   const [benchIndices,setBenchIndices]=useState({cac:true,sp500:true,msci:true});
@@ -1359,15 +1369,27 @@ export default function PatrimoineTracker(){
           </div>
         </div>
 
-        {snapshots.length>0&&<SectionCard title={`Évolution (${snapshots.length} snapshots)`} rightContent={
-          <div style={{display:"flex",gap:8}}>
+        {snapshots.length>0&&(()=>{
+          const PERIODS=[{k:"1j",label:"1J",days:1},{k:"7j",label:"7J",days:7},{k:"1m",label:"1M",days:30},{k:"3m",label:"3M",days:90},{k:"ytd",label:"YTD",days:null},{k:"1a",label:"1A",days:365},{k:"all",label:"Début",days:null}];
+          const now=Date.now();
+          let cutoff=null;
+          if(snapPeriod==="ytd"){cutoff=new Date(new Date().getFullYear(),0,1).getTime();}
+          else{const p=PERIODS.find(x=>x.k===snapPeriod);if(p?.days)cutoff=now-p.days*86400000;}
+          let filtered=cutoff?snapshots.filter(s=>new Date(s.date).getTime()>=cutoff):snapshots;
+          // Inclure le dernier snapshot avant la plage comme point d'ancrage
+          if(cutoff&&filtered.length<snapshots.length){const before=snapshots.filter(s=>new Date(s.date).getTime()<cutoff);if(before.length>0)filtered=[before[before.length-1],...filtered];}
+          return <SectionCard title={`Évolution (${filtered.length} snapshot${filtered.length>1?"s":""})`} rightContent={
+          <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}}>
+            <div style={{display:"flex",gap:4}}>
+              {PERIODS.map(p=><button key={p.k} onClick={()=>setSnapPeriod(p.k)} style={{padding:"4px 8px",borderRadius:6,border:`1px solid ${snapPeriod===p.k?C.accent:C.border}`,background:snapPeriod===p.k?C.accentDim:"transparent",color:snapPeriod===p.k?C.accent:C.textDim,cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5}}>{p.label}</button>)}
+            </div>
             <button onClick={()=>setShowSnapManager(!showSnapManager)} style={{background:showSnapManager?C.accentDim:"transparent",border:`1px solid ${showSnapManager?C.accent:C.border}`,borderRadius:8,padding:"6px 12px",color:showSnapManager?C.accent:C.textDim,cursor:"pointer",fontSize:11,fontWeight:600,display:"flex",alignItems:"center",gap:5}}>
               <Edit3 size={12}/>{showSnapManager?"Fermer":"Gérer"}
             </button>
           </div>
         }>
-          <div style={{padding:20}}><ResponsiveContainer width="100%" height={240}>
-            <AreaChart data={snapshots.map(s=>({...s,dateLabel:fmtDate(s.date)}))}>
+          <div style={{padding:20}}>{filtered.length<2?<div style={{textAlign:"center",padding:"40px 20px",color:C.textDim,fontSize:13}}>Pas assez de snapshots sur cette période.</div>:<ResponsiveContainer width="100%" height={240}>
+            <AreaChart data={filtered.map(s=>({...s,dateLabel:fmtDate(s.date)}))}>
               <defs><linearGradient id="gT" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.accent} stopOpacity={.3}/><stop offset="95%" stopColor={C.accent} stopOpacity={0}/></linearGradient></defs>
               <CartesianGrid strokeDasharray="3 3" stroke={C.border}/>
               <XAxis dataKey="dateLabel" tick={{fontSize:10,fill:C.textDim}} stroke={C.border}/>
@@ -1375,7 +1397,8 @@ export default function PatrimoineTracker(){
               <Tooltip content={({active,payload,label})=>{
                 if(!active||!payload?.[0])return null;
                 const d=payload[0].payload;
-                const prev=snapshots.indexOf(d)>0?snapshots[snapshots.indexOf(d)-1]:null;
+                const idx=filtered.indexOf(d);
+                const prev=idx>0?filtered[idx-1]:null;
                 const diff=prev?d.total-prev.total:0;
                 const diffPct=prev&&prev.total>0?((d.total-prev.total)/prev.total)*100:0;
                 return(<div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 18px",boxShadow:"0 12px 32px rgba(0,0,0,.5)",minWidth:180}}>
@@ -1397,7 +1420,7 @@ export default function PatrimoineTracker(){
               }}/>
               <Area type="monotone" dataKey="total" stroke={C.accent} strokeWidth={2.5} fill="url(#gT)" dot={{r:3,fill:C.accent,stroke:C.card,strokeWidth:2}} activeDot={{r:6,fill:C.accent,stroke:"#fff",strokeWidth:2}}/>
             </AreaChart>
-          </ResponsiveContainer></div>
+          </ResponsiveContainer>}</div>
           {showSnapManager&&<div style={{borderTop:`1px solid ${C.border}`,maxHeight:250,overflowY:"auto"}}>
             <div style={{display:"grid",gridTemplateColumns:"1.5fr 1fr 1fr 1fr 1fr 50px",padding:"8px 16px",background:C.bg}}>
               <span style={{fontSize:10,fontWeight:700,color:C.textMuted,textTransform:"uppercase",letterSpacing:.5}}>DATE</span>
@@ -1430,7 +1453,7 @@ export default function PatrimoineTracker(){
               </button>
             </div>}
           </div>}
-        </SectionCard>}
+        </SectionCard>;})()}
 
         {/* ═══ DASHBOARD EXTRAS ═══ */}
           {/* Savings Rate */}
