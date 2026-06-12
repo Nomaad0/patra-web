@@ -957,7 +957,7 @@ export default function PatrimoineTracker(){
     setEditItem(null);setForm({});};
 
   const del=(type,id)=>{if(type==="pea")setPea(p=>p.filter(h=>h.id!==id));else if(type==="cto")setCto(p=>p.filter(h=>h.id!==id));else if(type==="crypto")setCrypto(p=>p.filter(h=>h.id!==id));else setLivrets(p=>p.filter(l=>l.id!==id));};
-  const askDelete=(type,id)=>{const arr={pea,cto,crypto,livret:livrets}[type];const item=arr?.find(x=>x.id===id);setPendingDelete({type,id,name:item?.name||item?.symbol||"cette ligne"});};
+  const askDelete=(type,id)=>{const arr={pea,cto,crypto,livret:livrets}[type];const item=arr?.find(x=>x.id===id);setPendingDelete({kind:"holding",type,id,name:item?.name||item?.symbol||"cette ligne"});};
 
   const openEdit=(item,type)=>{setEditItem({...item,_type:type});
     if(type==="pea"||type==="cto")setForm({name:item.name,ticker:item.ticker,quantity:String(item.quantity),pru:String(item.pru),currentPrice:String(item.currentPrice),divPerShare:String(item.divPerShare||0),divFreq:item.divFreq||"annuel"});
