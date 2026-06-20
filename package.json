@@ -6,6 +6,9 @@
   "description": "PaTra - Suivi de patrimoine personnel",
   "author": "Pierrick",
   "dependencies": {
+    "@capacitor/cli": "^8.4.1",
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/ios": "^8.4.1",
     "@vercel/analytics": "^2.0.1",
     "lucide-react": "^0.383.0",
     "react": "^19.0.0",
@@ -17,6 +20,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && node -e \"const fs=require('fs');fs.renameSync('build/index.html','build/app.html');['og-preview.html','app-screenshot.html'].forEach(f=>{if(fs.existsSync('build/'+f))fs.unlinkSync('build/'+f);});const sw=fs.readFileSync('build/service-worker.js','utf8');fs.writeFileSync('build/service-worker.js',sw.replace('self.__BUILD_ID || Date.now()',Date.now()));\"",
+    "build:mobile": "react-scripts build && node -e \"const fs=require('fs');['og-preview.html','app-screenshot.html'].forEach(f=>{if(fs.existsSync('build/'+f))fs.unlinkSync('build/'+f);});\" && npx cap sync ios",
     "build:icons": "node scripts/generate-icons.js"
   },
   "engines": {
@@ -33,6 +37,7 @@
     ]
   },
   "devDependencies": {
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "typescript": "^6.0.3"
   }
 }

@@ -9,7 +9,7 @@ import {
   Trash2, Save, X, DollarSign, BarChart3,
   Target, Layers, ArrowUpRight,
   ArrowDownRight, Check, AlertCircle, Camera, Award,
-  Banknote, Zap, Flag, Download, Upload, Moon, Sun, HelpCircle, ChevronRight, Mail
+  Banknote, Zap, Flag, Download, Upload, Moon, Sun, HelpCircle, ChevronRight, Mail, MoreHorizontal
 } from "lucide-react";
 
 const DARK = {
@@ -629,6 +629,7 @@ export default function PatrimoineTracker(){
   const [darkMode,setDarkMode]=useState(true);
   const [isMobile,setIsMobile]=useState(()=>window.innerWidth<768);
   const [showOnboarding,setShowOnboarding]=useState(false);
+  const [showMoreSheet,setShowMoreSheet]=useState(false);
   const [toast,setToast]=useState(null);
   const [snapBlocked,setSnapBlocked]=useState(false);
   const [showRestoreConfirm,setShowRestoreConfirm]=useState(false);
@@ -1274,8 +1275,8 @@ export default function PatrimoineTracker(){
       <button onClick={clearDemo} style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"5px 12px",color:C.red,cursor:"pointer",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:5,flexShrink:0}}><Trash2 size={12}/>Effacer et commencer</button>
     </div>}
 
-    {/* TABS */}
-    <div style={{padding:isMobile?"8px 10px":"12px 28px",display:"flex",gap:6,borderBottom:`1px solid ${C.border}`,overflowX:"auto"}}>
+    {/* TABS (desktop only — mobile uses bottom tab bar) */}
+    <div style={{padding:"12px 28px",display:isMobile?"none":"flex",gap:6,borderBottom:`1px solid ${C.border}`,overflowX:"auto"}}>
       <TabBtn active={activeTab==="dashboard"} label={t.dashboard} icon={BarChart3} onClick={()=>setActiveTab("dashboard")}/>
       <TabBtn active={activeTab==="pea"} label={t.pea} icon={TrendingUp} onClick={()=>setActiveTab("pea")} badge={pea.length}/>
       <TabBtn active={activeTab==="cto"} label={t.cto} icon={DollarSign} onClick={()=>setActiveTab("cto")} badge={cto.length}/>
@@ -1286,7 +1287,7 @@ export default function PatrimoineTracker(){
       {<TabBtn active={activeTab==="transactions"} label={t.transactions} icon={Layers} onClick={()=>setActiveTab("transactions")} badge={transactions.length||undefined}/>}
     </div>
 
-    <div style={{padding:isMobile?"12px":"20px 28px",maxWidth:1400,margin:"0 auto"}}>
+    <div style={{padding:isMobile?"12px 12px calc(12px + 83px + env(safe-area-inset-bottom))":"20px 28px",maxWidth:1400,margin:"0 auto"}}>
 
       {/* ═══ DASHBOARD ═══ */}
       {activeTab==="dashboard"&&<>
@@ -2525,5 +2526,56 @@ export default function PatrimoineTracker(){
         </div>
       </div>
     </div>}
+
+    {/* ═══ BOTTOM TAB BAR (mobile) ═══ */}
+    {isMobile&&<>
+      <div style={{position:"fixed",bottom:0,left:0,right:0,background:C.card,borderTop:`1px solid ${C.border}`,display:"flex",justifyContent:"space-around",alignItems:"flex-start",padding:`8px 0 calc(8px + env(safe-area-inset-bottom, 0px))`,zIndex:200}}>
+        {[
+          {id:"dashboard",label:"Accueil",icon:BarChart3},
+          {id:"pea",label:"PEA",icon:TrendingUp,badge:pea.length||undefined},
+          {id:"crypto",label:"Crypto",icon:Zap,badge:crypto.length||undefined},
+          {id:"transactions",label:"Historique",icon:Layers,badge:transactions.length||undefined},
+          {id:"__more",label:"Plus",icon:MoreHorizontal},
+        ].map(tab=>{
+          const isMore=tab.id==="__more";
+          const moreIds=["cto","livrets","dividendes","objectif"];
+          const isActive=isMore?(moreIds.includes(activeTab)||showMoreSheet):activeTab===tab.id&&!showMoreSheet;
+          return(
+            <button key={tab.id} onClick={()=>{if(isMore){setShowMoreSheet(s=>!s);}else{setActiveTab(tab.id);setShowMoreSheet(false);}}} style={{background:"none",border:"none",display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"4px 6px",flex:1,cursor:"pointer",color:isActive?C.accent:C.textDim,WebkitTapHighlightColor:"transparent",position:"relative",transition:"color .15s"}}>
+              <div style={{position:"relative"}}>
+                <tab.icon size={22} strokeWidth={isActive?2.2:1.8}/>
+                {tab.badge&&<span style={{position:"absolute",top:-5,right:-8,background:C.accent,color:"#fff",borderRadius:10,padding:"1px 5px",fontSize:9,fontWeight:700,lineHeight:1.4,minWidth:16,textAlign:"center"}}>{tab.badge}</span>}
+              </div>
+              <span style={{fontSize:10,fontWeight:isActive?700:500,letterSpacing:.1}}>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* More sheet */}
+      {showMoreSheet&&<>
+        <div onClick={()=>setShowMoreSheet(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:199,backdropFilter:"blur(6px)",WebkitBackdropFilter:"blur(6px)"}}/>
+        <div style={{position:"fixed",bottom:`calc(67px + env(safe-area-inset-bottom, 0px))`,left:12,right:12,background:C.card,border:`1px solid ${C.border}`,borderRadius:20,padding:"8px 8px",zIndex:200,display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+          {[
+            {id:"cto",label:"CTO",icon:DollarSign,sub:cto.length?`${cto.length} position${cto.length>1?"s":""}`:null},
+            {id:"livrets",label:"Livrets",icon:Wallet,sub:livrets.length?`${livrets.length} livret${livrets.length>1?"s":""}`:null},
+            {id:"dividendes",label:"Dividendes",icon:Banknote,sub:currentMonthDiv>0?fmtEur(currentMonthDiv)+" ce mois":null},
+            {id:"objectif",label:"Objectif",icon:Flag,sub:null},
+          ].map(tab=>{
+            const isActive=activeTab===tab.id;
+            return(
+              <button key={tab.id} onClick={()=>{setActiveTab(tab.id);setShowMoreSheet(false);}} style={{background:isActive?C.accentDim:"transparent",border:`1px solid ${isActive?C.accent:C.border}`,borderRadius:14,padding:"14px 14px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",color:isActive?C.accent:C.text,WebkitTapHighlightColor:"transparent",textAlign:"left"}}>
+                <tab.icon size={20} color={isActive?C.accent:C.textDim}/>
+                <div>
+                  <div style={{fontSize:13,fontWeight:600}}>{tab.label}</div>
+                  {tab.sub&&<div style={{fontSize:11,color:C.textDim,marginTop:2}}>{tab.sub}</div>}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </>}
+    </>}
+
   </div>);
 }

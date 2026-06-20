@@ -28,3 +28,12 @@ CLAUDE.md
 
 # Artefacts divers
 {
+
+# Notes & marketing perso (à ne pas commit dans le repo public)
+dev-tools/
+audit-securite-*.md
+AUDIT-REPORT.md
+
+# Capacitor — dossiers natifs (privés, générés par CI)
+/ios/
+/android/
