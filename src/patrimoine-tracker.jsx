@@ -99,6 +99,8 @@ const QUICK_CRYPTO=[
   {name:"Chainlink", symbol:"LINK",cgId:"chainlink",     bg:"#1e3a5f",letter:"LI",logo:"https://assets.coingecko.com/coins/images/877/thumb/chainlink-new-logo.png"},
 ];
 
+const CG_LOGO=Object.fromEntries(QUICK_CRYPTO.map(c=>[c.cgId,{logo:c.logo,bg:c.bg,letter:c.letter}]));
+
 // Livrets réglementés FR
 const QUICK_LIVRETS=[
   {ticker:"LA",   name:"Livret A",     issuer:"État",   plafond:22950, defaultRate:1.5,  bg:"#1e3a5f",letter:"LA"},
@@ -386,6 +388,86 @@ function LogoImg({symbol,bg,letter,size=34}){
     style={{width:size,height:size,borderRadius:8,objectFit:"contain",flexShrink:0,background:"#fff",padding:2}}
     onError={()=>setErr(true)}
     onLoad={e=>{if(e.target.naturalWidth<10)setErr(true);}}/>;
+}
+
+function TxCard({tx,onDelete}){
+  const total=tx.quantity*tx.price;
+  const isBuy=tx.type==="buy";
+  const acctColor=tx.account==="pea"?C.accent:tx.account==="crypto"?C.purple:C.gold;
+  return(
+    <div style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",marginBottom:8}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+        <span style={{padding:"2px 8px",borderRadius:4,fontSize:10,fontWeight:700,background:isBuy?C.greenDim:C.redDim,color:isBuy?C.green:C.red}}>{isBuy?"ACHAT":"VENTE"}</span>
+        <span style={{fontSize:10,fontWeight:700,color:acctColor,fontFamily:"'JetBrains Mono',monospace",letterSpacing:.5}}>{tx.account.toUpperCase()}</span>
+        <span style={{flex:1,fontSize:11,color:C.textMuted,textAlign:"right"}}>{fmtDate(tx.date)}</span>
+        <button onClick={onDelete} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3,borderRadius:4}}
+          onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
+      </div>
+      <div style={{fontWeight:700,fontSize:13.5,color:C.text,marginBottom:8}}>
+        {tx.name}
+        {tx.notes&&<div style={{fontSize:11,color:C.textMuted,fontWeight:400,marginTop:2}}>{tx.notes}</div>}
+      </div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",borderTop:`1px solid ${C.border}`,paddingTop:8}}>
+        <div style={{fontSize:11,color:C.textDim}}>
+          <span>{tx.quantity} × {fmtEur(tx.price)}</span>
+          {tx.cashDelta!==undefined&&<div style={{marginTop:2}}>espèces : {tx.cashDelta>0?"+":""}{fmtEur(tx.cashDelta)}</div>}
+          {tx.stableDelta&&<div style={{marginTop:2}}>{tx.stableDelta.symbol} : {tx.stableDelta.delta>0?"+":""}{tx.stableDelta.delta.toFixed(2)}</div>}
+        </div>
+        <div style={{fontSize:16,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:isBuy?C.red:C.green}}>{isBuy?"-":"+"}{fmtEur(total)}</div>
+      </div>
+    </div>
+  );
+}
+
+function HoldingCard({item,type,totalValue,onEdit,onDelete}){
+  const montant=type==="livret"?item.balance:item.quantity*item.currentPrice;
+  const pru=type==="pea"?item.pru:item.avgPrice;
+  const pv=type==="pea"?(item.currentPrice-item.pru)*item.quantity:type==="crypto"?(item.currentPrice-item.avgPrice)*item.quantity:0;
+  const pvPct=type==="pea"?((item.currentPrice-item.pru)/item.pru)*100:type==="crypto"?((item.currentPrice-item.avgPrice)/item.avgPrice)*100:0;
+  const weight=totalValue>0?(montant/totalValue)*100:0;
+  const pos=pv>=0;
+  const ticker=item.ticker||item.symbol;
+  const cgMeta=type==="crypto"&&item.cgId?CG_LOGO[item.cgId]:null;
+  const logoSymbol=cgMeta?cgMeta.logo:ticker;
+  const logoBg=cgMeta?.bg||undefined;
+  const letter=cgMeta?.letter||(ticker?ticker.replace(/\.[A-Z]+$/,"").slice(0,2).toUpperCase():(item.name||"??").slice(0,2).toUpperCase());
+  return(
+    <div style={{background:C.bg,border:`1px solid ${C.border}`,borderRadius:12,padding:"12px 14px",marginBottom:8}}>
+      {/* Logo + Nom + actions */}
+      <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:10}}>
+        <LogoImg symbol={logoSymbol} bg={logoBg} letter={letter} size={36}/>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:700,fontSize:13.5,color:C.text,lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{item.name}</div>
+          {ticker&&<div style={{fontSize:10,color:C.textMuted,fontFamily:"'JetBrains Mono',monospace",marginTop:2}}>{ticker}</div>}
+        </div>
+        <div style={{display:"flex",gap:2,flexShrink:0}}>
+          <button onClick={()=>onEdit(item)} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}}
+            onMouseEnter={e=>e.currentTarget.style.color=C.accent} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Edit3 size={13}/></button>
+          <button onClick={()=>onDelete(item.id)} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:4,borderRadius:4}}
+            onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
+        </div>
+      </div>
+      {/* Montant + PV */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:8}}>
+        <div style={{fontSize:19,fontWeight:800,fontFamily:"'JetBrains Mono',monospace",color:C.text}}>{fmtEur(montant)}</div>
+        {type!=="livret"&&<div style={{textAlign:"right"}}>
+          <div style={{fontSize:14,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",color:pos?C.green:C.red,display:"flex",alignItems:"center",gap:3,justifyContent:"flex-end"}}>
+            {pos?<ArrowUpRight size={12}/>:<ArrowDownRight size={12}/>}{fmtPct(pvPct)}
+          </div>
+          <div style={{fontSize:11,color:pos?C.green:C.red,fontFamily:"'JetBrains Mono',monospace"}}>{pos?"+":""}{fmtEur(pv)}</div>
+        </div>}
+        {type==="livret"&&<div style={{fontSize:13,color:C.accent,fontFamily:"'JetBrains Mono',monospace"}}>{item.rate}% / an</div>}
+      </div>
+      {/* Détails */}
+      <div style={{display:"flex",gap:12,fontSize:10.5,color:C.textDim,borderTop:`1px solid ${C.border}`,paddingTop:8,flexWrap:"wrap"}}>
+        {type!=="livret"&&<>
+          <span>{type==="crypto"?item.quantity.toFixed(4):item.quantity} × {fmtEur(item.currentPrice)}</span>
+          <span>PRU <span style={{color:C.text,fontFamily:"'JetBrains Mono',monospace"}}>{fmtEur(pru)}</span></span>
+        </>}
+        <span style={{marginLeft:"auto"}}>Poids <span style={{color:C.text}}>{weight.toFixed(1)}%</span></span>
+      </div>
+    </div>
+  );
 }
 
 function InstrCard({ticker,name,issuer,bg,letter,logo,onSelect,selected}){
@@ -1640,7 +1722,7 @@ export default function PatrimoineTracker(){
             </div>
           </div>
           {isMobile
-            ? <div>{sortHoldings(pea,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>askDelete("pea",id)} isMobile/>)}</div>
+            ? <div style={{padding:"12px 12px 4px"}}>{sortHoldings(pea,"pea").map(h=><HoldingCard key={h.id} item={h} type="pea" totalValue={peaTotal} onEdit={i=>openEdit(i,"pea")} onDelete={id=>askDelete("pea",id)}/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:640}}>
                   <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
@@ -1722,7 +1804,7 @@ export default function PatrimoineTracker(){
             </div>
           </div>
           {isMobile
-            ? <div>{sortHoldings(cto,"pea").map(h=><HoldingRow key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>askDelete("cto",id)} isMobile/>)}</div>
+            ? <div style={{padding:"12px 12px 4px"}}>{sortHoldings(cto,"pea").map(h=><HoldingCard key={h.id} item={h} type="pea" totalValue={ctoTotal} onEdit={i=>openEdit(i,"cto")} onDelete={id=>askDelete("cto",id)}/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.5fr 0.7fr 0.7fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:640}}>
                   <SortHeader label="VALEUR" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
@@ -1804,7 +1886,7 @@ export default function PatrimoineTracker(){
             </div>
           </div>
           {isMobile
-            ? <div>{sortHoldings(crypto,"crypto").map(h=><HoldingRow key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>askDelete("crypto",id)} isMobile/>)}</div>
+            ? <div style={{padding:"12px 12px 4px"}}>{sortHoldings(crypto,"crypto").map(h=><HoldingCard key={h.id} item={h} type="crypto" totalValue={cryptoTotal} onEdit={i=>openEdit(i,"crypto")} onDelete={id=>askDelete("crypto",id)}/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 0.8fr 0.8fr 0.9fr 0.9fr 0.8fr 0.5fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:680}}>
                   <SortHeader label="CRYPTO" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="QTÉ" sortKey="quantity"/><SortHeader label="PRU" sortKey="pru"/><SortHeader label="COURS" sortKey="cours"/><SortHeader label="MONTANT" sortKey="montant"/><SortHeader label="+/- VAL" sortKey="pv"/><SortHeader label="+/- %" sortKey="pvpct"/><span style={thStyle}>POIDS</span><span style={thStyle}></span>
@@ -1824,7 +1906,7 @@ export default function PatrimoineTracker(){
             {addBtn("livret")}
           </div>
           {isMobile
-            ? <div>{livrets.map(l=><HoldingRow key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>askDelete("livret",id)} isMobile/>)}</div>
+            ? <div style={{padding:"12px 12px 4px"}}>{livrets.map(l=><HoldingCard key={l.id} item={l} type="livret" totalValue={livretsTotal} onEdit={i=>openEdit(i,"livret")} onDelete={id=>askDelete("livret",id)}/>)}</div>
             : <div style={{overflowX:"auto"}}>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 0.6fr 1fr 0.6fr 50px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg,minWidth:380}}>
                   <SortHeader label="LIVRET" sortKey="name" style={{textAlign:"left"}}/><SortHeader label="SOLDE" sortKey="solde"/><SortHeader label="TAUX" sortKey="taux"/><SortHeader label="POIDS" sortKey="poids"/><span style={thStyle}></span>
@@ -1957,19 +2039,8 @@ export default function PatrimoineTracker(){
             {["buy","sell"].map(type=>{const on=txFilter.types.includes(type);const col=type==="buy"?C.green:C.red;const colDim=type==="buy"?C.greenDim:C.redDim;return<button key={type} onClick={()=>setTxFilter(p=>({...p,types:on?p.types.filter(t=>t!==type):[...p.types,type]}))} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${on?col:C.border}`,background:on?colDim:"transparent",color:on?col:C.textDim,fontSize:11,fontWeight:700,cursor:"pointer"}}>{type==="buy"?"Achat":"Vente"}</button>;})}
             {(txFilter.accounts.length>0||txFilter.types.length>0)&&<button onClick={()=>setTxFilter({accounts:[],types:[]})} style={{padding:"5px 12px",borderRadius:20,border:`1px solid ${C.border}`,background:"transparent",color:C.textMuted,fontSize:11,cursor:"pointer"}}>✕ Tout</button>}
           </div>
-        <SectionCard scrollable>
-          <div style={{minWidth:680}}>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
-            <TxSortHeader label={t.date} sortKey="date" style={{textAlign:"left"}}/>
-            <TxSortHeader label={t.type} sortKey="type"/>
-            <TxSortHeader label={t.account} sortKey="account" style={{textAlign:"center"}}/>
-            <TxSortHeader label={t.name} sortKey="name" style={{textAlign:"left",paddingLeft:12}}/>
-            <TxSortHeader label={t.quantity} sortKey="quantity"/>
-            <TxSortHeader label={t.price} sortKey="price"/>
-            <TxSortHeader label={t.total} sortKey="total"/>
-            <span style={thStyle}></span>
-          </div>
-          {[...transactions].map((tx,origIdx)=>({...tx,_origIdx:origIdx})).filter(tx=>(txFilter.accounts.length===0||txFilter.accounts.includes(tx.account))&&(txFilter.types.length===0||txFilter.types.includes(tx.type))).sort((a,b)=>{
+        {(()=>{
+          const sortedTxs=[...transactions].map((tx,origIdx)=>({...tx,_origIdx:origIdx})).filter(tx=>(txFilter.accounts.length===0||txFilter.accounts.includes(tx.account))&&(txFilter.types.length===0||txFilter.types.includes(tx.type))).sort((a,b)=>{
             const {key,dir}=txSortConfig;
             if(key==="date"){const d=new Date(a.date).getTime()-new Date(b.date).getTime();return dir==="asc"?d:-d;}
             if(key==="type"||key==="account"||key==="name"){const s=a[key].localeCompare(b[key]);return dir==="asc"?s:-s;}
@@ -1979,28 +2050,49 @@ export default function PatrimoineTracker(){
             else if(key==="total"){vA=a.quantity*a.price;vB=b.quantity*b.price;}
             else{vA=new Date(a.date).getTime();vB=new Date(b.date).getTime();}
             return dir==="asc"?vA-vB:vB-vA;
-          }).map((tx,i)=>(
-            <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"10px 16px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,alignItems:"center"}}
-              onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
-              <span style={{color:C.text,fontWeight:500}}>{fmtDate(tx.date)}{tx.date.includes("T")&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontFamily:"'JetBrains Mono',monospace"}}>{new Date(tx.date).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}</span>
-              <span style={{textAlign:"right"}}><span style={{padding:"2px 8px",borderRadius:4,fontSize:10,fontWeight:700,background:tx.type==="buy"?C.greenDim:C.redDim,color:tx.type==="buy"?C.green:C.red}}>{tx.type==="buy"?t.buy:t.sell}</span></span>
-              <span style={{textAlign:"center",color:C.textDim,fontSize:11,fontWeight:600}}>{tx.account.toUpperCase()}</span>
-              <span style={{color:C.text,fontWeight:600,paddingLeft:12}}>{tx.name}{tx.notes&&<span style={{display:"block",color:C.textMuted,fontSize:10,fontWeight:400}}>{tx.notes}</span>}</span>
-              <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{tx.quantity}</span>
-              <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{fmtEur(tx.price)}</span>
-              <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:tx.type==="buy"?C.green:C.red}}>
-                {tx.type==="buy"?"-":"+"}{fmtEur(tx.quantity*tx.price)}
-                {tx.cashDelta!==undefined&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontWeight:400,marginTop:2}}>espèces : {tx.cashDelta>0?"+":""}{fmtEur(tx.cashDelta)}</span>}
-                {tx.stableDelta&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontWeight:400,marginTop:2}}>{tx.stableDelta.symbol} : {tx.stableDelta.delta>0?"+":""}{tx.stableDelta.delta.toFixed(2)}</span>}
-              </span>
-              <div style={{display:"flex",justifyContent:"flex-end"}}>
-                <button onClick={()=>setPendingDelete({kind:"tx",origIdx:tx._origIdx,name:tx.name,cashDelta:tx.cashDelta,account:tx.account,stableDelta:tx.stableDelta})} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
-                  onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
-              </div>
+          });
+          if(isMobile) return(
+            <div style={{padding:"4px 0"}}>
+              {sortedTxs.map((tx,i)=><TxCard key={i} tx={tx} onDelete={()=>setPendingDelete({kind:"tx",origIdx:tx._origIdx,name:tx.name,cashDelta:tx.cashDelta,account:tx.account,stableDelta:tx.stableDelta})}/>)}
             </div>
-          ))}
-          </div>
-        </SectionCard>
+          );
+          return(
+            <SectionCard scrollable>
+              <div style={{minWidth:680}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"0 16px",borderBottom:`1px solid ${C.border}`,background:C.bg}}>
+                <TxSortHeader label={t.date} sortKey="date" style={{textAlign:"left"}}/>
+                <TxSortHeader label={t.type} sortKey="type"/>
+                <TxSortHeader label={t.account} sortKey="account" style={{textAlign:"center"}}/>
+                <TxSortHeader label={t.name} sortKey="name" style={{textAlign:"left",paddingLeft:12}}/>
+                <TxSortHeader label={t.quantity} sortKey="quantity"/>
+                <TxSortHeader label={t.price} sortKey="price"/>
+                <TxSortHeader label={t.total} sortKey="total"/>
+                <span style={thStyle}></span>
+              </div>
+              {sortedTxs.map((tx,i)=>(
+                <div key={i} style={{display:"grid",gridTemplateColumns:"1fr 0.6fr 0.6fr 1.2fr 0.6fr 0.8fr 1fr 40px",padding:"10px 16px",borderBottom:`1px solid ${C.border}`,fontSize:12.5,alignItems:"center"}}
+                  onMouseEnter={e=>e.currentTarget.style.background=C.cardHover} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                  <span style={{color:C.text,fontWeight:500}}>{fmtDate(tx.date)}{tx.date.includes("T")&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontFamily:"'JetBrains Mono',monospace"}}>{new Date(tx.date).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</span>}</span>
+                  <span style={{textAlign:"right"}}><span style={{padding:"2px 8px",borderRadius:4,fontSize:10,fontWeight:700,background:tx.type==="buy"?C.greenDim:C.redDim,color:tx.type==="buy"?C.green:C.red}}>{tx.type==="buy"?t.buy:t.sell}</span></span>
+                  <span style={{textAlign:"center",color:C.textDim,fontSize:11,fontWeight:600}}>{tx.account.toUpperCase()}</span>
+                  <span style={{color:C.text,fontWeight:600,paddingLeft:12}}>{tx.name}{tx.notes&&<span style={{display:"block",color:C.textMuted,fontSize:10,fontWeight:400}}>{tx.notes}</span>}</span>
+                  <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{tx.quantity}</span>
+                  <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",color:C.textDim}}>{fmtEur(tx.price)}</span>
+                  <span style={{textAlign:"right",fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:tx.type==="buy"?C.green:C.red}}>
+                    {tx.type==="buy"?"-":"+"}{fmtEur(tx.quantity*tx.price)}
+                    {tx.cashDelta!==undefined&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontWeight:400,marginTop:2}}>espèces : {tx.cashDelta>0?"+":""}{fmtEur(tx.cashDelta)}</span>}
+                    {tx.stableDelta&&<span style={{display:"block",fontSize:10,color:C.textMuted,fontWeight:400,marginTop:2}}>{tx.stableDelta.symbol} : {tx.stableDelta.delta>0?"+":""}{tx.stableDelta.delta.toFixed(2)}</span>}
+                  </span>
+                  <div style={{display:"flex",justifyContent:"flex-end"}}>
+                    <button onClick={()=>setPendingDelete({kind:"tx",origIdx:tx._origIdx,name:tx.name,cashDelta:tx.cashDelta,account:tx.account,stableDelta:tx.stableDelta})} style={{background:"none",border:"none",cursor:"pointer",color:C.textDim,padding:3}}
+                      onMouseEnter={e=>e.currentTarget.style.color=C.red} onMouseLeave={e=>e.currentTarget.style.color=C.textDim}><Trash2 size={13}/></button>
+                  </div>
+                </div>
+              ))}
+              </div>
+            </SectionCard>
+          );
+        })()}
         </>}
       </>}
 
